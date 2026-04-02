@@ -46,11 +46,18 @@ window.addEventListener("click", () => {
  * Fonction création GlobalHull (fusion des géométries et contours noirs)
  */
 const createGlobalHull = (root, thickness = 0.03) => {
+  // Tableau pour stocker les géometries
   const geometries = []
 
   // ---- Copie et fusion des géométries ---- //
+  // Matrice vide pour convertir les répères monde vers le repère du model
+  const inverseRootMatrix = new THREE.Matrix4()
+
   // Mise à jour des matrices du modèle avant fusion
   root.updateMatrixWorld(true)
+
+  // Matrices mondes à matrices locales du model
+  inverseRootMatrix.copy(root.matrixWorld).invert()
 
   // Parcours des child du model
   root.traverse((child) => {
@@ -62,8 +69,14 @@ const createGlobalHull = (root, thickness = 0.03) => {
     // Clonage des géométries
     const geometry = child.geometry.clone()
 
-    // Inclusion des matrices dans le monde aux géométries copiées (sinon elles se retrouvent empilées au centre)
-    geometry.applyMatrix4(child.matrixWorld)
+    // Matrice vide pour la transformation du mesh dans l'espace local
+    const localMatrix = new THREE.Matrix4()
+
+    // Ou se trouve le mesh dans repère local par rapport au modèle
+    localMatrix.multiplyMatrices(inverseRootMatrix, child.matrixWorld)
+
+    // Inclusion des matrices dans le monde aux géométries copiées
+    geometry.applyMatrix4(localMatrix)
 
     // Ajout de la géométrie finale dans le tableau
     geometries.push(geometry)
@@ -85,6 +98,7 @@ const createGlobalHull = (root, thickness = 0.03) => {
 
   const outlineMesh = new THREE.Mesh(mergedGeometry, outlineMaterial)
   outlineMesh.scale.multiplyScalar(1 + thickness)
+  outlineMesh.name = "globalHull"
 
   return outlineMesh
 }
@@ -120,7 +134,7 @@ gltfLoader.load("models/Warawara.glb", (gltf) => {
   // Création du Hull
   const hull = createGlobalHull(model, 0.025)
   if (hull) {
-    scene.add(hull)
+    model.add(hull)
   }
 
   // Stockage mémoire du hull dans le model
