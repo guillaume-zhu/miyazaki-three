@@ -24,14 +24,53 @@ const axesHelper = new THREE.AxesHelper(2)
 scene.add(axesHelper)
 
 /**
- * Models
+ * Mouse and Click event
+ */
+const mouse = new THREE.Vector2()
+
+// Mousemove
+window.addEventListener("mousemove", (event) => {
+  mouse.x = (event.clientX / sizes.width) * 2 - 1
+  mouse.y = -(event.clientY / sizes.height) * 2 + 1
+})
+
+// Click
+window.addEventListener("click", () => {
+  if (currentIntersect) {
+    console.log("Objet cliqué :", currentIntersect.object)
+  }
+})
+
+/**
+ * Raycaster
  */
 
+// Setup
+const raycaster = new THREE.Raycaster()
+
+// Interactive objects pour raycaster
+const interactiveObjects = []
+
+// CurrentIntersect pour stocker les objets qui sont en hover
+let currentIntersect = null
+
+/**
+ * Models Imports
+ */
+
+// Warawara
 const gltfLoader = new GLTFLoader()
 
-gltfLoader.load(`models/Warawara.glb`, (gltf) => {
-  console.log("Modèle chargé !", gltf)
-  scene.add(gltf.scene)
+gltfLoader.load("models/Warawara.glb", (gltf) => {
+  console.log("warawara chargé", gltf)
+
+  const model = gltf.scene
+
+  // Ajout dans la scène
+  scene.add(model)
+
+  // Ajout dans interactiveObjects
+  interactiveObjects.push(model)
 })
 
 /**
@@ -42,7 +81,7 @@ scene.add(ambientLight)
 
 const cube = new THREE.Mesh(
   new THREE.BoxGeometry(1, 1),
-  new THREE.MeshBasicMaterial({ wireframe: true }),
+  new THREE.MeshBasicMaterial({ color: "pink" }),
 )
 
 scene.add(cube)
@@ -100,6 +139,27 @@ const tick = () => {
   const elapsedTIme = timer.getElapsed()
 
   timer.update()
+
+  // Update object
+  cube.position.y = Math.sin(elapsedTIme * 0.8)
+
+  // Raycaster
+  raycaster.setFromCamera(mouse, camera)
+  const objectToTest = [cube]
+  const intersects = raycaster.intersectObjects(objectToTest)
+
+  for (const object of objectToTest) {
+    object.scale.setScalar(1)
+  }
+  for (const intersect of intersects) {
+    intersect.object.scale.setScalar(1.2)
+  }
+
+  if (intersects.length) {
+    currentIntersect = intersects[0]
+  } else {
+    currentIntersect = null
+  }
 
   renderer.render(scene, camera)
 
