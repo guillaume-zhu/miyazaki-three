@@ -1,5 +1,5 @@
 import * as THREE from "three"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
+import { CameraControls } from "./controls/CameraControls.js"
 import GUI, { Controller } from "three/examples/jsm/libs/lil-gui.module.min.js"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
 
@@ -36,6 +36,8 @@ canvas.addEventListener("mousemove", (event) => {
 
 // Click
 window.addEventListener("click", () => {
+  if (cameraControls && cameraControls.hasMoved) return
+
   if (currentIntersect) {
     console.log("Objet cliqué :", currentIntersect.object)
   }
@@ -94,6 +96,23 @@ const sizes = {
   pixelRatio: Math.min(window.devicePixelRatio, 2),
 }
 
+/**
+ * Camera
+ */
+const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
+camera.position.set(0, 2, 8)
+scene.add(camera)
+
+/**
+ * Renderer
+ */
+const renderer = new THREE.WebGLRenderer({
+  canvas: canvas,
+})
+renderer.setSize(sizes.width, sizes.height)
+renderer.setPixelRatio(sizes.pixelRatio)
+renderer.setClearColor("#111111")
+
 window.addEventListener("resize", () => {
   // Update sizes
   sizes.width = window.innerWidth
@@ -109,26 +128,10 @@ window.addEventListener("resize", () => {
   renderer.setPixelRatio(sizes.pixelRatio)
 })
 
-/**
- * Camera
- */
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.set(0, 0, 3)
-scene.add(camera)
-
 // Controls
-const controls = new OrbitControls(camera, canvas)
-controls.enableDamping = true
+const cameraControls = new CameraControls(camera, scene, canvas)
 
-/**
- * Renderer
- */
-const renderer = new THREE.WebGLRenderer({
-  canvas: canvas,
-})
-renderer.setSize(sizes.width, sizes.height)
-renderer.setPixelRatio(sizes.pixelRatio)
-renderer.setClearColor("#111111")
+
 
 /**
  * Animate
