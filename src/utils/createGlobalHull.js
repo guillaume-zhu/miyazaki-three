@@ -2,63 +2,91 @@ import * as THREE from "three"
 import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js"
 
 /**
- * Fonction création GlobalHull (fusion des géométries et contours noirs)
+ * Crée un contour unique fusionné pour les meshes statiques d'un modèle.
  */
 
 export const createGlobalHull = (root, thickness = 0.03) => {
-  // Tableau pour stocker les géometries
   const geometries = []
-
-  // ---- Copie et fusion des géométries ---- //
-  // Matrice vide pour convertir les répères monde vers le repère du model
   const inverseRootMatrix = new THREE.Matrix4()
 
-  // Mise à jour des matrices du modèle avant fusion
   root.updateMatrixWorld(true)
-
-  // Matrices mondes à matrices locales du model
   inverseRootMatrix.copy(root.matrixWorld).invert()
 
-  // Parcours des child du model
   root.traverse((child) => {
-    // Si child n'est pas un mesh
-    if (!child.isMesh) {
+    if (!child.isMesh || child.isSkinnedMesh || !child.geometry) {
       return
     }
 
-    // Clonage des géométries
-    const geometry = child.geometry.clone()
+    const sourceGeometry = child.geometry.index ? child.geometry.toNonIndexed() : child.geometry
+    const positionAttribute = sourceGeometry.getAttribute("position")
 
-    // Matrice vide pour la transformation du mesh dans l'espace local
+    if (!positionAttribute) {
+      return
+    }
+
+    const positions = new Float32Array(positionAttribute.count * 3)
+
+    for (let i = 0; i < positionAttribute.count; i++) {
+      const offset = i * 3
+
+      positions[offset] = positionAttribute.getX(i)
+      positions[offset + 1] = positionAttribute.getY(i)
+      positions[offset + 2] = positionAttribute.getZ(i)
+    }
+
+    const geometry = new THREE.BufferGeometry()
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3))
+
     const localMatrix = new THREE.Matrix4()
-
-    // Ou se trouve le mesh dans repère local par rapport au modèle
     localMatrix.multiplyMatrices(inverseRootMatrix, child.matrixWorld)
-
-    // Inclusion des matrices dans le monde aux géométries copiées
     geometry.applyMatrix4(localMatrix)
-
-    // Ajout de la géométrie finale dans le tableau
     geometries.push(geometry)
   })
 
-  // Sécurité si modèle aucun mesh
   if (geometries.length === 0) {
     return null
   }
 
-  // Fusion des géometries
   const mergedGeometry = BufferGeometryUtils.mergeGeometries(geometries, false)
 
-  // ---- Hull ---- //
-  const outlineMaterial = new THREE.MeshBasicMaterial({
-    color: 0x000000,
+  if (!mergedGeometry) {
+    console.warn("Global hull ignoré : fusion des géométries impossible pour ce modèle.")
+    return null
+  }
+
+  const optimizedGeometry = BufferGeometryUtils.mergeVertices(mergedGeometry)
+  optimizedGeometry.computeVertexNormals()
+  optimizedGeometry.computeBoundingSphere()
+
+  const outlineMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      thickness: { value: thickness },
+      outlineColor: { value: new THREE.Color(0x000000) },
+    },
+    vertexShader: `
+      uniform float thickness;
+
+      void main() {
+        vec3 displacedPosition = position + normal * thickness;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(displacedPosition, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform vec3 outlineColor;
+
+      void main() {
+        gl_FragColor = vec4(outlineColor, 1.0);
+      }
+    `,
     side: THREE.BackSide,
+    depthWrite: false,
   })
 
-  const outlineMesh = new THREE.Mesh(mergedGeometry, outlineMaterial)
-  outlineMesh.scale.multiplyScalar(1 + thickness)
+  const outlineMesh = new THREE.Mesh(optimizedGeometry, outlineMaterial)
   outlineMesh.name = "globalHull"
+  outlineMesh.userData.setThickness = (nextThickness) => {
+    outlineMaterial.uniforms.thickness.value = nextThickness
+  }
 
   return outlineMesh
 }

@@ -1,11 +1,15 @@
 export const updateHoverState = (hoveredModel, newHoveredModel) => {
   if (hoveredModel !== newHoveredModel) {
-    if (hoveredModel && hoveredModel.userData.hull) {
-      hoveredModel.userData.hull.scale.setScalar(hoveredModel.userData.hullBaseScale)
+    if (hoveredModel && hoveredModel.userData.outline) {
+      hoveredModel.userData.outline.userData.setThickness(
+        hoveredModel.userData.outlineBaseThickness,
+      )
     }
 
-    if (newHoveredModel && newHoveredModel.userData.hull) {
-      newHoveredModel.userData.hull.scale.setScalar(newHoveredModel.userData.hullHoverScale)
+    if (newHoveredModel && newHoveredModel.userData.outline) {
+      newHoveredModel.userData.outline.userData.setThickness(
+        newHoveredModel.userData.outlineHoverThickness,
+      )
     }
 
     hoveredModel = newHoveredModel
