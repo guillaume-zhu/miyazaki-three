@@ -1,9 +1,9 @@
-import * as THREE from 'three'
+import * as THREE from "three"
 
 export function createWater(scene) {
   const floorGeo = new THREE.CircleGeometry(500, 64)
   const floorMat = new THREE.MeshBasicMaterial({
-    color: '#bde2eb',
+    color: "#bde2eb",
     side: THREE.DoubleSide,
   })
   const floor = new THREE.Mesh(floorGeo, floorMat)
@@ -16,11 +16,11 @@ export function createWater(scene) {
 
   const material = new THREE.ShaderMaterial({
     uniforms: {
-      uTime:          { value: 0 },
-      uColor:         { value: new THREE.Color('#bde2eb') },
-      uColorWave:     { value: new THREE.Color('#ffffff22') },
-      uTextureSize:   { value: 30.0 },
-      uWaveSpeed:     { value: 0.4 },
+      uTime: { value: 0 },
+      uColor: { value: new THREE.Color("#bde2eb") },
+      uColorWave: { value: new THREE.Color("#ffffff") },
+      uTextureSize: { value: 3.0 },
+      uWaveSpeed: { value: 0.4 },
       uWaveAmplitude: { value: 0.03 },
     },
 
