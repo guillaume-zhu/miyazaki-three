@@ -88,7 +88,10 @@ async function init() {
   /**
    * Models import
    */
-  loadModels({ scene, interactiveObjects, mixers })
+  const magicGoldMaterials = []
+  const magicGoldModels = []
+
+  loadModels({ scene, interactiveObjects, mixers, magicGoldMaterials, magicGoldModels })
 
   /**
    * Animation loop
@@ -110,6 +113,18 @@ async function init() {
     // ---- Play animation ---- //
     for (const mixer of mixers) {
       mixer.update(delta)
+    }
+
+    // Gold Animation
+    for (const material of magicGoldMaterials) {
+      if ("emissiveIntensity" in material) {
+        material.emissiveIntensity = 2.5 + Math.sin(t * 4) * 0.2
+      }
+    }
+
+    for (const model of magicGoldModels) {
+      model.position.y = model.userData.baseY + Math.sin(t * 2) * 0.08
+      model.rotation.y += 0.01
     }
 
     // ---- Raycaster update ---- //
