@@ -8,6 +8,7 @@ import { createWater } from './world/water.js'
 import { createGrass } from './world/grass.js'
 import { createSky } from './world/sky.js'
 import { createLights } from './scene/lights.js'
+import { loadMountain } from './world/mountain.js'
 
 /**
  * Mouse and Click event
@@ -28,6 +29,7 @@ window.addEventListener('click', () => {
  * Raycaster
  */
 const raycaster = new THREE.Raycaster()
+const mouse = new THREE.Vector2()
 
 // Interactive objects pour raycaster
 const interactiveObjects = []
@@ -45,6 +47,7 @@ async function init() {
   const platform = await loadPlatform(scene)
   const grassMaterial = createGrass(scene, platform)
   const waterMaterial = createWater(scene)
+  loadMountain(scene)
 
   /**
    * Models Imports
