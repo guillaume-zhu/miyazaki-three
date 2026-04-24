@@ -4,53 +4,89 @@ import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js"
 /**
  * Fonction création GlobalHull (fusion des géométries et contours noirs)
  */
-
 export const createGlobalHull = (root, thickness = 0.03) => {
-  // Tableau pour stocker les géometries
+  // Tableau pour stocker les géométries compatibles
   const geometries = []
 
-  // ---- Copie et fusion des géométries ---- //
-  // Matrice vide pour convertir les répères monde vers le repère du model
+  // Matrice vide pour convertir les repères monde vers le repère local du model
   const inverseRootMatrix = new THREE.Matrix4()
 
   // Mise à jour des matrices du modèle avant fusion
   root.updateMatrixWorld(true)
 
-  // Matrices mondes à matrices locales du model
+  // Matrices monde -> matrice locale du model
   inverseRootMatrix.copy(root.matrixWorld).invert()
 
-  // Parcours des child du model
+  // Signature de référence des attributs
+  let referenceSignature = null
+
+  // Parcours des enfants du modèle
   root.traverse((child) => {
-    // Si child n'est pas un mesh
-    if (!child.isMesh) {
+    // Ignore tout ce qui n'est pas un mesh
+    if (!child.isMesh || !child.geometry) {
       return
     }
 
-    // Clonage des géométries
+    // Ignore les meshes skinnés pour éviter les problèmes de merge
+    if (child.isSkinnedMesh) {
+      console.warn("createGlobalHull: SkinnedMesh ignoré", child.name)
+      return
+    }
+
+    // Ignore les géométries avec morph targets
+    if (child.geometry.morphAttributes && Object.keys(child.geometry.morphAttributes).length > 0) {
+      console.warn("createGlobalHull: géométrie avec morphAttributes ignorée", child.name)
+      return
+    }
+
+    // Clone de la géométrie
     const geometry = child.geometry.clone()
+
+    // Signature des attributs de la géométrie
+    const signature = Object.entries(geometry.attributes)
+      .map(([name, attr]) => `${name}:${attr.itemSize}`)
+      .sort()
+      .join("|")
+
+    // On garde seulement les géométries compatibles avec la première
+    if (referenceSignature === null) {
+      referenceSignature = signature
+    }
+
+    if (signature !== referenceSignature) {
+      console.warn("createGlobalHull: géométrie incompatible ignorée", child.name, signature)
+      return
+    }
 
     // Matrice vide pour la transformation du mesh dans l'espace local
     const localMatrix = new THREE.Matrix4()
 
-    // Ou se trouve le mesh dans repère local par rapport au modèle
+    // Où se trouve le mesh dans le repère local par rapport au modèle
     localMatrix.multiplyMatrices(inverseRootMatrix, child.matrixWorld)
 
-    // Inclusion des matrices dans le monde aux géométries copiées
+    // Application de la matrice locale à la géométrie
     geometry.applyMatrix4(localMatrix)
 
     // Ajout de la géométrie finale dans le tableau
     geometries.push(geometry)
   })
 
-  // Sécurité si modèle aucun mesh
+  // Sécurité si aucune géométrie compatible
   if (geometries.length === 0) {
+    console.warn("createGlobalHull: aucune géométrie compatible pour", root)
     return null
   }
 
-  // Fusion des géometries
+  // Fusion des géométries
   const mergedGeometry = BufferGeometryUtils.mergeGeometries(geometries, false)
 
-  // ---- Hull ---- //
+  // Sécurité si merge échoue
+  if (!mergedGeometry) {
+    console.warn("createGlobalHull: mergeGeometries a échoué pour", root)
+    return null
+  }
+
+  // Hull
   const outlineMaterial = new THREE.MeshBasicMaterial({
     color: 0x000000,
     side: THREE.BackSide,

@@ -20,3 +20,20 @@ body {
     height: 100%;
     outline: none;
 }
+
+.debug-panel {
+  position: fixed;
+  top: 48px;
+  left: 0;
+  z-index: 999;
+  padding: 8px 10px;
+
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 1.5;
+
+  color: white;
+  background: rgba(0, 0, 0, 0.75);
+
+  pointer-events: none;
+}

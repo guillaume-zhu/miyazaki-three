@@ -12,7 +12,7 @@ export function createSetup() {
 
   // Fog
   const fogColor = "#d6e4f0"
-  scene.fog = new THREE.FogExp2(fogColor, 0.014)
+  scene.fog = new THREE.FogExp2(fogColor, 0.006)
   scene.background = new THREE.Color(fogColor)
 
   /**
