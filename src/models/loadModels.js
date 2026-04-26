@@ -25,12 +25,12 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/avion.glb",
-    position: [25, 10, -100],
+    position: [25, 10, -60],
     rotation: [0, Math.PI * 1.5, 0],
     interactive: true,
     animated: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
   })
 
   // ---- Adriano ----
@@ -44,7 +44,7 @@ export const loadModels = ({
     scale: 0.5,
     interactive: true,
     hitboxScale: [0.7, 1, 0.3],
-    showHitbox: true,
+    showHitbox: false,
     // outlineBaseThickness: 0.001,
     // outlineHoverThickness: 0.001,
   })
@@ -56,12 +56,12 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/balais-kiki.glb",
-    position: [-2, 8, -5],
-    rotation: [0, Math.PI * 0.5, 0],
-    scale: 0.07,
+    position: [-3, 5.5, -20],
+    rotation: [Math.PI * 0.25, Math.PI * -0.25, Math.PI * 0.5],
+    scale: 0.05,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.01,
     outlineHoverThickness: 0.02,
   })
@@ -73,13 +73,44 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/bateau-ponyo.glb",
-    position: [0, -3, -90],
+    position: [0, -3, -80],
     rotation: [0, Math.PI * 0.5, 0],
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.03,
     outlineHoverThickness: 0.05,
+  })
+
+  // ---- Calcifer ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/calcifer.glb",
+    position: [10, 1, -20],
+    scale: 0.3,
+    interactive: true,
+    animated: true,
+    hitboxScale: [0.3, 0.5, 0.3],
+    showHitbox: false,
+  })
+
+  // ---- Canne ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/canne.glb",
+    position: [15, 5, -30],
+    scale: 2,
+    interactive: true,
+    hitboxScale: [1, 1, 1],
+    showHitbox: false,
+    outlineBaseThickness: 0.04,
+    outlineHoverThickness: 0.08,
   })
 
   // ---- Chapeau de paille ----
@@ -89,11 +120,11 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/chapeau-paille.glb",
-    position: [-1, 1, -10],
-    scale: 0.2,
+    position: [-2, 2, -20],
+    scale: 0.1,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.025,
     outlineHoverThickness: 0.05,
     onLoad: (model) => {
@@ -119,21 +150,6 @@ export const loadModels = ({
     },
   })
 
-  // ---- Calcifer ----
-  loadInteractiveModel({
-    gltfLoader,
-    scene,
-    interactiveObjects,
-    mixers,
-    path: "models/calcifer.glb",
-    position: [20, 1, -15],
-    scale: 0.3,
-    interactive: true,
-    animated: true,
-    hitboxScale: [0.3, 0.5, 0.3],
-    showHitbox: true,
-  })
-
   // ---- Chihiro ----
   loadInteractiveModel({
     gltfLoader,
@@ -141,29 +157,13 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/chihiro.glb",
-    position: [8, 0, -10],
+    position: [20, 0, -25],
     rotation: [0, Math.PI * 1.5, 0],
     scale: 0.35,
     interactive: true,
     animated: true,
     hitboxScale: [0.3, 1, 1],
-    showHitbox: true,
-  })
-
-  // ---- Canne ----
-  loadInteractiveModel({
-    gltfLoader,
-    scene,
-    interactiveObjects,
-    mixers,
-    path: "models/canne.glb",
-    position: [5, 2, -10],
-    scale: 2,
-    interactive: true,
-    hitboxScale: [1, 1, 1],
-    showHitbox: true,
-    outlineBaseThickness: 0.01,
-    outlineHoverThickness: 0.02,
+    showHitbox: false,
   })
 
   // ---- Couteau ----
@@ -173,12 +173,12 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/couteau.glb",
-    position: [-10, 10, -10],
-    rotation: [0, 0, Math.PI * -0.75],
+    position: [-20, 10, -20],
+    rotation: [0, Math.PI * 0.5, Math.PI * -0.75],
     scale: 0.002,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     // outlineBaseThickness: 2,
     // outlineHoverThickness: 40000,
   })
@@ -191,10 +191,10 @@ export const loadModels = ({
     mixers,
     path: "models/epouvantail.glb",
     position: [10, 2, -100],
-    scale: 0.5,
+    scale: 0.25,
     interactive: true,
     hitboxScale: [0.8, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
   })
 
   // ---- Fleche ----
@@ -204,14 +204,14 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/fleche.glb",
-    position: [15, 3, -15],
-    scale: 1,
-    rotation: [Math.PI * 0.5, 0, Math.PI * 0.5],
+    position: [15, 3, -30],
+    scale: 2,
+    rotation: [Math.PI * -0.5, Math.PI * 0.25, Math.PI * 0.25],
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
-    outlineBaseThickness: 0.01,
-    outlineHoverThickness: 0.015,
+    showHitbox: false,
+    outlineBaseThickness: 0.015,
+    outlineHoverThickness: 0.03,
   })
 
   // ---- Kiki ----
@@ -221,12 +221,12 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/kiki.glb",
-    position: [-5, 0, -10],
-    rotation: [0, Math.PI, 0],
+    position: [-15, 0, -25],
+    rotation: [0, Math.PI * -0.75, 0],
     scale: 2.75,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.01,
     outlineHoverThickness: 0.015,
   })
@@ -238,12 +238,12 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/kodama.glb",
-    position: [-7, 0, -10],
-    rotation: [0, -Math.PI * 0.5, 0],
+    position: [-20, 0, -25],
+    rotation: [0, -Math.PI * 0.25, 0],
     scale: 0.05,
     interactive: true,
     hitboxScale: [0.5, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.025,
     outlineHoverThickness: 0.05,
   })
@@ -255,12 +255,46 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/lanterne.glb",
-    position: [-9, 0, -10],
-    rotation: [0, Math.PI * 0.5, 0],
+    position: [-24, 0, -25],
+    rotation: [0, Math.PI * 1, 0],
     scale: 5,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
+    outlineBaseThickness: 0.005,
+    outlineHoverThickness: 0.01,
+  })
+
+  // ---- Le Chateau ambulant ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/chateau-ambulant.glb",
+    position: [30, 10, -150],
+    rotation: [0, -Math.PI * 0.5, 0],
+    scale: 0.4,
+    interactive: true,
+    hitboxScale: [1, 1, 1],
+    showHitbox: false,
+    outlineBaseThickness: 0.005,
+    outlineHoverThickness: 0.01,
+  })
+
+  // ---- Le Chateau laputa ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/chateau-laputa.glb",
+    position: [25, 30, -175],
+    rotation: [0, 0, 0],
+    scale: 10,
+    interactive: true,
+    hitboxScale: [1, 1, 1],
+    showHitbox: false,
     outlineBaseThickness: 0.005,
     outlineHoverThickness: 0.01,
   })
@@ -272,12 +306,12 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/masque-sans-visage.glb",
-    position: [-3, 1, -10],
-    rotation: [0, Math.PI * -0.5, 0],
+    position: [-9, 4, -23],
+    rotation: [0, Math.PI * -0.25, 0],
     scale: 1.8,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.015,
     outlineHoverThickness: 0.03,
   })
@@ -289,12 +323,12 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/masque-mononoke.glb",
-    position: [1, 1, -10],
+    position: [-1, 3, -22],
     rotation: [Math.PI * -0.25, 0, 0],
-    scale: 0.5,
+    scale: 0.25,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.025,
     outlineHoverThickness: 0.05,
   })
@@ -306,8 +340,8 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/noiraude.glb",
-    position: [10, 1, -15],
-    rotation: [0, 0, 0],
+    position: [18, 1, -28],
+    rotation: [0, -Math.PI * 0.3, 0],
     scale: 1,
     interactive: true,
     hitboxScale: [1, 1, 1],
@@ -317,21 +351,21 @@ export const loadModels = ({
   })
 
   // ---- haku-queue ----
-  loadInteractiveModel({
-    gltfLoader,
-    scene,
-    interactiveObjects,
-    mixers,
-    path: "models/haku-queue.glb",
-    position: [-10, 5, -20],
-    rotation: [0, Math.PI * 0.5, 0],
-    scale: 10,
-    interactive: true,
-    hitboxScale: [1, 1, 1],
-    showHitbox: true,
-    outlineBaseThickness: 0.005,
-    outlineHoverThickness: 0.01,
-  })
+  // loadInteractiveModel({
+  //   gltfLoader,
+  //   scene,
+  //   interactiveObjects,
+  //   mixers,
+  //   path: "models/haku-queue.glb",
+  //   position: [-10, 5, -20],
+  //   rotation: [0, Math.PI * 0.5, 0],
+  //   scale: 10,
+  //   interactive: true,
+  //   hitboxScale: [1, 1, 1],
+  //   showHitbox: true,
+  //   outlineBaseThickness: 0.005,
+  //   outlineHoverThickness: 0.01,
+  // })
 
   // ---- pepite-or ----
   loadInteractiveModel({
@@ -545,19 +579,19 @@ export const loadModels = ({
   })
 
   // ---- yuba ----
-  loadInteractiveModel({
-    gltfLoader,
-    scene,
-    interactiveObjects,
-    mixers,
-    path: "models/yuba.glb",
-    position: [5, 0, -20],
-    rotation: [0, Math.PI * 0.85, 0],
-    scale: 1.25,
-    interactive: true,
-    hitboxScale: [0.75, 1, 1],
-    showHitbox: true,
-    outlineBaseThickness: 0.01,
-    outlineHoverThickness: 0.02,
-  })
+  // loadInteractiveModel({
+  //   gltfLoader,
+  //   scene,
+  //   interactiveObjects,
+  //   mixers,
+  //   path: "models/yuba.glb",
+  //   position: [5, 0, -20],
+  //   rotation: [0, Math.PI * 0.85, 0],
+  //   scale: 1.25,
+  //   interactive: true,
+  //   hitboxScale: [0.75, 1, 1],
+  //   showHitbox: true,
+  //   outlineBaseThickness: 0.01,
+  //   outlineHoverThickness: 0.02,
+  // })
 }

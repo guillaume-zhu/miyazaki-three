@@ -19,7 +19,7 @@ export function createSetup() {
    * Camera
    */
   const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 500)
-  camera.position.set(0, 6, -20)
+  camera.position.set(0, 4, -15)
 
   /**
    * Renderer
