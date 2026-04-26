@@ -4,6 +4,11 @@ import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js"
 
 import { loadInteractiveModel } from "../utils/loadInteractiveModel.js"
 
+/**
+ * Animations
+ */
+
+// Train
 const createTrainXAnimation = (model, { distance = 9, speed = 3, pauseDuration = 2.5 } = {}) => {
   const startX = model.position.x
   const endX = startX + distance
@@ -33,14 +38,37 @@ const createTrainXAnimation = (model, { distance = 9, speed = 3, pauseDuration =
   }
 }
 
-export const loadModels = ({
-  scene,
-  interactiveObjects,
-  mixers,
-  magicGoldMaterials,
-  magicGoldModels,
-  modelAnimations = [],
-}) => {
+// Gold
+const createMagicGoldAnimation = (
+  model,
+  materials,
+  {
+    floatAmplitude = 0.08,
+    floatSpeed = 2,
+    pulseBase = 2.5,
+    pulseAmplitude = 0.4,
+    pulseSpeed = 4,
+    rotationSpeed = 1,
+  } = {},
+) => {
+  const baseY = model.position.y
+
+  return (delta, t) => {
+    model.position.y = baseY + Math.sin(t * floatSpeed) * floatAmplitude
+    model.rotation.y += rotationSpeed * delta
+
+    for (const material of materials) {
+      if ("emissiveIntensity" in material) {
+        material.emissiveIntensity = pulseBase + Math.sin(t * pulseSpeed) * pulseAmplitude
+      }
+    }
+  }
+}
+
+/**
+ * Import
+ */
+export const loadModels = ({ scene, interactiveObjects, mixers, modelAnimations = [] }) => {
   const dracoLoader = new DRACOLoader()
   dracoLoader.setDecoderPath("/draco/")
 
@@ -467,8 +495,8 @@ export const loadModels = ({
     outlineHoverThickness: 0.04,
     onLoad: (model) => {
       model.userData.modelKey = "pepite-or"
-      model.userData.baseY = model.position.y
-      magicGoldModels.push(model)
+
+      const goldMaterials = []
 
       model.traverse((child) => {
         if (!child.isMesh || !child.material) return
@@ -489,8 +517,19 @@ export const loadModels = ({
         }
 
         child.material.needsUpdate = true
-        magicGoldMaterials.push(child.material)
+        goldMaterials.push(child.material)
       })
+
+      modelAnimations.push(
+        createMagicGoldAnimation(model, goldMaterials, {
+          floatAmplitude: 0.08,
+          floatSpeed: 2,
+          pulseBase: 2.5,
+          pulseAmplitude: 0.4,
+          pulseSpeed: 4,
+          rotationSpeed: 1,
+        }),
+      )
     },
   })
 
