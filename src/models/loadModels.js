@@ -493,22 +493,6 @@ export const loadModels = ({
     // outlineHoverThickness: 0.01,
   })
 
-  // ---- train ----
-  loadInteractiveModel({
-    gltfLoader,
-    scene,
-    interactiveObjects,
-    mixers,
-    path: "models/train.glb",
-    position: [30, 20, -150],
-    rotation: [0, 0, 0],
-    scale: 1,
-    interactive: true,
-    hitboxScale: [1, 1, 1],
-    showHitbox: true,
-    outlineBaseThickness: 0.025,
-    outlineHoverThickness: 0.05,
-  })
 
   // ---- totoro ----
   loadInteractiveModel({
