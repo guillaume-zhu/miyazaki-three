@@ -13,6 +13,8 @@ import { createLights } from "./scene/lights.js"
 
 import { CameraControls } from "./controls/CameraControls.js"
 import { MouseTracker } from "./controls/MouseTracker.js"
+import { openHUD } from "./HUD.js"
+import { MODELS_DATA } from "./data/models.js"
 
 import { loadInteractiveModel } from "./utils/loadInteractiveModel.js"
 import { updateHoverState } from "./utils/updateHoverState.js"
@@ -50,7 +52,13 @@ window.addEventListener("click", () => {
     : null
 
   if (clickedModel) {
-    console.log("Objet cliqué :", clickedModel)
+    const key = clickedModel.userData.modelKey
+    const data = MODELS_DATA[key]
+    if (data) {
+      openHUD(data)
+    } else {
+      console.log("Objet cliqué sans données HUD :", key ?? clickedModel)
+    }
   }
 })
 

@@ -17,7 +17,11 @@
             href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap"
             rel="stylesheet"
         />
-        <script src="./src/HUD.js" defer></script>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700&display=swap"
+            rel="stylesheet"
+        />
+        <script type="module" src="./src/HUD.js"></script>
     </head>
     <body>
         <canvas class="webgl"></canvas>
@@ -37,7 +41,8 @@
                 </div>
             </div>
         </header>
-        <main>
+        <main style="display: none">
+            <div id="hud-overlay" style="position:fixed;inset:0;z-index:998;cursor:pointer;"></div>
             <div id="game-interface">
                 <section id="screen-rules" class="quiz-container">
                     <h1 class="quiz-title">COMMENT FAIRE</h1>
@@ -66,10 +71,11 @@
                     class="quiz-container"
                     style="display: none"
                 >
+                    <button id="hud-close" style="position:absolute;top:16px;right:20px;background:none;border:none;font-size:1.5rem;cursor:pointer;font-weight:bold;">✕</button>
                     <h1 class="quiz-title">
                         DANS LEQUEL DE CES FILMS CET OBJET EST PRÉSENT ?
                     </h1>
-                    <div class="model-viewport"></div>
+                    <div class="model-viewport" id="question-image"></div>
                     <div class="answers-group" id="answers-list"></div>
                 </section>
 

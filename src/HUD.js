@@ -1,169 +1,144 @@
-// --- 1. BASE DE DONNÉES ---
-const database = [
-    {
-        imageObjet: "./img/arc-mahito.png",
-        choix: [
-            "Le vent se lève",
-            "Kiki la petite sorcière",
-            "Le Garçon et le Héron",
-        ],
-        bonneReponse: "Le Garçon et le Héron",
-        anecdote:
-            "L'arc de Mahito est inspiré des arcs traditionnels japonais utilisés dans le kyūdō.",
-        imageAnecdote: "./img/Arc-Mahito-ex.png",
-    },
-    // Tu pourras ajouter tes 21 autres objets ici
-];
+// --- HUD.js — Module ES6 ---
 
-let currentIndex = 0;
-let score = 0;
+// --- Empêcher les clics dans le HUD de traverser vers la scène 3D ---
+document.addEventListener("DOMContentLoaded", () => {
+    const gameInterface = document.getElementById("game-interface")
+    if (gameInterface) {
+        gameInterface.addEventListener("click", (e) => e.stopPropagation())
+    }
+})
 
-// --- 2. FONCTIONS DE NAVIGATION ---
+let currentData = null
+let score = 0
 
-// Fermer les règles et masquer l'interface complète
-function closeRules() {
-    const rulesScreen = document.getElementById("screen-rules");
-    const interfaceMain = document.querySelector("main");
+// --- Fermeture du HUD ---
+export function closeHUD() {
+    const interfaceMain = document.querySelector("main")
+    const activeScreen =
+        document.getElementById("screen-quiz").style.display === "block"
+            ? document.getElementById("screen-quiz")
+            : document.getElementById("screen-anecdote")
 
-    // 1. On lance l'animation de sortie
-    rulesScreen.classList.add("pop-out");
+    activeScreen.classList.add("pop-out")
 
-    // 2. On attend la fin de l'animation (300ms comme dans le CSS)
     setTimeout(() => {
-        rulesScreen.style.display = "none";
-        if (interfaceMain) interfaceMain.style.display = "none";
-
-        // On retire la classe pour que la fenêtre puisse se ré-ouvrir proprement plus tard
-        rulesScreen.classList.remove("pop-out");
-    }, 300);
+        activeScreen.style.display = "none"
+        activeScreen.classList.remove("pop-out")
+        if (interfaceMain) interfaceMain.style.display = "none"
+    }, 300)
 }
 
-// Ouvrir une question (appelé par les icônes ou le volume)
-function openQuestion(index) {
-    currentIndex = index;
-    const data = database[index];
+// --- Fermer l'écran des règles ---
+window.closeRules = function () {
+    const rulesScreen = document.getElementById("screen-rules")
+    const interfaceMain = document.querySelector("main")
 
-    // 1. On affiche le <main> (le conteneur global)
-    const interfaceContainer = document.querySelector("main");
-    if (interfaceContainer) {
-        interfaceContainer.style.display = "flex";
-    }
+    rulesScreen.classList.add("pop-out")
 
-    // 2. Mise à jour de l'image de l'objet
-    const questionImg = document.getElementById("question-image");
-    if (questionImg) {
-        questionImg.style.backgroundImage = `url(${data.imageObjet})`;
-    }
-
-    // 3. Génération des boutons de réponse
-    const container = document.getElementById("answers-list");
-    if (container) {
-        container.innerHTML = "";
-        data.choix.forEach((choix) => {
-            const btn = document.createElement("button");
-            btn.classList.add("answer-btn");
-            btn.innerText = choix;
-            btn.onclick = () => showAnecdote();
-            container.appendChild(btn);
-        });
-    }
-
-    // 4. Affichage de la bonne section
-    document.getElementById("screen-rules").style.display = "none";
-    document.getElementById("screen-anecdote").style.display = "none";
-    document.getElementById("screen-quiz").style.display = "block";
+    setTimeout(() => {
+        rulesScreen.style.display = "none"
+        if (interfaceMain) interfaceMain.style.display = "none"
+        rulesScreen.classList.remove("pop-out")
+    }, 300)
 }
 
-// Passer à l'écran anecdote
+// --- Passer à l'écran anecdote ---
 function showAnecdote() {
-    const data = database[currentIndex];
+    if (!currentData) return
 
-    document.getElementById("screen-quiz").style.display = "none";
+    document.getElementById("screen-quiz").style.display = "none"
 
-    // Mise à jour du texte et de l'image d'anecdote
-    const anecdoteText = document.getElementById("anecdote-text");
-    const anecdoteImg = document.getElementById("anecdote-image");
+    const anecdoteText = document.getElementById("anecdote-text")
+    const anecdoteImg = document.getElementById("anecdote-image")
 
-    if (anecdoteText) anecdoteText.innerText = data.anecdote;
+    if (anecdoteText) anecdoteText.innerText = currentData.anecdote
     if (anecdoteImg)
-        anecdoteImg.style.backgroundImage = `url(${data.imageAnecdote})`;
+        anecdoteImg.style.backgroundImage = `url(${currentData.imageAnecdote})`
 
-    document.getElementById("screen-anecdote").style.display = "block";
+    document.getElementById("screen-anecdote").style.display = "block"
 }
 
-// Terminer la séquence et masquer l'interface
-function finishSequence() {
-    const anecdoteScreen = document.getElementById("screen-anecdote");
-    const interfaceMain = document.querySelector("main");
+// --- Vérifier la réponse et donner un feedback visuel ---
+function handleAnswer(btn, choix, data, container) {
+    if (choix === data.bonneReponse) {
+        // Bonne réponse → vert + désactiver tous les boutons
+        btn.classList.add("answer-correct")
+        container.querySelectorAll(".answer-btn").forEach((b) => {
+            b.style.pointerEvents = "none"
+        })
+        // Transition vers l'anecdote après un court délai
+        setTimeout(() => showAnecdote(), 800)
+    } else {
+        // Mauvaise réponse → rouge + shake, ce bouton uniquement est désactivé
+        btn.classList.add("answer-wrong")
+    }
+}
 
-    anecdoteScreen.classList.add("pop-out");
+// --- Terminer la séquence ---
+window.finishSequence = function () {
+    const anecdoteScreen = document.getElementById("screen-anecdote")
+    const interfaceMain = document.querySelector("main")
+
+    anecdoteScreen.classList.add("pop-out")
 
     setTimeout(() => {
-        anecdoteScreen.style.display = "none";
-        if (interfaceMain) interfaceMain.style.display = "none";
-
-        anecdoteScreen.classList.remove("pop-out");
-        updateScore();
-    }, 300);
+        anecdoteScreen.style.display = "none"
+        anecdoteScreen.classList.remove("pop-out")
+        if (interfaceMain) interfaceMain.style.display = "none"
+        updateScore()
+    }, 300)
 }
 
-// Mettre à jour le compteur 0/22
+// --- Mise à jour du score ---
 function updateScore() {
-    score++;
-    const scoreElement = document.querySelector(".score-counter");
-    if (scoreElement) {
-        scoreElement.innerText = `${score}/22`;
-    }
+    score++
+    const el = document.querySelector(".score-counter")
+    if (el) el.innerText = `${score}/22`
 }
 
-// --- 3. ÉCOUTEURS D'ÉVÉNEMENTS (TESTS) ---
+// --- Ouvrir le HUD avec les données d'un objet ---
+export function openHUD(data) {
+    currentData = data
+    const interfaceMain = document.querySelector("main")
 
-// On cible l'icône de volume par sa classe
-const volumeIcon = document.querySelector(".icon-left");
+    if (interfaceMain) interfaceMain.style.display = "flex"
 
-if (volumeIcon) {
-    volumeIcon.style.cursor = "pointer"; // Pour confirmer visuellement que c'est cliquable
+    // Image de l'objet
+    const questionImg = document.getElementById("question-image")
+    if (questionImg)
+        questionImg.style.backgroundImage = `url(${data.imageObjet})`
 
-    volumeIcon.onclick = function () {
-        console.log("Clic volume détecté !");
-        openQuestion(0); // On force l'ouverture de la première question
-    };
-} else {
-    console.error("L'icône .icon-left n'a pas été trouvée");
-}
-
-// Assure-toi que openQuestion force l'affichage du main
-function openQuestion(index) {
-    currentIndex = index;
-    const data = database[index];
-
-    // On force l'affichage du conteneur principal qui était en display:none
-    const interfaceContainer = document.querySelector("main");
-    if (interfaceContainer) {
-        interfaceContainer.style.display = "flex";
-    }
-
-    // Mise à jour de l'image
-    const questionImg = document.getElementById("question-image");
-    if (questionImg) {
-        questionImg.style.backgroundImage = `url(${data.imageObjet})`;
-    }
-
-    // Génération des boutons
-    const container = document.getElementById("answers-list");
-    if (container) {
-        container.innerHTML = "";
+    // Génération des boutons de réponse
+    const answersContainer = document.getElementById("answers-list")
+    if (answersContainer) {
+        answersContainer.innerHTML = ""
         data.choix.forEach((choix) => {
-            const btn = document.createElement("button");
-            btn.classList.add("answer-btn");
-            btn.innerText = choix;
-            btn.onclick = () => showAnecdote();
-            container.appendChild(btn);
-        });
+            const btn = document.createElement("button")
+            btn.classList.add("answer-btn")
+            btn.innerText = choix
+            btn.onclick = (e) => {
+                e.stopPropagation()
+                handleAnswer(btn, choix, data, answersContainer)
+            }
+            answersContainer.appendChild(btn)
+        })
     }
 
-    // On cache les règles et l'anecdote, on montre le quiz
-    document.getElementById("screen-rules").style.display = "none";
-    document.getElementById("screen-anecdote").style.display = "none";
-    document.getElementById("screen-quiz").style.display = "block";
+    // Affichage des écrans
+    document.getElementById("screen-rules").style.display = "none"
+    document.getElementById("screen-anecdote").style.display = "none"
+    document.getElementById("screen-quiz").style.display = "block"
+
+    // Fermeture via overlay et croix
+    const overlay = document.getElementById("hud-overlay")
+    if (overlay) overlay.onclick = (e) => {
+        e.stopPropagation()
+        closeHUD()
+    }
+
+    const closeBtn = document.getElementById("hud-close")
+    if (closeBtn) closeBtn.onclick = (e) => {
+        e.stopPropagation()
+        closeHUD()
+    }
 }
