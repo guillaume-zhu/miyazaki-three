@@ -1,11 +1,11 @@
 import * as THREE from 'three'
 
 export function createGrass(scene, platformMesh) {
-  const BLADE_COUNT    = 120000
-  const BLADE_HEIGHT   = 1
-  const BLADE_WIDTH    = 0.08
-  const RAY_ORIGIN_Y   = 50
-  const TEXTURE_REPEAT = 3
+  const BLADE_COUNT        = 100000
+  const BLADE_HEIGHT       = 1
+  const BLADE_WIDTH        = 0.08
+  const RAY_ORIGIN_Y       = 50
+  const TEXTURE_REPEAT     = 3
 
   const box = new THREE.Box3().setFromObject(platformMesh)
   const size = new THREE.Vector3()
@@ -23,7 +23,7 @@ export function createGrass(scene, platformMesh) {
   grassTexture.magFilter = THREE.LinearFilter
 
   const CAMERA_FORWARD_ANGLE = -Math.PI / 2
-  const VISIBLE_ARC = Math.PI * 0.8
+  const VISIBLE_ARC = Math.PI * 0.65
 
   function isInVisibleArc(x, z) {
     const angle = Math.atan2(z - center.z, x - center.x)
@@ -35,24 +35,20 @@ export function createGrass(scene, platformMesh) {
 
   const bladeGeo = new THREE.BufferGeometry()
   const positions = new Float32Array([
-    -BLADE_WIDTH * 0.5,  0.0,  0,
-     BLADE_WIDTH * 0.5,  0.0,  0,
-    -BLADE_WIDTH * 0.35, 0.4,  0,
-     BLADE_WIDTH * 0.35, 0.4,  0,
-    -BLADE_WIDTH * 0.15, 0.75, 0,
-     BLADE_WIDTH * 0.15, 0.75, 0,
-     0.0,                1.0,  0,
+    -BLADE_WIDTH * 0.5,  0.0, 0,
+     BLADE_WIDTH * 0.5,  0.0, 0,
+    -BLADE_WIDTH * 0.25, 0.5, 0,
+     BLADE_WIDTH * 0.25, 0.5, 0,
+     0.0,                1.0, 0,
   ])
   const uvs = new Float32Array([
     0.0, 0.0,  1.0, 0.0,
-    0.0, 0.4,  1.0, 0.4,
-    0.0, 0.75, 1.0, 0.75,
+    0.0, 0.5,  1.0, 0.5,
     0.5, 1.0,
   ])
   const indices = new Uint16Array([
     0, 1, 2,  2, 1, 3,
-    2, 3, 4,  4, 3, 5,
-    4, 5, 6,
+    2, 3, 4,
   ])
   bladeGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
   bladeGeo.setAttribute('uv', new THREE.BufferAttribute(uvs, 2))
@@ -120,7 +116,7 @@ export function createGrass(scene, platformMesh) {
 
   for (let i = 0; i < maxAttempts && placed < BLADE_COUNT; i++) {
     const angle = Math.random()*Math.PI*2
-    const radius = Math.sqrt(Math.random())*RADIUS
+    const radius = Math.sqrt(Math.random()) * RADIUS
     const x = center.x+Math.cos(angle)*radius
     const z = center.z+Math.sin(angle)*radius
     if (!isInVisibleArc(x, z)) continue
@@ -199,8 +195,7 @@ export function createGrass(scene, platformMesh) {
         float phase = dot(aOffset.xz, windDir) / uWindWaveSize;
         float mainWave   = sin(phase + uTime * uWindSpeed);
         float detailWave = sin(phase * 2.3 + uTime * uWindSpeed * 1.7) * 0.3;
-        float microWave  = sin(phase * 5.1 + uTime * uWindSpeed * 2.5) * 0.1;
-        float windForce  = (mainWave + detailWave + microWave) * uWindStrength;
+        float windForce  = (mainWave + detailWave) * uWindStrength;
         float bendFactor = pow(uv.y, 2.5);
         pos.x += windDir.x * windForce * bendFactor;
         pos.z += windDir.y * windForce * bendFactor;
