@@ -31,6 +31,9 @@ export const loadModels = ({
     animated: true,
     hitboxScale: [1, 1, 1],
     showHitbox: false,
+    onLoad: (model) => {
+      model.userData.modelKey = "avion"
+    },
   })
 
   // ---- Adriano ----
@@ -47,6 +50,9 @@ export const loadModels = ({
     showHitbox: false,
     // outlineBaseThickness: 0.001,
     // outlineHoverThickness: 0.001,
+    onLoad: (model) => {
+      model.userData.modelKey = "adriano"
+    },
   })
 
   // ---- Balais KIki ----
@@ -64,6 +70,9 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.01,
     outlineHoverThickness: 0.02,
+    onLoad: (model) => {
+      model.userData.modelKey = "balais-kiki"
+    },
   })
 
   // ---- Bateau Ponyo ----
@@ -80,6 +89,9 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.03,
     outlineHoverThickness: 0.05,
+    onLoad: (model) => {
+      model.userData.modelKey = "bateau-ponyo"
+    },
   })
 
   // ---- Calcifer ----
@@ -95,6 +107,9 @@ export const loadModels = ({
     animated: true,
     hitboxScale: [0.3, 0.5, 0.3],
     showHitbox: false,
+    onLoad: (model) => {
+      model.userData.modelKey = "calcifer"
+    },
   })
 
   // ---- Canne ----
@@ -111,6 +126,9 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.04,
     outlineHoverThickness: 0.08,
+    onLoad: (model) => {
+      model.userData.modelKey = "canne"
+    },
   })
 
   // ---- Chapeau de paille ----
@@ -128,6 +146,8 @@ export const loadModels = ({
     outlineBaseThickness: 0.025,
     outlineHoverThickness: 0.05,
     onLoad: (model) => {
+      model.userData.modelKey = "chapeau-paille"
+
       model.traverse((child) => {
         if (!child.isMesh || !child.material) return
 
@@ -164,6 +184,9 @@ export const loadModels = ({
     animated: true,
     hitboxScale: [0.3, 1, 1],
     showHitbox: false,
+    onLoad: (model) => {
+      model.userData.modelKey = "chihiro"
+    },
   })
 
   // ---- Couteau ----
@@ -181,6 +204,9 @@ export const loadModels = ({
     showHitbox: false,
     // outlineBaseThickness: 2,
     // outlineHoverThickness: 40000,
+    onLoad: (model) => {
+      model.userData.modelKey = "couteau"
+    },
   })
 
   // ---- Epouvantail ----
@@ -195,6 +221,9 @@ export const loadModels = ({
     interactive: true,
     hitboxScale: [0.8, 1, 1],
     showHitbox: false,
+    onLoad: (model) => {
+      model.userData.modelKey = "epouvantail"
+    },
   })
 
   // ---- Fleche ----
@@ -212,6 +241,9 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.015,
     outlineHoverThickness: 0.03,
+    onLoad: (model) => {
+      model.userData.modelKey = "fleche"
+    },
   })
 
   // ---- Kiki ----
@@ -229,6 +261,9 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.01,
     outlineHoverThickness: 0.015,
+    onLoad: (model) => {
+      model.userData.modelKey = "kiki"
+    },
   })
 
   // ---- Kodama ----
@@ -246,6 +281,9 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.025,
     outlineHoverThickness: 0.05,
+    onLoad: (model) => {
+      model.userData.modelKey = "kodama"
+    },
   })
 
   // ---- Lanterne ----
@@ -297,6 +335,9 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.005,
     outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.userData.modelKey = "lanterne"
+    },
   })
 
   // ---- Masque Sans Visage ----
@@ -314,6 +355,9 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.015,
     outlineHoverThickness: 0.03,
+    onLoad: (model) => {
+      model.userData.modelKey = "masque-sans-visage"
+    },
   })
 
   // ---- Masque Mononoke ----
@@ -331,6 +375,9 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.025,
     outlineHoverThickness: 0.05,
+    onLoad: (model) => {
+      model.userData.modelKey = "masque-mononoke"
+    },
   })
 
   // ---- Noiraude ----
@@ -348,6 +395,9 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.025,
     outlineHoverThickness: 0.05,
+    onLoad: (model) => {
+      model.userData.modelKey = "noiraude"
+    },
   })
 
   // ---- haku-queue ----
@@ -365,6 +415,9 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.005,
     outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.userData.modelKey = "haku-queue"
+    },
   })
 
   // ---- pepite-or ----
@@ -383,6 +436,7 @@ export const loadModels = ({
     outlineBaseThickness: 0.02,
     outlineHoverThickness: 0.04,
     onLoad: (model) => {
+      model.userData.modelKey = "pepite-or"
       model.userData.baseY = model.position.y
       magicGoldModels.push(model)
 
@@ -425,6 +479,9 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.02,
     outlineHoverThickness: 0.04,
+    onLoad: (model) => {
+      model.userData.modelKey = "perruche-verte"
+    },
   })
 
   // ---- perruche-rose ----
@@ -442,6 +499,9 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.02,
     outlineHoverThickness: 0.04,
+    onLoad: (model) => {
+      model.userData.modelKey = "perruche-rose"
+    },
   })
 
   // ---- perruche-bleue ----
@@ -459,6 +519,9 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.02,
     outlineHoverThickness: 0.04,
+    onLoad: (model) => {
+      model.userData.modelKey = "perruche-bleue"
+    },
   })
 
   // ---- bonhomme-totoro ----
@@ -476,6 +539,9 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.005,
     outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.userData.modelKey = "bonhomme-totoro"
+    },
   })
 
   // ---- ramen ----
@@ -491,6 +557,9 @@ export const loadModels = ({
     interactive: true,
     hitboxScale: [1, 1, 1],
     showHitbox: false,
+    onLoad: (model) => {
+      model.userData.modelKey = "ramen"
+    },
   })
 
   // ---- robot ----
@@ -508,6 +577,9 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.005,
     outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.userData.modelKey = "robot"
+    },
   })
 
   // ---- sceau ----
@@ -525,6 +597,9 @@ export const loadModels = ({
     showHitbox: false,
     // outlineBaseThickness: 0.001,
     // outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.userData.modelKey = "sceau"
+    },
   })
 
   // ---- train ----
@@ -542,6 +617,9 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.025,
     outlineHoverThickness: 0.05,
+    onLoad: (model) => {
+      model.userData.modelKey = "train"
+    },
   })
 
   // ---- totoro ----
@@ -559,6 +637,9 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.005,
     outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.userData.modelKey = "totoro"
+    },
   })
 
   // ---- warawara ----
@@ -576,6 +657,9 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.025,
     outlineHoverThickness: 0.05,
+    onLoad: (model) => {
+      model.userData.modelKey = "warawara"
+    },
   })
 
   // ---- yuba ----
@@ -593,5 +677,8 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.01,
     outlineHoverThickness: 0.02,
+    onLoad: (model) => {
+      model.userData.modelKey = "yuba"
+    },
   })
 }
