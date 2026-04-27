@@ -10,6 +10,7 @@ export const MODELS_DATA = {
         bonneReponse: "Le Vent se lève",
         anecdote: "L'avion de Jiro Horikoshi est inspiré du chasseur Mitsubishi A5M, conçu dans les années 30 au Japon.",
         imageAnecdote: "./img/avion-ex.png",
+        isFound: false,
     },
     "adriano": {
         imageObjet: "./img/adriano.png",
@@ -17,6 +18,7 @@ export const MODELS_DATA = {
         bonneReponse: "Porco Rosso",
         anecdote: "Adriano est le surnom de Marco Pagot, ancien as de l'aviation reconverti en chasseur de prime.",
         imageAnecdote: "./img/adriano-ex.png",
+        isFound: false,
     },
     "balais-kiki": {
         imageObjet: "./img/balais-kiki.png",
@@ -24,6 +26,7 @@ export const MODELS_DATA = {
         bonneReponse: "Kiki la petite sorcière",
         anecdote: "Le balai de Kiki est en brindilles de pin, symbole de la simplicité et du lien à la nature dans la culture japonaise.",
         imageAnecdote: "./img/balais-kiki-ex.png",
+        isFound: false,
     },
     "bateau-ponyo": {
         imageObjet: "./img/bateau-ponyo.png",
@@ -31,6 +34,7 @@ export const MODELS_DATA = {
         bonneReponse: "Ponyo sur la falaise",
         anecdote: "Le petit bateau de Sōsuke est un jouet devenu réel, symbole de l'innocence de l'enfance.",
         imageAnecdote: "./img/bateau-ponyo-ex.png",
+        isFound: false,
     },
     "chapeau-paille": {
         imageObjet: "./img/chapeau-paille.png",
@@ -38,6 +42,7 @@ export const MODELS_DATA = {
         bonneReponse: "Mon Voisin Totoro",
         anecdote: "Le chapeau de paille est un symbole récurrent chez Miyazaki, représentant l'innocence rurale du Japon d'après-guerre.",
         imageAnecdote: "./img/chapeau-paille-ex.png",
+        isFound: false,
     },
     "calcifer": {
         imageObjet: "./img/calcifer.png",
@@ -45,6 +50,7 @@ export const MODELS_DATA = {
         bonneReponse: "Le Château Ambulant",
         anecdote: "Calcifer est un démon du feu lié par contrat à Hauru. Sa voix originale est assurée par Tatsuya Gashūin.",
         imageAnecdote: "./img/calcifer-ex.png",
+        isFound: false,
     },
     "chihiro": {
         imageObjet: "./img/chihiro.png",
@@ -52,6 +58,7 @@ export const MODELS_DATA = {
         bonneReponse: "Le Voyage de Chihiro",
         anecdote: "Chihiro est l'un des personnages les plus emblématiques de Miyazaki, récompensé par un Oscar en 2003.",
         imageAnecdote: "./img/chihiro-ex.png",
+        isFound: false,
     },
     "canne": {
         imageObjet: "./img/canne.png",
@@ -59,6 +66,7 @@ export const MODELS_DATA = {
         bonneReponse: "Le Château Ambulant",
         anecdote: "La canne de la Sorcière des Landes est un symbole de son pouvoir et de sa vieillesse maudite.",
         imageAnecdote: "./img/canne-ex.png",
+        isFound: false,
     },
     "couteau": {
         imageObjet: "./img/couteau.png",
@@ -66,6 +74,7 @@ export const MODELS_DATA = {
         bonneReponse: "Princesse Mononoké",
         anecdote: "Le couteau de San est forgé à partir d'os et de pierre, reflet de sa vie sauvage élevée par les loups.",
         imageAnecdote: "./img/couteau-ex.png",
+        isFound: false,
     },
     "epouvantail": {
         imageObjet: "./img/epouvantail.png",
@@ -73,6 +82,7 @@ export const MODELS_DATA = {
         bonneReponse: "Le Château Ambulant",
         anecdote: "Kabu l'épouvantail est en réalité le Prince Justin, victime d'un sortilège. Il aide Sophie tout au long du film.",
         imageAnecdote: "./img/epouvantail-ex.png",
+        isFound: false,
     },
     "fleche": {
         imageObjet: "./img/fleche.png",
@@ -80,6 +90,7 @@ export const MODELS_DATA = {
         bonneReponse: "Le Garçon et le Héron",
         anecdote: "L'arc de Mahito est inspiré des arcs traditionnels japonais utilisés dans le kyūdō.",
         imageAnecdote: "./img/Arc-Mahito-ex.png",
+        isFound: false,
     },
     "kiki": {
         imageObjet: "./img/kiki.png",
@@ -87,6 +98,7 @@ export const MODELS_DATA = {
         bonneReponse: "Kiki la petite sorcière",
         anecdote: "Kiki est inspirée du roman de Eiko Kadono publié en 1985. Le film sort en 1989 au Japon.",
         imageAnecdote: "./img/kiki-ex.png",
+        isFound: false,
     },
     "kodama": {
         imageObjet: "./img/kodama.png",
@@ -94,6 +106,7 @@ export const MODELS_DATA = {
         bonneReponse: "Princesse Mononoké",
         anecdote: "Les kodama sont des esprits des arbres dans le folklore japonais. Leur présence indique une forêt en bonne santé.",
         imageAnecdote: "./img/kodama-ex.png",
+        isFound: false,
     },
     "lanterne": {
         imageObjet: "./img/lanterne.png",
@@ -101,6 +114,7 @@ export const MODELS_DATA = {
         bonneReponse: "Le Voyage de Chihiro",
         anecdote: "Les lanternes de l'Aburaya illuminent les bains de la nuit, attirant les esprits venus se purifier.",
         imageAnecdote: "./img/lanterne-ex.png",
+        isFound: false,
     },
     "masque-sans-visage": {
         imageObjet: "./img/masque-sans-visage.png",
@@ -108,6 +122,7 @@ export const MODELS_DATA = {
         bonneReponse: "Le Voyage de Chihiro",
         anecdote: "Sans-Visage est l'un des personnages les plus mystérieux de Miyazaki, symbole de la solitude et du désir d'appartenance.",
         imageAnecdote: "./img/masque-sans-visage-ex.png",
+        isFound: false,
     },
     "masque-mononoke": {
         imageObjet: "./img/masque-mononoke.png",
@@ -115,6 +130,7 @@ export const MODELS_DATA = {
         bonneReponse: "Princesse Mononoké",
         anecdote: "Le masque de San est peint avec du sang animal, marquant son appartenance au monde sauvage plutôt qu'humain.",
         imageAnecdote: "./img/masque-mononoke-ex.png",
+        isFound: false,
     },
     "noiraude": {
         imageObjet: "./img/noiraude.png",
@@ -122,6 +138,7 @@ export const MODELS_DATA = {
         bonneReponse: "Mon Voisin Totoro",
         anecdote: "Les Noiraudes (Susuwatari) sont de petits esprits de suie qui fuient la lumière. Ils réapparaissent dans Le Voyage de Chihiro.",
         imageAnecdote: "./img/noiraude-ex.png",
+        isFound: false,
     },
     "haku-queue": {
         imageObjet: "./img/haku-queue.png",
@@ -129,6 +146,7 @@ export const MODELS_DATA = {
         bonneReponse: "Le Voyage de Chihiro",
         anecdote: "Haku est en réalité l'esprit de la rivière Kohaku, une rivière aujourd'hui disparue sous le béton.",
         imageAnecdote: "./img/haku-queue-ex.png",
+        isFound: false,
     },
     "pepite-or": {
         imageObjet: "./img/pepite-or.png",
@@ -136,6 +154,7 @@ export const MODELS_DATA = {
         bonneReponse: "Le Voyage de Chihiro",
         anecdote: "L'or de Sans-Visage se révèle être de la boue à la fin, métaphore de la vacuité de la richesse matérielle.",
         imageAnecdote: "./img/pepite-or-ex.png",
+        isFound: false,
     },
     "perruche-verte": {
         imageObjet: "./img/perruche-verte.png",
@@ -143,6 +162,7 @@ export const MODELS_DATA = {
         bonneReponse: "Le Château Ambulant",
         anecdote: "Les perruches de Hauru sont des créatures magiques qui peuplent son château itinérant.",
         imageAnecdote: "./img/perruche-verte-ex.png",
+        isFound: false,
     },
     "perruche-rose": {
         imageObjet: "./img/perruche-rose.png",
@@ -150,6 +170,7 @@ export const MODELS_DATA = {
         bonneReponse: "Le Château Ambulant",
         anecdote: "Les perruches de Hauru sont des créatures magiques qui peuplent son château itinérant.",
         imageAnecdote: "./img/perruche-rose-ex.png",
+        isFound: false,
     },
     "perruche-bleue": {
         imageObjet: "./img/perruche-bleue.png",
@@ -157,6 +178,7 @@ export const MODELS_DATA = {
         bonneReponse: "Le Château Ambulant",
         anecdote: "Les perruches de Hauru sont des créatures magiques qui peuplent son château itinérant.",
         imageAnecdote: "./img/perruche-bleue-ex.png",
+        isFound: false,
     },
     "bonhomme-totoro": {
         imageObjet: "./img/bonhomme-totoro.png",
@@ -164,6 +186,7 @@ export const MODELS_DATA = {
         bonneReponse: "Mon Voisin Totoro",
         anecdote: "Le bonhomme de Totoro est fabriqué par Satsuki et Mei pour remercier Totoro de ses graines magiques.",
         imageAnecdote: "./img/bonhomme-totoro-ex.png",
+        isFound: false,
     },
     "ramen": {
         imageObjet: "./img/ramen.png",
@@ -171,6 +194,7 @@ export const MODELS_DATA = {
         bonneReponse: "Le Voyage de Chihiro",
         anecdote: "Le ramen dans Le Voyage de Chihiro représente la nourriture des humains — en manger peut transformer en cochon.",
         imageAnecdote: "./img/ramen-ex.png",
+        isFound: false,
     },
     "robot": {
         imageObjet: "./img/robot.png",
@@ -178,6 +202,7 @@ export const MODELS_DATA = {
         bonneReponse: "Le Château dans le Ciel",
         anecdote: "Les robots de Laputa sont inspirés des illustrations de science-fiction des années 30. Miyazaki les voulait à la fois menaçants et mélancoliques.",
         imageAnecdote: "./img/robot-ex.png",
+        isFound: false,
     },
     "sceau": {
         imageObjet: "./img/sceau.png",
@@ -185,6 +210,7 @@ export const MODELS_DATA = {
         bonneReponse: "Le Voyage de Chihiro",
         anecdote: "Le sceau de Yubaba permet de prendre possession du nom des gens — perdre son nom, c'est perdre son identité.",
         imageAnecdote: "./img/sceau-ex.png",
+        isFound: false,
     },
     "train": {
         imageObjet: "./img/train.png",
@@ -192,6 +218,7 @@ export const MODELS_DATA = {
         bonneReponse: "Le Voyage de Chihiro",
         anecdote: "Le train sous-marin de Chihiro ne s'arrête qu'à sens unique — personne ne revient jamais en arrière.",
         imageAnecdote: "./img/train-ex.png",
+        isFound: false,
     },
     "totoro": {
         imageObjet: "./img/totoro.png",
@@ -199,6 +226,7 @@ export const MODELS_DATA = {
         bonneReponse: "Mon Voisin Totoro",
         anecdote: "Totoro est devenu le symbole du Studio Ghibli. Son nom vient d'une déformation du mot japonais 'tororu' (troll).",
         imageAnecdote: "./img/totoro-ex.png",
+        isFound: false,
     },
     "warawara": {
         imageObjet: "./img/warawara.png",
@@ -206,6 +234,7 @@ export const MODELS_DATA = {
         bonneReponse: "Le Garçon et le Héron",
         anecdote: "Les Warawara sont de petites créatures blanches représentant les âmes des futurs humains dans Le Garçon et le Héron.",
         imageAnecdote: "./img/warawara-ex.png",
+        isFound: false,
     },
     "yuba": {
         imageObjet: "./img/yuba.png",
@@ -213,5 +242,6 @@ export const MODELS_DATA = {
         bonneReponse: "Le Voyage de Chihiro",
         anecdote: "Zéniba, sœur de Yubaba, vit seule et simplement — un contrepoint paisible à la frénésie des bains.",
         imageAnecdote: "./img/yuba-ex.png",
+        isFound: false,
     },
 }
