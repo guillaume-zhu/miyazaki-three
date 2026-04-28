@@ -196,8 +196,8 @@ export const loadModels = ({ scene, interactiveObjects, mixers, modelAnimations 
     interactiveObjects,
     mixers,
     path: "models/chapeau-paille.glb",
-    position: [-2, 2, -20],
-    scale: 0.1,
+    position: [-6, 1.55, -32],
+    scale: 0.2,
     interactive: true,
     hitboxScale: [1, 1, 1],
     showHitbox: false,
@@ -425,9 +425,9 @@ export const loadModels = ({ scene, interactiveObjects, mixers, modelAnimations 
     interactiveObjects,
     mixers,
     path: "models/masque-mononoke.glb",
-    position: [-1, 3, -22],
-    rotation: [Math.PI * -0.25, 0, 0],
-    scale: 0.25,
+    position: [-2.8, 1.15, -29.2],
+    rotation: [Math.PI * -0.2, Math.PI * 0, 0],
+    scale: 0.5,
     interactive: true,
     hitboxScale: [1, 1, 1],
     showHitbox: false,
@@ -620,7 +620,7 @@ export const loadModels = ({ scene, interactiveObjects, mixers, modelAnimations 
     interactiveObjects,
     mixers,
     path: "models/ramen.glb",
-    position: [0, 1, -28],
+    position: [-4.5, 2.65, -31],
     rotation: [0, 0, 0],
     scale: 0.01,
     interactive: true,
@@ -658,7 +658,7 @@ export const loadModels = ({ scene, interactiveObjects, mixers, modelAnimations 
     interactiveObjects,
     mixers,
     path: "models/sceau.glb",
-    position: [-2, 1, -28],
+    position: [-4.5, 1, -27],
     rotation: [0, -Math.PI * 0.5, 0],
     scale: 1.2,
     interactive: true,
@@ -754,6 +754,73 @@ export const loadModels = ({ scene, interactiveObjects, mixers, modelAnimations 
     outlineHoverThickness: 0.02,
     onLoad: (model) => {
       model.userData.modelKey = "yuba"
+    },
+  })
+
+  /**
+   * Décors
+   */
+  // ---- cerisier ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/assets/cerisier.glb",
+    position: [20, 0, -30],
+    rotation: [0, -Math.PI * 0.25, 0],
+    scale: 7,
+    interactive: true,
+    hitboxScale: [0.75, 1, 1],
+    showHitbox: false,
+    onLoad: (model) => {
+      model.traverse((child) => {
+        if (!child.isMesh || !child.material) return
+
+        child.material = child.material.clone()
+
+        // branches / tronc
+        if (child.name.includes("Oak_Bark") || child.material.name.includes("SHD_trunk")) {
+          child.material.color.set("#af9f9f")
+          child.material.color.multiplyScalar(0.8)
+        }
+
+        // fleurs
+        if (child.name.includes("rsSprite1") || child.material.name.includes("rsSprite1")) {
+          child.material.color.set("#dde6dd")
+          // child.material.color.multiplyScalar(0.8)
+        }
+
+        if ("envMapIntensity" in child.material) {
+          child.material.envMapIntensity = 0.6
+        }
+
+        child.material.needsUpdate = true
+      })
+    },
+  })
+
+  // ---- table ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/assets/table.glb",
+    position: [-5, 1.5, -30],
+    rotation: [0, Math.PI * 0.25, 0],
+    scale: 3,
+    interactive: true,
+    hitboxScale: [0, 0, 0],
+    showHitbox: false,
+    outlineBaseThickness: 0.01,
+    outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.traverse((child) => {
+        if (!child.isMesh || !child.material) return
+
+        child.material.color.multiplyScalar(0.6)
+      })
     },
   })
 }

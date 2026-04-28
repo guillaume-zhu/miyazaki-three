@@ -13,6 +13,7 @@ import { createLights } from "./scene/lights.js"
 import { loadMountain } from "./world/mountain.js"
 import { createWaterfall } from "./world/waterfall.js"
 
+import { OrbitControls } from "three/examples/jsm/Addons.js"
 import { CameraControls } from "./controls/CameraControls.js"
 import { MouseTracker } from "./controls/MouseTracker.js"
 import { openHUD } from "./hud/HUD.js"
@@ -29,6 +30,7 @@ import { setupModelAnimation } from "./utils/setupModelAnimation.js"
  */
 // Camera
 let cameraControls = null
+const USE_ORBIT_CONTROLS = true
 
 // Raycaster
 const raycaster = new THREE.Raycaster()
@@ -89,15 +91,28 @@ async function init() {
   debugPanel.className = "debug-panel"
   document.body.appendChild(debugPanel)
 
-  const gridHelper = new THREE.GridHelper(100, 100)
-  scene.add(gridHelper)
-  gridHelper.position.y = 0.5
+  // const gridHelper = new THREE.GridHelper(100, 100)
+  // scene.add(gridHelper)
+  // gridHelper.position.y = 0.5
 
   /**
    * Camera controls
    */
   const mouseTracker = new MouseTracker(renderer.domElement)
-  cameraControls = new CameraControls(camera, scene, mouseTracker)
+
+  let orbitControls = null
+
+  if (USE_ORBIT_CONTROLS) {
+    orbitControls = new OrbitControls(camera, renderer.domElement)
+
+    orbitControls.enableDamping = true
+    orbitControls.dampingFactor = 0.05
+
+    orbitControls.target.set(0, 2, -40)
+    orbitControls.update()
+  } else {
+    cameraControls = new CameraControls(camera, scene, mouseTracker)
+  }
 
   /**
    * Environment
@@ -172,6 +187,11 @@ async function init() {
     }
 
     hoveredModel = updateHoverState(hoveredModel, newHoveredModel)
+
+    // ---- Camera test ---- //
+    if (orbitControls) {
+      orbitControls.update()
+    }
 
     // ---- Render ---- //
     renderer.render(scene, camera)
