@@ -1,13 +1,104 @@
 <!doctype html>
-<html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Miyazaki project</title>
-  </head>
-  <body>
-    <canvas class="webgl"></canvas>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<html lang="fr-FR">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Version triche</title>
+        <meta
+            name="description"
+            content="En arrivant dans ce lycéé², tu découvres une forge secrète. En l’activant, tu libères un esprit qui te propose de relever un défi : deviner dans lequel de ces films cet objet est présent."
+        />
+        <link rel="stylesheet" href="./src/style.css" />
+        <link rel="stylesheet" href="./src/hud/HUD.css" />
+        <link rel="shortcut icon" href="favicon.png" type="image/png" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700&display=swap"
+            rel="stylesheet"
+        />
+        <script type="module" src="./src/hud/HUD.js"></script>
+    </head>
+    <body>
+        <canvas class="webgl"></canvas>
+        <script type="module" src="/src/main.js"></script>
+        <header>
+            <div class="icon-container">
+                <img
+                    id="btn-test-quiz"
+                    src="./img/volume-icon.svg"
+                    alt="icon de volume"
+                    class="icon-left"
+                    style="cursor: pointer"
+                />
+                <div class="icon-right">
+                    <img src="./img/puzzle-vector.png" alt="" />
+                    <p class="score-counter">0/22</p>
+                </div>
+            </div>
+        </header>
+        <main style="display: none">
+            <div id="hud-overlay" style="position:fixed;inset:0;z-index:998;cursor:pointer;"></div>
+            <div id="game-interface">
+                <section id="screen-rules" class="quiz-container">
+                    <h1 class="quiz-title">COMMENT FAIRE</h1>
+                    <div class="rules">
+                        <ul>
+                            <li>
+                                1. Trouve les références de ta mémoire perdue
+                            </li>
+                            <li>
+                                2. Clique dessus et essaye de te rappeler d'où
+                                ils viennent
+                            </li>
+                            <li>
+                                3. Récolte toutes les pièces pour découvrir des
+                                surprises
+                            </li>
+                        </ul>
+                    </div>
+                    <button class="submit-btn" onclick="closeRules()">
+                        retrouver la mémoire
+                    </button>
+                </section>
+
+                <section
+                    id="screen-quiz"
+                    class="quiz-container"
+                    style="display: none"
+                >
+                    <button id="hud-close" style="position:absolute;top:16px;right:20px;background:none;border:none;font-size:1.5rem;cursor:pointer;font-weight:bold;">✕</button>
+                    <h1 class="quiz-title">
+                        DANS LEQUEL DE CES FILMS CET OBJET EST PRÉSENT ?
+                    </h1>
+                    <div class="model-viewport" id="question-image"></div>
+                    <div class="answers-group" id="answers-list"></div>
+                </section>
+
+                <section
+                    id="screen-anecdote"
+                    class="quiz-container"
+                    style="display: none"
+                >
+                    <h1 class="quiz-title">ANECDOTE</h1>
+                    <div class="model-viewport" id="anecdote-image"></div>
+                    <div class="anecdote">
+                        <p id="anecdote-text">
+                            Quand on parle du Roi Dagobert qui a mis sa culotte
+                            à l’envers on parle pas d’une culotte genre un slip
+                            mais d’un pantalon, en effet à l’époque on appelait
+                            ça comme ça
+                        </p>
+                    </div>
+                    <button class="submit-btn" onclick="finishSequence()">
+                        continuer
+                    </button>
+                </section>
+            </div>
+        </main>
+    </body>
 </html>

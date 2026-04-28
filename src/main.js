@@ -10,12 +10,13 @@ import { createWater } from "./world/water.js"
 import { createGrass } from "./world/grass.js"
 import { createSky } from "./world/sky.js"
 import { createLights } from "./scene/lights.js"
-import { loadMountain } from './world/mountain.js'
-import { createWaterfall } from './world/waterfall.js'
-import { loadTrain } from './world/train.js'
+import { loadMountain } from "./world/mountain.js"
+import { createWaterfall } from "./world/waterfall.js"
 
 import { CameraControls } from "./controls/CameraControls.js"
 import { MouseTracker } from "./controls/MouseTracker.js"
+import { openHUD } from "./hud/HUD.js"
+import { MODELS_DATA } from "./data/models.js"
 
 import { loadInteractiveModel } from "./utils/loadInteractiveModel.js"
 import { updateHoverState } from "./utils/updateHoverState.js"
@@ -53,7 +54,13 @@ window.addEventListener("click", () => {
     : null
 
   if (clickedModel) {
-    console.log("Objet cliqué :", clickedModel)
+    const key = clickedModel.userData.modelKey
+    const data = MODELS_DATA[key]
+    if (data) {
+      openHUD(data)
+    } else {
+      console.log("Objet cliqué sans données HUD :", key ?? clickedModel)
+    }
   }
 })
 
@@ -105,16 +112,19 @@ async function init() {
   const grassMaterial = createGrass(scene, platform)
   const waterMaterial = createWater(scene)
   const waterfallMaterial = createWaterfall(scene)
-  const train = loadTrain(scene)
   loadMountain(scene)
 
   /**
    * Models import
    */
-  const magicGoldMaterials = []
-  const magicGoldModels = []
+  const modelAnimations = []
 
-  loadModels({ scene, interactiveObjects, mixers, magicGoldMaterials, magicGoldModels })
+  loadModels({
+    scene,
+    interactiveObjects,
+    mixers,
+    modelAnimations,
+  })
 
   /**
    * Animation loop
@@ -135,23 +145,15 @@ async function init() {
     grassMaterial.uniforms.uTime.value = t
     waterMaterial.uniforms.uTime.value = t
     waterfallMaterial.uniforms.uTime.value = t
-    train.update(delta)
 
     // ---- Play animation ---- //
     for (const mixer of mixers) {
       mixer.update(delta)
     }
 
-    // Gold Animation
-    for (const material of magicGoldMaterials) {
-      if ("emissiveIntensity" in material) {
-        material.emissiveIntensity = 2.5 + Math.sin(t * 4) * 0.4
-      }
-    }
-
-    for (const model of magicGoldModels) {
-      model.position.y = model.userData.baseY + Math.sin(t * 2) * 0.08
-      model.rotation.y += 0.01
+    // Custom model animation
+    for (const updateModelAnimation of modelAnimations) {
+      updateModelAnimation(delta, t)
     }
 
     // ---- Raycaster update ---- //
