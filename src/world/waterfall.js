@@ -14,7 +14,7 @@ export function createWaterfall(scene) {
       uColor:       { value: new THREE.Color('#a8d8e8') },
       uFoamColor:   { value: new THREE.Color('#ffffff') },
       uSpeed:       { value: 0.7 },
-      uTopWidth:    { value: 0.6 },  // largeur en haut  (0→1 = fraction du plan)
+      uTopWidth:    { value: 1 },  // largeur en haut  (0→1 = fraction du plan)
       uBottomWidth: { value: 1 }, // largeur en bas
       uSplitY:      { value: 0.6 },  // hauteur de la transition (0=bas, 1=haut)
     },
@@ -115,7 +115,7 @@ export function createWaterfall(scene) {
 
   // ---- Position on the mountain ----
   // Adjust these values to match where the waterfall sits on the model
-  group.position.set(44, -3, -90)
+  group.position.set(44, -3, -88)
   group.rotation.y = Math.PI / 6
 
   scene.add(group)
