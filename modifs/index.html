@@ -10,7 +10,7 @@
         />
         <link rel="stylesheet" href="./src/style.css" />
         <link rel="stylesheet" href="./src/hud/HUD.css" />
-        <link rel="shortcut icon" href="favicon.png" type="image/png" />
+        <link rel="shortcut icon" href="img/favicon.svg" type="image/svg+xml" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
@@ -104,7 +104,7 @@
                         <button id="hud-close">✕</button>
                     </div>
                     <h1 class="quiz-title">
-                        DANS LEQUEL DE CES FILMS CET OBJET EST PRÉSENT ?
+                        DANS LEQUEL DE CES FILMS CETTE RÉFÉRENCE EST PRÉSENTE ?
                     </h1>
                     <div class="model-viewport" id="question-image"></div>
                     <div class="answers-group" id="answers-list"></div>
@@ -116,33 +116,15 @@
                     style="display: none"
                 >
                     <h1 class="quiz-title">ANECDOTE</h1>
-
-                    <!-- BLOC 1 : Poster (gauche) + infos film (droite) -->
-                    <div class="film-bloc">
-                        <img id="film-poster" src="" alt="Affiche du film" />
-                        <div class="film-info">
-                            <p id="film-title-year"></p>
-                            <p id="film-note"></p>
-                            <a
-                                id="film-trailer"
-                                href="#"
-                                target="_blank"
-                                rel="noopener"
-                            >
-                                ▶ Bande annonce
-                            </a>
-                            <p id="film-overview"></p>
-                        </div>
+                    <div class="model-viewport" id="anecdote-image"></div>
+                    <div class="anecdote">
+                        <p id="anecdote-text">
+                            Quand on parle du Roi Dagobert qui a mis sa culotte
+                            à l’envers on parle pas d’une culotte genre un slip
+                            mais d’un pantalon, en effet à l’époque on appelait
+                            ça comme ça
+                        </p>
                     </div>
-
-                    <!-- BLOC 2 : Anecdote pleine largeur -->
-                    <div class="anecdote-bloc">
-                        <h2 class="anecdote-label">LE SAVIEZ-VOUS ?</h2>
-                        <div class="anecdote-box">
-                            <p id="anecdote-text"></p>
-                        </div>
-                    </div>
-
                     <button class="submit-btn" onclick="finishSequence()">
                         continuer
                     </button>

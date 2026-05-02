@@ -4,15 +4,6 @@ import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 
 import { loadInteractiveModel } from "../utils/loadInteractiveModel.js";
-import { initGameInterface } from "../hud/HUD.js";
-import { setGameReady } from "../main.js";
-
-// fonction du son:
-function playSound(file, vol = 1.0) {
-    let audio = new Audio(file);
-    audio.volume = vol;
-    audio.play();
-}
 
 /**
  * Animations
@@ -88,7 +79,6 @@ export const loadModels = ({
     mixers,
     modelAnimations = [],
 }) => {
-    // ---------------------------------- LOGIQUE LOADER -----------------------------------------------------
     // --- Éléments du DOM ---
     const loaderBar = document.getElementById("loader-bar");
     const loaderText = document.getElementById("loader-text");
@@ -99,45 +89,15 @@ export const loadModels = ({
 
     loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
         const progressRatio = (itemsLoaded / itemsTotal) * 100;
-        // On utilise requestAnimationFrame pour synchroniser la mise à jour avec l'écran
-        window.requestAnimationFrame(() => {
-            if (loaderBar) {
-                loaderBar.style.width = `${progressRatio}%`;
-            }
-            if (loaderText) {
-                // On arrondit pour éviter les chiffres à virgule qui bougent trop
-                loaderText.innerText = `Récupération de la mémoire... ${Math.round(progressRatio)}%`;
-            }
-        });
+        if (loaderBar) loaderBar.style.width = `${progressRatio}%`;
+        if (loaderText)
+            loaderText.innerText = `Récupération de la mémoire... ${Math.round(progressRatio)}%`;
     };
 
     loadingManager.onLoad = () => {
-        const progressGroup = document.getElementById("loader-progress-group");
-        const launchBtn = document.getElementById("launch-btn");
-        const loaderScreen = document.getElementById("loader-screen");
-
-        if (progressGroup) progressGroup.style.display = "none";
-
-        if (launchBtn) {
-            launchBtn.style.display = "inline-block";
-            launchBtn.onclick = () => {
-                playSound("./sound/wind-sound.mp3");
-                // 1. On cache le loader
-                loaderScreen.classList.add("loader-hidden");
-
-                // 2. ON APPELLE LES RÈGLES (C'est ce qui manquait !)
-                // On attend un tout petit peu que le fondu du loader commence
-                setTimeout(() => {
-                    initGameInterface();
-                }, 1000);
-
-                // 3. On autorise le clic sur les modèles 3D après un délai
-                // pour éviter que le clic du bouton ne traverse et n'ouvre un quiz
-                setTimeout(() => {
-                    setGameReady(); // On utilise la fonction importée de main.js
-                }, 1500);
-            };
-        }
+        setTimeout(() => {
+            if (loaderScreen) loaderScreen.classList.add("loader-hidden");
+        }, 800);
     };
 
     // --- Configuration des Loaders avec le Manager ---
