@@ -103,7 +103,7 @@ async function init() {
    * Environment
    */
   createLights(scene)
-  createSky(scene)
+  const sky = createSky(scene)  
 
   /**
    * World elements
@@ -143,7 +143,6 @@ async function init() {
 
     // ---- World Animation update---- //
     grassMaterial.uniforms.uTime.value = t
-    waterMaterial.uniforms.uTime.value = t
     waterfallMaterial.uniforms.uTime.value = t
 
     // ---- Play animation ---- //
