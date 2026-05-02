@@ -79,6 +79,34 @@ body {
     margin-top: 10px;
 }
 
+.header-pseudo {
+    font-family: "Police-Ghibli", sans-serif;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 6px;
+    color: #000;
+}
+
+.logout-btn {
+    margin-top: 8px;
+    background: none;
+    border: 2px solid #000;
+    border-radius: 12px;
+    padding: 4px 12px;
+    font-family: var(--font-lexend);
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 2px 2px 0px #000;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.logout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 3px 4px 0px #000;
+}
+
 .rules {
     text-align: center;
     font-size: 26px;
@@ -447,6 +475,171 @@ body {
     font-family: "Police-Ghibli", sans-serif;
     font-size: 1.3rem;
     margin-bottom: 30px;
+    text-align: center;
+}
+
+/* ════════════════════════════════════════════
+   ÉCRAN AUTH
+════════════════════════════════════════════ */
+
+#screen-auth {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+    background: #e9e0db;
+}
+
+/* ── Menu principal ── */
+#auth-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.auth-logo {
+    width: 320px;
+    max-width: 80vw;
+    height: auto;
+}
+
+.auth-menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 260px;
+}
+
+/* Bouton secondaire (créer un compte) — fond transparent */
+.auth-btn-secondary {
+    background-color: transparent !important;
+    color: #000 !important;
+    text-shadow: none !important;
+    border: 2px solid #000;
+    box-shadow: 0px 4px 0px #000;
+}
+
+.auth-btn-secondary:hover {
+    background-color: rgba(0,0,0,0.05) !important;
+}
+
+/* ── Formulaires login / register / profile ── */
+#auth-login,
+#auth-register,
+#auth-profile {
+    width: 460px;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 14px 18px;
+    border: var(--border-width) solid var(--border-color);
+    border-radius: 16px;
+    font-family: var(--font-lexend);
+    font-size: 1rem;
+    background: #ffffff;
+    box-shadow: 3px 3px 0px var(--border-color);
+    outline: none;
+    transition: box-shadow 0.15s ease;
+    box-sizing: border-box;
+}
+
+.auth-input:focus {
+    box-shadow: 5px 5px 0px var(--border-color);
+}
+
+.auth-error {
+    font-family: var(--font-lexend);
+    font-size: 0.85rem;
+    color: #e35050;
+    font-weight: 700;
+    min-height: 20px;
+    margin: 0;
+}
+
+.auth-switch {
+    font-family: var(--font-lexend);
+    font-size: 0.9rem;
+    text-align: center;
+    margin: 0;
+}
+
+.auth-switch span {
+    font-weight: 700;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.auth-switch span:hover {
+    opacity: 0.7;
+}
+
+/* ── Écran profil ── */
+.auth-profile-subtitle {
+    font-family: var(--font-lexend);
+    font-size: 0.95rem;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+/* Grille des 5 avatars */
+.avatar-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.avatar-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 72px;
+    padding: 10px 6px;
+    border: var(--border-width) solid var(--border-color);
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 3px 3px 0px var(--border-color);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.avatar-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 4px 6px 0px var(--border-color);
+}
+
+/* Carte sélectionnée → fond vert */
+.avatar-card.selected {
+    background: #8ecc7f;
+    transform: translateY(-3px);
+    box-shadow: 4px 6px 0px var(--border-color);
+}
+
+.avatar-emoji {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.avatar-name {
+    font-family: var(--font-lexend);
+    font-size: 0.65rem;
+    font-weight: 700;
     text-align: center;
 }
 

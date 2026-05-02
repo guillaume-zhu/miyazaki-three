@@ -26,6 +26,83 @@
     <body>
         <canvas class="webgl"></canvas>
         <script type="module" src="/src/main.js"></script>
+
+        <!-- ══ ÉCRAN AUTH ══ -->
+        <div id="screen-auth">
+
+            <!-- 1. Menu principal -->
+            <section id="auth-menu">
+                <img src="/img/logo-miyazathree.png" alt="MiyazaThree" class="auth-logo" />
+                <div class="auth-menu-buttons">
+                    <button class="submit-btn" onclick="showLogin()">Se connecter</button>
+                    <button class="submit-btn auth-btn-secondary" onclick="showRegister()">Créer un compte</button>
+                </div>
+            </section>
+
+            <!-- 2. Login -->
+            <section id="auth-login" class="quiz-container" style="display: none">
+                <h1 class="quiz-title">Connexion</h1>
+                <div class="auth-form">
+                    <input type="email" id="auth-email" placeholder="Email" class="auth-input" />
+                    <input type="password" id="auth-password" placeholder="Mot de passe" class="auth-input" />
+                    <p id="auth-error" class="auth-error"></p>
+                    <button class="submit-btn" onclick="handleLogin()">Se connecter</button>
+                    <p class="auth-switch">Pas encore de compte ? <span onclick="showRegister()">S'inscrire</span></p>
+                    <p class="auth-switch"><span onclick="showMenu()">← Retour</span></p>
+                </div>
+            </section>
+
+            <!-- 3. Register -->
+            <section id="auth-register" class="quiz-container" style="display: none">
+                <h1 class="quiz-title">Créer un compte</h1>
+                <div class="auth-form">
+                    <input type="email" id="register-email" placeholder="Email" class="auth-input" />
+                    <input type="password" id="register-password" placeholder="Mot de passe (6 caractères min)" class="auth-input" />
+                    <p id="register-error" class="auth-error"></p>
+                    <button class="submit-btn" onclick="handleRegister()">Continuer</button>
+                    <p class="auth-switch">Déjà un compte ? <span onclick="showLogin()">Se connecter</span></p>
+                    <p class="auth-switch"><span onclick="showMenu()">← Retour</span></p>
+                </div>
+            </section>
+
+            <!-- 4. Choix avatar + pseudo (après register uniquement) -->
+            <section id="auth-profile" class="quiz-container" style="display: none">
+                <h1 class="quiz-title">Ton identité</h1>
+                <p class="auth-profile-subtitle">Choisis ton avatar et ton pseudo</p>
+
+                <!-- Grille des 5 avatars -->
+                <div class="avatar-grid">
+                    <div class="avatar-card" data-avatar="avatar-1" onclick="selectAvatar('avatar-1')">
+                        <span class="avatar-emoji">🌿</span>
+                        <span class="avatar-name">Totoro</span>
+                    </div>
+                    <div class="avatar-card" data-avatar="avatar-2" onclick="selectAvatar('avatar-2')">
+                        <span class="avatar-emoji">🔥</span>
+                        <span class="avatar-name">Calcifer</span>
+                    </div>
+                    <div class="avatar-card" data-avatar="avatar-3" onclick="selectAvatar('avatar-3')">
+                        <span class="avatar-emoji">🐉</span>
+                        <span class="avatar-name">Haku</span>
+                    </div>
+                    <div class="avatar-card" data-avatar="avatar-4" onclick="selectAvatar('avatar-4')">
+                        <span class="avatar-emoji">🌊</span>
+                        <span class="avatar-name">Ponyo</span>
+                    </div>
+                    <div class="avatar-card" data-avatar="avatar-5" onclick="selectAvatar('avatar-5')">
+                        <span class="avatar-emoji">✈️</span>
+                        <span class="avatar-name">Porco</span>
+                    </div>
+                </div>
+
+                <div class="auth-form">
+                    <input type="text" id="profile-username" placeholder="Ton pseudo (2-20 caractères)" class="auth-input" maxlength="20" />
+                    <p id="profile-error" class="auth-error"></p>
+                    <button class="submit-btn" onclick="handleProfileSetup()">Entrer dans le monde</button>
+                </div>
+            </section>
+
+        </div>
+
         <div id="loader-screen">
             <div class="loader-content">
                 <h1 class="loader-title">MiyazaThree</h1>
@@ -64,6 +141,7 @@
                         class=""
                     />
                     <p class="score-counter">0 / 25</p>
+                    <button class="logout-btn" onclick="handleLogout()">Déconnexion</button>
                 </div>
             </div>
         </header>

@@ -1,237 +1,565 @@
-// fonction du son:
+import { MODELS_DATA } from '../data/models.js'
+
+// ════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════
+const API_URL = 'http://localhost:3000'
+
+// ════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════
+let currentData = null
+let currentFilmTmdb = null
+let score = 0
+let currentUsername = null  // pseudo du joueur connecté
+let selectedAvatar = null   // avatar sélectionné sur l'écran profil
+
+// ════════════════════════════════════════════
+// SON
+// ════════════════════════════════════════════
 function playSound(file, vol = 1.0) {
-    let audio = new Audio(file);
-    audio.volume = vol;
-    audio.play();
+    const audio = new Audio(file)
+    audio.volume = vol
+    audio.play()
 }
 
-let currentData = null;
-let currentFilmTmdb = null; // Données TMDB du film lié à l'objet cliqué
-let score = 0;
+// ════════════════════════════════════════════
+// TOKEN JWT — Stockage dans localStorage
+// Le token prouve que le joueur est connecté.
+// On le garde entre les sessions (rechargements de page).
+// ════════════════════════════════════════════
+function getToken() {
+    return localStorage.getItem('miyaza_token')
+}
 
-// --- Fermeture du HUD ---
+function setToken(token) {
+    localStorage.setItem('miyaza_token', token)
+}
+
+function removeToken() {
+    localStorage.removeItem('miyaza_token')
+}
+
+// ════════════════════════════════════════════
+// AUTH — Navigation entre les écrans
+// ════════════════════════════════════════════
+function hideAllAuthScreens() {
+    document.getElementById('auth-menu').style.display = 'none'
+    document.getElementById('auth-login').style.display = 'none'
+    document.getElementById('auth-register').style.display = 'none'
+    document.getElementById('auth-profile').style.display = 'none'
+}
+
+window.showMenu = function () {
+    hideAllAuthScreens()
+    document.getElementById('auth-menu').style.display = 'flex'
+}
+
+window.showLogin = function () {
+    hideAllAuthScreens()
+    document.getElementById('auth-login').style.display = 'block'
+    document.getElementById('auth-error').innerText = ''
+}
+
+window.showRegister = function () {
+    hideAllAuthScreens()
+    document.getElementById('auth-register').style.display = 'block'
+    document.getElementById('register-error').innerText = ''
+}
+
+function showProfileSetup() {
+    hideAllAuthScreens()
+    document.getElementById('auth-profile').style.display = 'block'
+    document.getElementById('profile-error').innerText = ''
+    selectedAvatar = null
+}
+
+// ════════════════════════════════════════════
+// AVATAR — Sélection
+// ════════════════════════════════════════════
+window.selectAvatar = function (avatarKey) {
+    selectedAvatar = avatarKey
+    // On retire la classe .selected de toutes les cartes
+    document.querySelectorAll('.avatar-card').forEach(card => {
+        card.classList.remove('selected')
+    })
+    // On l'ajoute uniquement à la carte cliquée
+    const card = document.querySelector(`.avatar-card[data-avatar="${avatarKey}"]`)
+    if (card) card.classList.add('selected')
+}
+
+// ════════════════════════════════════════════
+// PROFIL — Sauvegarder avatar + pseudo
+// ════════════════════════════════════════════
+window.handleProfileSetup = async function () {
+    const username = document.getElementById('profile-username').value.trim()
+    const errorEl = document.getElementById('profile-error')
+    errorEl.innerText = ''
+
+    if (!selectedAvatar) {
+        errorEl.innerText = 'Choisis un avatar !'
+        return
+    }
+    if (username.length < 2) {
+        errorEl.innerText = 'Pseudo trop court (2 caractères minimum)'
+        return
+    }
+
+    try {
+        const res = await fetch(`${API_URL}/api/auth/profile`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${getToken()}`
+            },
+            body: JSON.stringify({ username, avatar: selectedAvatar })
+        })
+        const data = await res.json()
+
+        if (!res.ok) {
+            errorEl.innerText = data.error || 'Erreur lors de la sauvegarde'
+            return
+        }
+
+        currentUsername = data.username
+        afficherPseudo()
+        await onAuthSuccess()
+    } catch {
+        errorEl.innerText = 'Impossible de contacter le serveur'
+    }
+}
+
+// ════════════════════════════════════════════
+// PSEUDO — Affichage dans l'interface
+// ════════════════════════════════════════════
+function afficherPseudo() {
+    if (!currentUsername) return
+    // Dans le header à côté du score
+    const header = document.querySelector('.icon-right')
+    let pseudoEl = document.getElementById('header-pseudo')
+    if (!pseudoEl && header) {
+        pseudoEl = document.createElement('p')
+        pseudoEl.id = 'header-pseudo'
+        pseudoEl.className = 'header-pseudo'
+        header.prepend(pseudoEl)
+    }
+    if (pseudoEl) pseudoEl.innerText = currentUsername
+}
+
+// ════════════════════════════════════════════
+// AUTH — Login
+// ════════════════════════════════════════════
+window.handleLogin = async function () {
+    const email = document.getElementById('auth-email').value.trim()
+    const password = document.getElementById('auth-password').value
+    const errorEl = document.getElementById('auth-error')
+    errorEl.innerText = ''
+
+    try {
+        const res = await fetch(`${API_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        })
+        const data = await res.json()
+
+        if (!res.ok) {
+            errorEl.innerText = data.error || 'Erreur de connexion'
+            return
+        }
+
+        setToken(data.token)
+        // Si le joueur a déjà un pseudo → on le charge et on lance le jeu
+        // Sinon → on va sur l'écran de config du profil
+        if (data.username) {
+            currentUsername = data.username
+            afficherPseudo()
+            await onAuthSuccess()
+        } else {
+            showProfileSetup()
+        }
+    } catch {
+        errorEl.innerText = 'Impossible de contacter le serveur'
+    }
+}
+
+// ════════════════════════════════════════════
+// AUTH — Register
+// ════════════════════════════════════════════
+window.handleRegister = async function () {
+    const email = document.getElementById('register-email').value.trim()
+    const password = document.getElementById('register-password').value
+    const errorEl = document.getElementById('register-error')
+    errorEl.innerText = ''
+
+    try {
+        const res = await fetch(`${API_URL}/api/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        })
+        const data = await res.json()
+
+        if (!res.ok) {
+            errorEl.innerText = data.error || 'Erreur lors de la création du compte'
+            return
+        }
+
+        setToken(data.token)
+        // Après register → toujours montrer l'écran profil (nouveau joueur)
+        showProfileSetup()
+    } catch {
+        errorEl.innerText = 'Impossible de contacter le serveur'
+    }
+}
+
+// ════════════════════════════════════════════
+// Après auth réussie :
+// 1. Charger la progression depuis le backend
+// 2. Cacher l'écran auth pour laisser apparaître le jeu
+// ════════════════════════════════════════════
+async function onAuthSuccess() {
+    await chargerProgression()
+    document.getElementById('screen-auth').style.display = 'none'
+}
+
+// ════════════════════════════════════════════
+// PROGRESSION — Charger depuis le backend
+// On reçoit la liste des objets déjà trouvés
+// et on les marque comme trouvés dans MODELS_DATA
+// ════════════════════════════════════════════
+async function chargerProgression() {
+    const token = getToken()
+    if (!token) return
+
+    try {
+        const res = await fetch(`${API_URL}/api/progression`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+
+        if (!res.ok) {
+            // Token expiré ou invalide → on déconnecte
+            removeToken()
+            document.getElementById('screen-auth').style.display = 'flex'
+            return
+        }
+
+        const { score: savedScore, foundObjects } = await res.json()
+
+        score = savedScore
+        for (const key of foundObjects) {
+            if (MODELS_DATA[key]) MODELS_DATA[key].isFound = true
+        }
+
+        const el = document.querySelector('.score-counter')
+        if (el) el.innerText = `${score} / 25`
+
+        // On récupère aussi le profil du joueur (username + avatar)
+        const meRes = await fetch(`${API_URL}/api/auth/me`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        if (meRes.ok) {
+            const me = await meRes.json()
+            if (me.username) {
+                currentUsername = me.username
+                afficherPseudo()
+            }
+        }
+
+        console.log('✅ Progression chargée :', score, 'objet(s) trouvé(s)')
+    } catch (error) {
+        console.error('Erreur chargement progression :', error)
+    }
+}
+
+// ════════════════════════════════════════════
+// PROGRESSION — Sauvegarder dans le backend
+// Appelée après chaque objet trouvé
+// ════════════════════════════════════════════
+async function sauvegarderProgression() {
+    const token = getToken()
+    if (!token) return
+
+    // On reconstruit la liste des clés des objets trouvés
+    const foundObjects = Object.entries(MODELS_DATA)
+        .filter(([, data]) => data.isFound)
+        .map(([key]) => key)
+
+    try {
+        await fetch(`${API_URL}/api/progression/save`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ score, foundObjects })
+        })
+        console.log('💾 Progression sauvegardée')
+    } catch (error) {
+        console.error('Erreur sauvegarde progression :', error)
+    }
+}
+
+// ════════════════════════════════════════════
+// FERMETURE DU HUD
+// ════════════════════════════════════════════
 export function closeHUD() {
-    const interfaceMain = document.querySelector("main");
-    // On cherche l'écran actuellement visible
-    const quizScreen = document.getElementById("screen-quiz");
-    const anecdoteScreen = document.getElementById("screen-anecdote");
+    const interfaceMain = document.querySelector('main')
+    const quizScreen = document.getElementById('screen-quiz')
+    const anecdoteScreen = document.getElementById('screen-anecdote')
 
     const activeScreen =
-        quizScreen.style.display === "block" ? quizScreen : anecdoteScreen;
+        quizScreen.style.display === 'block' ? quizScreen : anecdoteScreen
 
     if (activeScreen) {
-        activeScreen.classList.add("pop-out");
+        activeScreen.classList.add('pop-out')
         setTimeout(() => {
-            activeScreen.style.display = "none";
-            activeScreen.classList.remove("pop-out");
-            if (interfaceMain) interfaceMain.style.display = "none";
-        }, 300);
+            activeScreen.style.display = 'none'
+            activeScreen.classList.remove('pop-out')
+            if (interfaceMain) interfaceMain.style.display = 'none'
+        }, 300)
     }
 }
 
-// --- Fermer l'écran des règles ---
+// ════════════════════════════════════════════
+// FERMER LES RÈGLES
+// ════════════════════════════════════════════
 window.closeRules = function () {
-    const rulesScreen = document.getElementById("screen-rules");
-    const interfaceMain = document.querySelector("main");
+    const rulesScreen = document.getElementById('screen-rules')
+    const interfaceMain = document.querySelector('main')
 
-    rulesScreen.classList.add("pop-out");
+    rulesScreen.classList.add('pop-out')
+    playSound('/sound/wind-sound.mp3', 0.5)
 
     setTimeout(() => {
-        rulesScreen.style.display = "none";
-        rulesScreen.classList.remove("pop-out");
-        // Important : on cache le main seulement si on ne passe pas à un autre écran
-        if (interfaceMain) interfaceMain.style.display = "none";
-    }, 300);
-};
-
-// --- Passer à l'écran anecdote ---
-function showAnecdote() {
-    if (!currentData) return;
-
-    document.getElementById("screen-quiz").style.display = "none";
-
-    // ── Anecdote (colonne droite) ──
-    const anecdoteText = document.getElementById("anecdote-text");
-    if (anecdoteText) anecdoteText.innerText = currentData.anecdote;
-
-    // ── Données TMDB (colonne gauche) ──
-    if (currentFilmTmdb) {
-        // Poster
-        const poster = document.getElementById("film-poster");
-        if (poster) {
-            poster.src = currentFilmTmdb.poster || "";
-            poster.style.display = currentFilmTmdb.poster ? "block" : "none";
-        }
-
-        // Titre + Année
-        const titleYear = document.getElementById("film-title-year");
-        if (titleYear)
-            titleYear.innerText = `${currentFilmTmdb.title} (${currentFilmTmdb.year})`;
-
-        // Note
-        const note = document.getElementById("film-note");
-        if (note) note.innerText = `⭐ ${currentFilmTmdb.note} / 10`;
-
-        // Trailer
-        const trailer = document.getElementById("film-trailer");
-        if (trailer) {
-            trailer.href = currentFilmTmdb.trailerUrl || "#";
-            trailer.style.display = currentFilmTmdb.trailerUrl
-                ? "inline-block"
-                : "none";
-        }
-
-        // Synopsis
-
-        const overview = document.getElementById("film-overview");
-        if (overview) overview.innerText = currentFilmTmdb.overview || "";
-    }
-
-    document.getElementById("screen-anecdote").style.display = "block";
+        rulesScreen.style.display = 'none'
+        rulesScreen.classList.remove('pop-out')
+        if (interfaceMain) interfaceMain.style.display = 'none'
+    }, 300)
 }
 
-// --- Vérifier la réponse et donner un feedback visuel ---
+// ════════════════════════════════════════════
+// ANECDOTE
+// ════════════════════════════════════════════
+function showAnecdote() {
+    if (!currentData) return
+
+    document.getElementById('screen-quiz').style.display = 'none'
+
+    const anecdoteText = document.getElementById('anecdote-text')
+    if (anecdoteText) anecdoteText.innerText = currentData.anecdote
+
+    if (currentFilmTmdb) {
+        const poster = document.getElementById('film-poster')
+        if (poster) {
+            poster.src = currentFilmTmdb.poster || ''
+            poster.style.display = currentFilmTmdb.poster ? 'block' : 'none'
+        }
+
+        const titleYear = document.getElementById('film-title-year')
+        if (titleYear)
+            titleYear.innerText = `${currentFilmTmdb.title} (${currentFilmTmdb.year})`
+
+        const note = document.getElementById('film-note')
+        if (note) note.innerText = `⭐ ${currentFilmTmdb.note} / 10`
+
+        const trailer = document.getElementById('film-trailer')
+        if (trailer) {
+            trailer.href = currentFilmTmdb.trailerUrl || '#'
+            trailer.style.display = currentFilmTmdb.trailerUrl ? 'inline-block' : 'none'
+        }
+
+        const overview = document.getElementById('film-overview')
+        if (overview) overview.innerText = currentFilmTmdb.overview || ''
+    }
+
+    document.getElementById('screen-anecdote').style.display = 'block'
+}
+
+// ════════════════════════════════════════════
+// RÉPONSE
+// ════════════════════════════════════════════
 function handleAnswer(btn, choix, data, container) {
     if (choix === data.bonneReponse) {
-        btn.classList.add("answer-correct");
-        container.querySelectorAll(".answer-btn").forEach((b) => {
-            b.style.pointerEvents = "none";
-        });
-
-        // Transition vers l'anecdote après un court délai
-        playSound("/sound/correct.wav", 0.5);
-        setTimeout(() => showAnecdote(), 800);
+        btn.classList.add('answer-correct')
+        container.querySelectorAll('.answer-btn').forEach((b) => {
+            b.style.pointerEvents = 'none'
+        })
+        playSound('/sound/correct.wav', 0.5)
+        setTimeout(() => showAnecdote(), 800)
     } else {
-        // Mauvaise réponse → rouge + shake, ce bouton uniquement est désactivé
-        btn.classList.add("answer-wrong");
-        playSound("/sound/wrong.wav");
+        btn.classList.add('answer-wrong')
+        playSound('/sound/wrong.wav')
     }
 }
 
-// --- Passer à l'écran bravo ---
+// ════════════════════════════════════════════
+// ÉCRAN BRAVO
+// ════════════════════════════════════════════
 window.showBravo = function () {
-    const anecdoteScreen = document.getElementById("screen-anecdote");
-    anecdoteScreen.classList.add("pop-out");
+    const anecdoteScreen = document.getElementById('screen-anecdote')
+    anecdoteScreen.classList.add('pop-out')
 
     setTimeout(() => {
-        anecdoteScreen.style.display = "none";
-        anecdoteScreen.classList.remove("pop-out");
-        updateScore();
+        anecdoteScreen.style.display = 'none'
+        anecdoteScreen.classList.remove('pop-out')
+        updateScore()
 
-        const bravoScore = document.getElementById("bravo-score");
-        if (bravoScore) bravoScore.innerText = `Tu as retrouvé ${score} souvenir${score > 1 ? "s" : ""} sur 25`;
+        const bravoScore = document.getElementById('bravo-score')
+        if (bravoScore) {
+            const pseudo = currentUsername ? `Bravo ${currentUsername} !` : 'Bravo !'
+            bravoScore.innerText = `${pseudo} Tu as retrouvé ${score} souvenir${score > 1 ? 's' : ''} sur 25`
+        }
 
-        document.getElementById("screen-bravo").style.display = "block";
-    }, 300);
-};
+        document.getElementById('screen-bravo').style.display = 'block'
+    }, 300)
+}
 
-// --- Terminer la séquence ---
+// ════════════════════════════════════════════
+// FIN DE SÉQUENCE
+// ════════════════════════════════════════════
 window.finishSequence = function () {
-    const bravoScreen = document.getElementById("screen-bravo");
-    const interfaceMain = document.querySelector("main");
+    const bravoScreen = document.getElementById('screen-bravo')
+    const interfaceMain = document.querySelector('main')
 
-    bravoScreen.classList.add("pop-out");
+    bravoScreen.classList.add('pop-out')
 
     setTimeout(() => {
-        bravoScreen.style.display = "none";
-        bravoScreen.classList.remove("pop-out");
-        if (interfaceMain) interfaceMain.style.display = "none";
-    }, 300);
-};
+        bravoScreen.style.display = 'none'
+        bravoScreen.classList.remove('pop-out')
+        if (interfaceMain) interfaceMain.style.display = 'none'
+    }, 300)
+}
 
-// --- Mise à jour du score ---
+// ════════════════════════════════════════════
+// MISE À JOUR DU SCORE + SAUVEGARDE
+// ════════════════════════════════════════════
 function updateScore() {
-    // Si l'objet actuel existe et n'a pas encore été trouvé
     if (currentData && !currentData.isFound) {
-        score++;
-        currentData.isFound = true;
-        const el = document.querySelector(".score-counter");
-        if (el) el.innerText = `${score} / 25`;
+        score++
+        currentData.isFound = true
+
+        const el = document.querySelector('.score-counter')
+        if (el) el.innerText = `${score} / 25`
+
+        // On sauvegarde en base à chaque nouvel objet trouvé
+        sauvegarderProgression()
     }
 }
 
-// --- OUVRIR LE QUIZ (Appelé par le clic sur un modèle) ---
+// ════════════════════════════════════════════
+// OUVRIR LE HUD
+// ════════════════════════════════════════════
 export function openHUD(data, filmTmdb = null) {
-    const rulesScreen = document.getElementById("screen-rules");
-    const loaderScreen = document.getElementById("loader-screen");
+    const rulesScreen = document.getElementById('screen-rules')
+    const loaderScreen = document.getElementById('loader-screen')
 
-    // --- BLOCAGE DE SÉCURITÉ ---
-    // Si le loader est encore visible OU si les règles sont ouvertes, on refuse d'ouvrir le quiz
     if (
-        !loaderScreen.classList.contains("loader-hidden") ||
-        rulesScreen.style.display === "block"
+        !loaderScreen.classList.contains('loader-hidden') ||
+        rulesScreen.style.display === 'block'
     ) {
-        console.log(
-            "HUD : Tentative d'ouverture du quiz bloquée (Loader ou Règles actifs)",
-        );
-        return;
+        return
     }
 
-    currentData = data;
-    currentFilmTmdb = filmTmdb; // On stocke pour que showAnecdote() puisse y accéder
-    const interfaceMain = document.querySelector("main");
+    currentData = data
+    currentFilmTmdb = filmTmdb
+    const interfaceMain = document.querySelector('main')
 
-    if (interfaceMain) interfaceMain.style.display = "flex";
+    if (interfaceMain) interfaceMain.style.display = 'flex'
 
-    // --- LOGIQUE DE FILTRAGE ---
     if (data.isFound) {
-        // Cas : Déjà trouvé -> On affiche directement l'anecdote
-        showAnecdote();
+        showAnecdote()
     } else {
-        // Cas : Nouveau -> On affiche le quiz classique
-        const questionImg = document.getElementById("question-image");
+        const questionImg = document.getElementById('question-image')
         if (questionImg)
-            questionImg.style.backgroundImage = `url(${data.imageObjet})`;
+            questionImg.style.backgroundImage = `url(${data.imageObjet})`
 
-        const answersContainer = document.getElementById("answers-list");
+        const answersContainer = document.getElementById('answers-list')
         if (answersContainer) {
-            answersContainer.innerHTML = "";
+            answersContainer.innerHTML = ''
             data.choix.forEach((choix) => {
-                const btn = document.createElement("button");
-                btn.classList.add("answer-btn");
-                btn.innerText = choix;
+                const btn = document.createElement('button')
+                btn.classList.add('answer-btn')
+                btn.innerText = choix
                 btn.onclick = (e) => {
-                    e.stopPropagation();
-                    handleAnswer(btn, choix, data, answersContainer);
-                };
-                answersContainer.appendChild(btn);
-            });
+                    e.stopPropagation()
+                    handleAnswer(btn, choix, data, answersContainer)
+                }
+                answersContainer.appendChild(btn)
+            })
         }
-        document.getElementById("screen-anecdote").style.display = "none";
-        document.getElementById("screen-quiz").style.display = "block";
+        document.getElementById('screen-anecdote').style.display = 'none'
+        document.getElementById('screen-quiz').style.display = 'block'
     }
 
-    // Gestion de la fermeture par l'overlay ou la croix
-    const overlay = document.getElementById("hud-overlay");
+    const overlay = document.getElementById('hud-overlay')
     if (overlay)
         overlay.onclick = (e) => {
-            e.stopPropagation();
-            closeHUD();
-        };
-    const closeBtn = document.getElementById("hud-close");
+            e.stopPropagation()
+            closeHUD()
+        }
+
+    const closeBtn = document.getElementById('hud-close')
     if (closeBtn)
         closeBtn.onclick = (e) => {
-            e.stopPropagation();
-            closeHUD();
-        };
+            e.stopPropagation()
+            closeHUD()
+        }
 }
 
-// --- Initialisation automatique des règles (Appelé par le bouton du Loader) ---
+// ════════════════════════════════════════════
+// INIT INTERFACE JEU (appelé par le bouton du loader)
+// ════════════════════════════════════════════
 export function initGameInterface() {
-    const interfaceMain = document.querySelector("main");
-    const rulesScreen = document.getElementById("screen-rules");
-    const quizScreen = document.getElementById("screen-quiz");
-    const anecdoteScreen = document.getElementById("screen-anecdote");
+    const interfaceMain = document.querySelector('main')
+    const rulesScreen = document.getElementById('screen-rules')
+    const quizScreen = document.getElementById('screen-quiz')
+    const anecdoteScreen = document.getElementById('screen-anecdote')
 
     if (interfaceMain && rulesScreen) {
-        // On nettoie tout avant d'afficher
-        quizScreen.style.display = "none";
-        anecdoteScreen.style.display = "none";
-
-        interfaceMain.style.display = "flex";
-        rulesScreen.style.display = "block";
-
-        // On empêche les clics de traverser vers Three.js
-        interfaceMain.addEventListener("click", (e) => e.stopPropagation());
+        quizScreen.style.display = 'none'
+        anecdoteScreen.style.display = 'none'
+        interfaceMain.style.display = 'flex'
+        rulesScreen.style.display = 'block'
+        interfaceMain.addEventListener('click', (e) => e.stopPropagation())
     }
 }
+
+// ════════════════════════════════════════════
+// DÉCONNEXION
+// ════════════════════════════════════════════
+window.handleLogout = function () {
+    removeToken()
+    score = 0
+    currentUsername = null
+    selectedAvatar = null
+    for (const key of Object.keys(MODELS_DATA)) {
+        MODELS_DATA[key].isFound = false
+    }
+    const el = document.querySelector('.score-counter')
+    if (el) el.innerText = '0 / 25'
+
+    const pseudoEl = document.getElementById('header-pseudo')
+    if (pseudoEl) pseudoEl.remove()
+
+    document.getElementById('screen-auth').style.display = 'flex'
+    showMenu()
+}
+
+// ════════════════════════════════════════════
+// DÉMARRAGE — Vérifier si le joueur est déjà connecté
+// ════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', async () => {
+    const token = getToken()
+    if (token) {
+        await chargerProgression()
+        // chargerProgression remet l'écran auth si le token est expiré
+        // sinon on cache l'auth
+        if (getToken()) {
+            document.getElementById('screen-auth').style.display = 'none'
+        }
+    } else {
+        // Pas de token → on affiche le menu principal
+        showMenu()
+    }
+})
