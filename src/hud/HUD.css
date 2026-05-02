@@ -390,7 +390,9 @@ body {
     text-decoration: none;
     color: #000;
     box-shadow: 3px 3px 0px var(--border-color);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
     width: fit-content;
 }
 
@@ -407,6 +409,7 @@ body {
     margin: 0;
     display: -webkit-box;
     -webkit-line-clamp: 4;
+    line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -445,4 +448,61 @@ body {
     font-size: 1.3rem;
     margin-bottom: 30px;
     text-align: center;
+}
+
+/* ------------------------------------------- LOADER ------------------------------------------- */
+
+#loader-screen {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #e9e0db;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000; /* Doit être au-dessus de tout */
+    transition: opacity 0.8s ease-in-out;
+}
+
+.loader-content {
+    text-align: center;
+    width: 300px;
+}
+
+.loader-title {
+    font-family: "Police-Ghibli", sans-serif;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #000;
+}
+
+.loader-bar-container {
+    width: 100%;
+    height: 10px;
+    background: rgba(0, 0, 0, 0.1);
+    border: 2px solid #000;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+#loader-bar {
+    width: 0%;
+    height: 100%;
+    background: #8ecc7f; /* Vert Ghibli */
+    transition: width 0.4s ease-out;
+}
+
+#loader-text {
+    font-family: "Lexend", sans-serif;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+/* Classe pour faire disparaître le loader */
+.loader-hidden {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease-out;
 }
