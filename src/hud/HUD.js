@@ -117,18 +117,34 @@ function handleAnswer(btn, choix, data, container) {
     }
 }
 
-// --- Terminer la séquence ---
-window.finishSequence = function () {
+// --- Passer à l'écran bravo ---
+window.showBravo = function () {
     const anecdoteScreen = document.getElementById("screen-anecdote");
-    const interfaceMain = document.querySelector("main");
-
     anecdoteScreen.classList.add("pop-out");
 
     setTimeout(() => {
         anecdoteScreen.style.display = "none";
         anecdoteScreen.classList.remove("pop-out");
-        if (interfaceMain) interfaceMain.style.display = "none";
         updateScore();
+
+        const bravoScore = document.getElementById("bravo-score");
+        if (bravoScore) bravoScore.innerText = `Tu as retrouvé ${score} souvenir${score > 1 ? "s" : ""} sur 25`;
+
+        document.getElementById("screen-bravo").style.display = "block";
+    }, 300);
+};
+
+// --- Terminer la séquence ---
+window.finishSequence = function () {
+    const bravoScreen = document.getElementById("screen-bravo");
+    const interfaceMain = document.querySelector("main");
+
+    bravoScreen.classList.add("pop-out");
+
+    setTimeout(() => {
+        bravoScreen.style.display = "none";
+        bravoScreen.classList.remove("pop-out");
+        if (interfaceMain) interfaceMain.style.display = "none";
     }, 300);
 };
 

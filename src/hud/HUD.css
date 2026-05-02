@@ -1,13 +1,16 @@
 :root {
-    --bg-color: #e9e0db; /* Couleur de fond des boutons */
+    --bg-color: #e9e0db;
+    /* Couleur de fond des boutons */
     --border-color: #000000;
     --border-width: 4px;
     --font-lexend: "Lexend", sans-serif;
 }
 
 @font-face {
-    font-family: "Police-Ghibli"; /* Le nom que tu choisiras pour l'utiliser plus tard */
-    src: url("/fonts/AvantGarde-Medium.otf") format("opentype"); /* Vérifie bien le chemin et le format */
+    font-family: "Police-Ghibli";
+    /* Le nom que tu choisiras pour l'utiliser plus tard */
+    src: url("/fonts/AvantGarde-Medium.otf") format("opentype");
+    /* Vérifie bien le chemin et le format */
     font-weight: normal;
     font-style: normal;
 }
@@ -20,10 +23,9 @@ body {
     margin: 0;
     background-size: cover;
     font-family: "Police-Ghibli", sans-serif;
-    cursor: image-set(
-        url("/img/Figma-Cursor.png") 1x,
-        url("/img/Figma-Cursor.png") 2x
-    );
+    cursor: image-set(url("/img/Figma-Cursor.png") 1x,
+            url("/img/Figma-Cursor.png") 2x);
+
     ul {
         list-style-type: none;
     }
@@ -214,22 +216,28 @@ body {
 }
 
 @keyframes shake {
+
     0%,
     100% {
         transform: translateX(0);
     }
+
     15% {
         transform: translateX(-6px);
     }
+
     30% {
         transform: translateX(5px);
     }
+
     45% {
         transform: translateX(-4px);
     }
+
     60% {
         transform: translateX(3px);
     }
+
     75% {
         transform: translateX(-2px);
     }
@@ -278,12 +286,14 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    pointer-events: none; /* Laisse passer les clics vers Three.js par défaut */
+    pointer-events: none;
+    /* Laisse passer les clics vers Three.js par défaut */
     z-index: 999;
 }
 
 .quiz-container {
-    pointer-events: auto; /* Réactive les clics sur la fenêtre de quiz */
+    pointer-events: auto;
+    /* Réactive les clics sur la fenêtre de quiz */
     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -292,6 +302,7 @@ body {
         transform: scale(0.8);
         opacity: 0;
     }
+
     100% {
         transform: scale(1);
         opacity: 1;
@@ -301,7 +312,8 @@ body {
 /* Classe que l'on ajoutera en JS pour fermer la fenêtre */
 .pop-out {
     animation: popOut 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    pointer-events: none; /* Empêche de cliquer pendant l'animation */
+    pointer-events: none;
+    /* Empêche de cliquer pendant l'animation */
 }
 
 @keyframes popOut {
@@ -309,6 +321,7 @@ body {
         transform: scale(1);
         opacity: 1;
     }
+
     100% {
         transform: scale(0.8);
         opacity: 0;
@@ -327,7 +340,7 @@ body {
     align-items: flex-start;
     text-align: left;
     margin-bottom: 16px;
-    background: rgba(255,255,255,0.3);
+    background: rgba(255, 255, 255, 0.3);
     border: var(--border-width) solid var(--border-color);
     border-radius: 20px;
     padding: 16px;
@@ -425,4 +438,11 @@ body {
     font-family: "Police-Ghibli", sans-serif;
     font-size: 0.95rem;
     line-height: 1.6;
+}
+
+.bravo-score {
+    font-family: "Police-Ghibli", sans-serif;
+    font-size: 1.3rem;
+    margin-bottom: 30px;
+    text-align: center;
 }
