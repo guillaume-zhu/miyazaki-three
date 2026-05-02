@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 let currentData = null;
+let currentFilmTmdb = null; // Données TMDB du film lié à l'objet cliqué
 let score = 0;
 
 // --- Fermeture du HUD ---
@@ -55,12 +56,43 @@ function showAnecdote() {
 
     document.getElementById("screen-quiz").style.display = "none";
 
+    // ── Anecdote (colonne droite) ──
     const anecdoteText = document.getElementById("anecdote-text");
-    const anecdoteImg = document.getElementById("anecdote-image");
-
     if (anecdoteText) anecdoteText.innerText = currentData.anecdote;
-    if (anecdoteImg)
-        anecdoteImg.style.backgroundImage = `url(${currentData.imageAnecdote})`;
+
+    // ── Données TMDB (colonne gauche) ──
+    if (currentFilmTmdb) {
+        // Poster
+        const poster = document.getElementById("film-poster");
+        if (poster) {
+            poster.src = currentFilmTmdb.poster || "";
+            poster.style.display = currentFilmTmdb.poster ? "block" : "none";
+        }
+
+        // Titre + Année
+        const titleYear = document.getElementById("film-title-year");
+        if (titleYear)
+            titleYear.innerText = `${currentFilmTmdb.title} (${currentFilmTmdb.year})`;
+
+        // Note
+        const note = document.getElementById("film-note");
+        if (note) note.innerText = `⭐ ${currentFilmTmdb.note} / 10`;
+
+        // Trailer
+        const trailer = document.getElementById("film-trailer");
+        if (trailer) {
+            if (currentFilmTmdb.trailerUrl) {
+                trailer.href = currentFilmTmdb.trailerUrl;
+                trailer.style.display = "inline-block";
+            } else {
+                trailer.style.display = "none";
+            }
+        }
+
+        // Synopsis
+        const overview = document.getElementById("film-overview");
+        if (overview) overview.innerText = currentFilmTmdb.overview || "";
+    }
 
     document.getElementById("screen-anecdote").style.display = "block";
 }
@@ -116,9 +148,10 @@ function updateScore() {
     }
 }
 
-// --- Ouvrir le HUD avec les données d'un objet ---
-export function openHUD(data) {
+// --- Ouvrir le HUD avec les données d'un objet + les données TMDB du film ---
+export function openHUD(data, filmTmdb = null) {
     currentData = data;
+    currentFilmTmdb = filmTmdb; // On stocke pour que showAnecdote() puisse y accéder
     const interfaceMain = document.querySelector("main");
 
     if (interfaceMain) interfaceMain.style.display = "flex";

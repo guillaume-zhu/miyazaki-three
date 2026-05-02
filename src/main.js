@@ -17,6 +17,7 @@ import { CameraControls } from "./controls/CameraControls.js"
 import { MouseTracker } from "./controls/MouseTracker.js"
 import { openHUD } from "./hud/HUD.js"
 import { MODELS_DATA } from "./data/models.js"
+import { chargerFilmsTMDB, FILMS_TMDB } from "./data/tmdb.js"
 
 import { loadInteractiveModel } from "./utils/loadInteractiveModel.js"
 import { updateHoverState } from "./utils/updateHoverState.js"
@@ -57,7 +58,9 @@ window.addEventListener("click", () => {
     const key = clickedModel.userData.modelKey
     const data = MODELS_DATA[key]
     if (data) {
-      openHUD(data)
+      // On récupère les données TMDB du film correspondant à cet objet
+      const filmTmdb = FILMS_TMDB[data.filmTmdbId] || null
+      openHUD(data, filmTmdb)
     } else {
       console.log("Objet cliqué sans données HUD :", key ?? clickedModel)
     }
@@ -68,6 +71,12 @@ window.addEventListener("click", () => {
  * App Initialization
  */
 async function init() {
+  /**
+   * Chargement des données TMDB au démarrage
+   * On attend que tous les films soient chargés avant de lancer la scène
+   */
+  await chargerFilmsTMDB()
+
   /**
    * Scene setup
    */

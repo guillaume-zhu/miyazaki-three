@@ -94,15 +94,28 @@
                     style="display: none"
                 >
                     <h1 class="quiz-title">ANECDOTE</h1>
-                    <div class="model-viewport" id="anecdote-image"></div>
-                    <div class="anecdote">
-                        <p id="anecdote-text">
-                            Quand on parle du Roi Dagobert qui a mis sa culotte
-                            à l’envers on parle pas d’une culotte genre un slip
-                            mais d’un pantalon, en effet à l’époque on appelait
-                            ça comme ça
-                        </p>
+
+                    <!-- BLOC 1 : Poster (gauche) + infos film (droite) -->
+                    <div class="film-bloc">
+                        <img id="film-poster" src="" alt="Affiche du film" />
+                        <div class="film-info">
+                            <p id="film-title-year"></p>
+                            <p id="film-note"></p>
+                            <a id="film-trailer" href="#" target="_blank" rel="noopener">
+                                ▶ Bande annonce
+                            </a>
+                            <p id="film-overview"></p>
+                        </div>
                     </div>
+
+                    <!-- BLOC 2 : Anecdote pleine largeur -->
+                    <div class="anecdote-bloc">
+                        <h2 class="anecdote-label">LE SAVIEZ-VOUS ?</h2>
+                        <div class="anecdote-box">
+                            <p id="anecdote-text"></p>
+                        </div>
+                    </div>
+
                     <button class="submit-btn" onclick="finishSequence()">
                         continuer
                     </button>
