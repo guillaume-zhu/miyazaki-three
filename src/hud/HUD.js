@@ -1,9 +1,5 @@
 import { MODELS_DATA } from '../data/models.js'
-
-// ════════════════════════════════════════════
-// CONFIG
-// ════════════════════════════════════════════
-const API_URL = 'http://localhost:3000'
+import { API_URL } from '../config.js'
 
 // ════════════════════════════════════════════
 // STATE

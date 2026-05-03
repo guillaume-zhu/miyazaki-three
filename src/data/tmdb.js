@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000'
+import { API_URL } from '../config.js'
 
 // Stockage en mémoire des films TMDB
 export const FILMS_TMDB = {}

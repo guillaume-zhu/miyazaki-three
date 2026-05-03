@@ -527,11 +527,17 @@ body {
     background-color: rgba(0,0,0,0.05) !important;
 }
 
-/* ── Formulaires login / register / profile ── */
+/* ── Formulaires login / register ── */
 #auth-login,
-#auth-register,
-#auth-profile {
+#auth-register {
     width: 460px;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* ── Profil (plus large pour la grille d'avatars) ── */
+#auth-profile {
+    width: 620px;
+    max-width: 90vw;
     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -589,30 +595,31 @@ body {
 /* ── Écran profil ── */
 .auth-profile-subtitle {
     font-family: var(--font-lexend);
-    font-size: 0.95rem;
+    font-size: 1.15rem;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 32px;
     color: #555;
 }
 
-/* Grille des 5 avatars */
+/* Grille des 8 avatars */
 .avatar-grid {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 12px;
-    margin-bottom: 24px;
+    gap: 16px;
+    margin-bottom: 36px;
 }
 
 .avatar-card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
-    width: 72px;
-    padding: 10px 6px;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    padding: 12px;
     border: var(--border-width) solid var(--border-color);
-    border-radius: 16px;
+    border-radius: 22px;
     background: #fff;
     box-shadow: 3px 3px 0px var(--border-color);
     cursor: pointer;
@@ -620,15 +627,22 @@ body {
 }
 
 .avatar-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-4px);
     box-shadow: 4px 6px 0px var(--border-color);
 }
 
 /* Carte sélectionnée → fond vert */
 .avatar-card.selected {
     background: #8ecc7f;
-    transform: translateY(-3px);
+    transform: translateY(-4px);
     box-shadow: 4px 6px 0px var(--border-color);
+}
+
+.avatar-img {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    pointer-events: none;
 }
 
 .avatar-emoji {
