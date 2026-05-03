@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken'
 
 import User from './models/User.js'
 import Progression from './models/Progression.js'
+import Player from './models/Player.js'
 
 const app = express()
 
@@ -261,6 +262,89 @@ app.get('/api/films/miyazaki', async (req, res) => {
     } catch (error) {
         console.error('Erreur TMDB :', error)
         res.status(500).json({ error: 'Impossible de récupérer les films' })
+    }
+})
+
+// ════════════════════════════════════════════════
+// ROUTES PLAYER (nouveau flux sans auth)
+// ════════════════════════════════════════════════
+
+// ── POST /api/player/join — Rejoindre ou reprendre une partie ──
+app.post('/api/player/join', async (req, res) => {
+    try {
+        const { username, avatar } = req.body
+
+        if (!username || username.trim().length < 2) {
+            return res.status(400).json({ error: 'Pseudo trop court (2 caractères minimum)' })
+        }
+        if (username.trim().length > 20) {
+            return res.status(400).json({ error: 'Pseudo trop long (20 caractères maximum)' })
+        }
+
+        // Chercher un joueur existant avec ce pseudo
+        let player = await Player.findOne({ username: username.trim() })
+
+        if (player) {
+            // Joueur existant → on met à jour l'avatar si fourni et on renvoie ses données
+            if (avatar) {
+                player.avatar = avatar
+                await player.save()
+            }
+            return res.json({
+                username: player.username,
+                avatar: player.avatar,
+                score: player.score,
+                foundObjects: player.foundObjects,
+                isNew: false
+            })
+        }
+
+        // Nouveau joueur → création
+        player = await Player.create({
+            username: username.trim(),
+            avatar: avatar || 'avatar-1'
+        })
+
+        res.status(201).json({
+            username: player.username,
+            avatar: player.avatar,
+            score: player.score,
+            foundObjects: player.foundObjects,
+            isNew: true
+        })
+    } catch (error) {
+        // Gestion du cas où le pseudo est pris (race condition)
+        if (error.code === 11000) {
+            return res.status(409).json({ error: 'Ce pseudo est déjà pris' })
+        }
+        console.error('Erreur player/join :', error)
+        res.status(500).json({ error: 'Erreur serveur' })
+    }
+})
+
+// ── POST /api/player/save — Sauvegarder la progression ──
+app.post('/api/player/save', async (req, res) => {
+    try {
+        const { username, score, foundObjects } = req.body
+
+        if (!username) {
+            return res.status(400).json({ error: 'Pseudo requis' })
+        }
+
+        const player = await Player.findOneAndUpdate(
+            { username: username.trim() },
+            { score, foundObjects },
+            { new: true }
+        )
+
+        if (!player) {
+            return res.status(404).json({ error: 'Joueur introuvable' })
+        }
+
+        res.json({ success: true })
+    } catch (error) {
+        console.error('Erreur player/save :', error)
+        res.status(500).json({ error: 'Erreur serveur' })
     }
 })
 

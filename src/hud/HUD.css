@@ -88,7 +88,7 @@ body {
     color: #000;
 }
 
-.logout-btn {
+.change-player-btn {
     margin-top: 8px;
     background: none;
     border: 2px solid #000;
@@ -102,7 +102,7 @@ body {
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.logout-btn:hover {
+.change-player-btn:hover {
     transform: translateY(-2px);
     box-shadow: 3px 4px 0px #000;
 }

@@ -11,7 +11,7 @@ const API_URL = 'http://localhost:3000'
 let currentData = null
 let currentFilmTmdb = null
 let score = 0
-let currentUsername = null  // pseudo du joueur connecté
+let currentUsername = null  // pseudo du joueur
 let selectedAvatar = null   // avatar sélectionné sur l'écran profil
 
 // ════════════════════════════════════════════
@@ -23,6 +23,7 @@ function playSound(file, vol = 1.0) {
     audio.play()
 }
 
+/* === AUTH LEGACY START ===
 // ════════════════════════════════════════════
 // TOKEN JWT — Stockage dans localStorage
 // Le token prouve que le joueur est connecté.
@@ -39,14 +40,13 @@ function setToken(token) {
 function removeToken() {
     localStorage.removeItem('miyaza_token')
 }
+=== AUTH LEGACY END === */
 
 // ════════════════════════════════════════════
 // AUTH — Navigation entre les écrans
 // ════════════════════════════════════════════
 function hideAllAuthScreens() {
     document.getElementById('auth-menu').style.display = 'none'
-    document.getElementById('auth-login').style.display = 'none'
-    document.getElementById('auth-register').style.display = 'none'
     document.getElementById('auth-profile').style.display = 'none'
 }
 
@@ -55,6 +55,7 @@ window.showMenu = function () {
     document.getElementById('auth-menu').style.display = 'flex'
 }
 
+/* === AUTH LEGACY START ===
 window.showLogin = function () {
     hideAllAuthScreens()
     document.getElementById('auth-login').style.display = 'block'
@@ -66,12 +67,17 @@ window.showRegister = function () {
     document.getElementById('auth-register').style.display = 'block'
     document.getElementById('register-error').innerText = ''
 }
+=== AUTH LEGACY END === */
 
-function showProfileSetup() {
+window.showProfileSetup = function () {
     hideAllAuthScreens()
     document.getElementById('auth-profile').style.display = 'block'
     document.getElementById('profile-error').innerText = ''
     selectedAvatar = null
+    // Réinitialiser la sélection visuelle
+    document.querySelectorAll('.avatar-card').forEach(card => {
+        card.classList.remove('selected')
+    })
 }
 
 // ════════════════════════════════════════════
@@ -89,7 +95,8 @@ window.selectAvatar = function (avatarKey) {
 }
 
 // ════════════════════════════════════════════
-// PROFIL — Sauvegarder avatar + pseudo
+// PROFIL — Rejoindre le jeu avec pseudo + avatar
+// Appelle POST /api/player/join (nouveau flux)
 // ════════════════════════════════════════════
 window.handleProfileSetup = async function () {
     const username = document.getElementById('profile-username').value.trim()
@@ -106,22 +113,33 @@ window.handleProfileSetup = async function () {
     }
 
     try {
-        const res = await fetch(`${API_URL}/api/auth/profile`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${getToken()}`
-            },
+        const res = await fetch(`${API_URL}/api/player/join`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, avatar: selectedAvatar })
         })
         const data = await res.json()
 
         if (!res.ok) {
-            errorEl.innerText = data.error || 'Erreur lors de la sauvegarde'
+            errorEl.innerText = data.error || 'Erreur lors de la connexion'
             return
         }
 
+        // Stocker le pseudo en localStorage pour auto-reconnexion
+        localStorage.setItem('miyaza_username', data.username)
+
         currentUsername = data.username
+        score = data.score || 0
+        // Restaurer les objets trouvés
+        if (data.foundObjects && data.foundObjects.length > 0) {
+            for (const key of data.foundObjects) {
+                if (MODELS_DATA[key]) MODELS_DATA[key].isFound = true
+            }
+        }
+
+        const el = document.querySelector('.score-counter')
+        if (el) el.innerText = `${score} / 25`
+
         afficherPseudo()
         await onAuthSuccess()
     } catch {
@@ -129,25 +147,9 @@ window.handleProfileSetup = async function () {
     }
 }
 
+/* === AUTH LEGACY START ===
 // ════════════════════════════════════════════
-// PSEUDO — Affichage dans l'interface
-// ════════════════════════════════════════════
-function afficherPseudo() {
-    if (!currentUsername) return
-    // Dans le header à côté du score
-    const header = document.querySelector('.icon-right')
-    let pseudoEl = document.getElementById('header-pseudo')
-    if (!pseudoEl && header) {
-        pseudoEl = document.createElement('p')
-        pseudoEl.id = 'header-pseudo'
-        pseudoEl.className = 'header-pseudo'
-        header.prepend(pseudoEl)
-    }
-    if (pseudoEl) pseudoEl.innerText = currentUsername
-}
-
-// ════════════════════════════════════════════
-// AUTH — Login
+// AUTH — Login (ancien système)
 // ════════════════════════════════════════════
 window.handleLogin = async function () {
     const email = document.getElementById('auth-email').value.trim()
@@ -169,8 +171,6 @@ window.handleLogin = async function () {
         }
 
         setToken(data.token)
-        // Si le joueur a déjà un pseudo → on le charge et on lance le jeu
-        // Sinon → on va sur l'écran de config du profil
         if (data.username) {
             currentUsername = data.username
             afficherPseudo()
@@ -184,7 +184,7 @@ window.handleLogin = async function () {
 }
 
 // ════════════════════════════════════════════
-// AUTH — Register
+// AUTH — Register (ancien système)
 // ════════════════════════════════════════════
 window.handleRegister = async function () {
     const email = document.getElementById('register-email').value.trim()
@@ -206,29 +206,85 @@ window.handleRegister = async function () {
         }
 
         setToken(data.token)
-        // Après register → toujours montrer l'écran profil (nouveau joueur)
         showProfileSetup()
     } catch {
         errorEl.innerText = 'Impossible de contacter le serveur'
     }
 }
+=== AUTH LEGACY END === */
 
 // ════════════════════════════════════════════
-// Après auth réussie :
-// 1. Charger la progression depuis le backend
-// 2. Cacher l'écran auth pour laisser apparaître le jeu
+// PSEUDO — Affichage dans l'interface
+// ════════════════════════════════════════════
+function afficherPseudo() {
+    if (!currentUsername) return
+    // Dans le header à côté du score
+    const header = document.querySelector('.icon-right')
+    let pseudoEl = document.getElementById('header-pseudo')
+    if (!pseudoEl && header) {
+        pseudoEl = document.createElement('p')
+        pseudoEl.id = 'header-pseudo'
+        pseudoEl.className = 'header-pseudo'
+        header.prepend(pseudoEl)
+    }
+    if (pseudoEl) pseudoEl.innerText = currentUsername
+}
+
+// ════════════════════════════════════════════
+// Après connexion réussie :
+// Cache l'écran auth pour laisser apparaître le jeu
 // ════════════════════════════════════════════
 async function onAuthSuccess() {
-    await chargerProgression()
     document.getElementById('screen-auth').style.display = 'none'
 }
 
 // ════════════════════════════════════════════
-// PROGRESSION — Charger depuis le backend
-// On reçoit la liste des objets déjà trouvés
-// et on les marque comme trouvés dans MODELS_DATA
+// PROGRESSION — Charger depuis le backend (nouveau flux Player)
 // ════════════════════════════════════════════
 async function chargerProgression() {
+    const username = localStorage.getItem('miyaza_username')
+    if (!username) return false
+
+    try {
+        const res = await fetch(`${API_URL}/api/player/join`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username })
+        })
+
+        if (!res.ok) {
+            // Pseudo invalide ou erreur → on nettoie et on affiche le menu
+            localStorage.removeItem('miyaza_username')
+            return false
+        }
+
+        const data = await res.json()
+
+        currentUsername = data.username
+        score = data.score || 0
+
+        if (data.foundObjects && data.foundObjects.length > 0) {
+            for (const key of data.foundObjects) {
+                if (MODELS_DATA[key]) MODELS_DATA[key].isFound = true
+            }
+        }
+
+        const el = document.querySelector('.score-counter')
+        if (el) el.innerText = `${score} / 25`
+
+        afficherPseudo()
+        return true
+    } catch (error) {
+        console.error('Erreur chargement progression :', error)
+        return false
+    }
+}
+
+/* === AUTH LEGACY START ===
+// ════════════════════════════════════════════
+// PROGRESSION — Charger depuis le backend (ancien système JWT)
+// ════════════════════════════════════════════
+async function chargerProgressionLegacy() {
     const token = getToken()
     if (!token) return
 
@@ -238,7 +294,6 @@ async function chargerProgression() {
         })
 
         if (!res.ok) {
-            // Token expiré ou invalide → on déconnecte
             removeToken()
             document.getElementById('screen-auth').style.display = 'flex'
             return
@@ -254,7 +309,6 @@ async function chargerProgression() {
         const el = document.querySelector('.score-counter')
         if (el) el.innerText = `${score} / 25`
 
-        // On récupère aussi le profil du joueur (username + avatar)
         const meRes = await fetch(`${API_URL}/api/auth/me`, {
             headers: { Authorization: `Bearer ${token}` }
         })
@@ -271,16 +325,41 @@ async function chargerProgression() {
         console.error('Erreur chargement progression :', error)
     }
 }
+=== AUTH LEGACY END === */
 
 // ════════════════════════════════════════════
-// PROGRESSION — Sauvegarder dans le backend
+// PROGRESSION — Sauvegarder dans le backend (nouveau flux Player)
 // Appelée après chaque objet trouvé
 // ════════════════════════════════════════════
 async function sauvegarderProgression() {
+    const username = localStorage.getItem('miyaza_username')
+    if (!username) return
+
+    // On reconstruit la liste des clés des objets trouvés
+    const foundObjects = Object.entries(MODELS_DATA)
+        .filter(([, data]) => data.isFound)
+        .map(([key]) => key)
+
+    try {
+        await fetch(`${API_URL}/api/player/save`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, score, foundObjects })
+        })
+        console.log('💾 Progression sauvegardée')
+    } catch (error) {
+        console.error('Erreur sauvegarde progression :', error)
+    }
+}
+
+/* === AUTH LEGACY START ===
+// ════════════════════════════════════════════
+// PROGRESSION — Sauvegarder (ancien système JWT)
+// ════════════════════════════════════════════
+async function sauvegarderProgressionLegacy() {
     const token = getToken()
     if (!token) return
 
-    // On reconstruit la liste des clés des objets trouvés
     const foundObjects = Object.entries(MODELS_DATA)
         .filter(([, data]) => data.isFound)
         .map(([key]) => key)
@@ -299,6 +378,7 @@ async function sauvegarderProgression() {
         console.error('Erreur sauvegarde progression :', error)
     }
 }
+=== AUTH LEGACY END === */
 
 // ════════════════════════════════════════════
 // FERMETURE DU HUD
@@ -526,7 +606,29 @@ export function initGameInterface() {
 }
 
 // ════════════════════════════════════════════
-// DÉCONNEXION
+// CHANGER DE JOUEUR (remplace l'ancien handleLogout)
+// ════════════════════════════════════════════
+window.handleChangePlayer = function () {
+    localStorage.removeItem('miyaza_username')
+    score = 0
+    currentUsername = null
+    selectedAvatar = null
+    for (const key of Object.keys(MODELS_DATA)) {
+        MODELS_DATA[key].isFound = false
+    }
+    const el = document.querySelector('.score-counter')
+    if (el) el.innerText = '0 / 25'
+
+    const pseudoEl = document.getElementById('header-pseudo')
+    if (pseudoEl) pseudoEl.remove()
+
+    document.getElementById('screen-auth').style.display = 'flex'
+    showMenu()
+}
+
+/* === AUTH LEGACY START ===
+// ════════════════════════════════════════════
+// DÉCONNEXION (ancien système)
 // ════════════════════════════════════════════
 window.handleLogout = function () {
     removeToken()
@@ -545,21 +647,41 @@ window.handleLogout = function () {
     document.getElementById('screen-auth').style.display = 'flex'
     showMenu()
 }
+=== AUTH LEGACY END === */
 
 // ════════════════════════════════════════════
-// DÉMARRAGE — Vérifier si le joueur est déjà connecté
+// DÉMARRAGE — Vérifier si le joueur a déjà un pseudo
+// ════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', async () => {
+    const savedUsername = localStorage.getItem('miyaza_username')
+    if (savedUsername) {
+        // Pseudo trouvé → on charge la progression depuis la BDD
+        const success = await chargerProgression()
+        if (success) {
+            document.getElementById('screen-auth').style.display = 'none'
+        } else {
+            // Erreur → on affiche le menu
+            showMenu()
+        }
+    } else {
+        // Pas de pseudo → on affiche le menu principal
+        showMenu()
+    }
+})
+
+/* === AUTH LEGACY START ===
+// ════════════════════════════════════════════
+// DÉMARRAGE — Ancien système avec vérification JWT
 // ════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', async () => {
     const token = getToken()
     if (token) {
-        await chargerProgression()
-        // chargerProgression remet l'écran auth si le token est expiré
-        // sinon on cache l'auth
+        await chargerProgressionLegacy()
         if (getToken()) {
             document.getElementById('screen-auth').style.display = 'none'
         }
     } else {
-        // Pas de token → on affiche le menu principal
         showMenu()
     }
 })
+=== AUTH LEGACY END === */
