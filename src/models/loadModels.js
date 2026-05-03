@@ -121,7 +121,7 @@ export const loadModels = ({
         if (launchBtn) {
             launchBtn.style.display = "inline-block";
             launchBtn.onclick = () => {
-                playSound("./sound/wind-sound.mp3");
+                playSound("./sound/Ghibli-sounds-shortened.MP3");
                 // 1. On cache le loader
                 loaderScreen.classList.add("loader-hidden");
 
