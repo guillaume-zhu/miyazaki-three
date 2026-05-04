@@ -438,7 +438,11 @@ window.showBravo = function () {
             bravoScore.innerText = `${pseudo} Tu as retrouvé ${score} souvenir${score > 1 ? 's' : ''} sur 25`
         }
 
-        document.getElementById('screen-bravo').style.display = 'block'
+        const bravoScreen = document.getElementById('screen-bravo').style.display = 'block'
+
+        const timer = setTimeout(() => {
+            bravoScreen.style.display = 'none'
+        }, 3000)
     }, 300)
 }
 
