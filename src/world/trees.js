@@ -48,19 +48,32 @@ export const loadTrees = (scene) => {
       treeD.rotation.y = Math.PI * 0.5
       treeD.scale.setScalar(2)
 
+      // Arbre principal à droite
+      const treeE = tree06Source.clone(true)
+      treeE.position.set(20, -2, -30)
+      treeE.rotation.y = Math.PI * 0.9
+      treeE.scale.setScalar(1.5)
+
+      // BUISSON
       // Plus a gauche - buisson
-      const treeE = tree08Source.clone(true)
-      treeE.position.set(-20, -5, -20)
-      treeE.rotation.y = Math.PI * 0.5
-      treeE.scale.setScalar(0.5)
+      const buissonA = tree08Source.clone(true)
+      buissonA.position.set(-20, -5, -20)
+      buissonA.rotation.y = Math.PI * 0.5
+      buissonA.scale.setScalar(0.5)
 
       // totoro - buisson
-      const treeF = tree08Source.clone(true)
-      treeF.position.set(-16, -5, -35)
-      treeF.rotation.y = Math.PI
-      treeF.scale.setScalar(0.5)
+      const buissonB = tree08Source.clone(true)
+      buissonB.position.set(-16, -5, -35)
+      buissonB.rotation.y = Math.PI
+      buissonB.scale.setScalar(0.5)
 
-      scene.add(treeA, treeB, treeC, treeD, treeE, treeF)
+      // laputa - buisson
+      const buissonC = tree08Source.clone(true)
+      buissonC.position.set(-10.5, -4, -18)
+      buissonC.rotation.y = Math.PI
+      buissonC.scale.setScalar(0.425)
+
+      scene.add(treeA, treeB, treeC, treeD, treeE, buissonB)
     },
     undefined,
     (error) => {

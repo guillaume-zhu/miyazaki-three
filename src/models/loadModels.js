@@ -224,7 +224,7 @@ export const loadModels = ({ scene, interactiveObjects, mixers, modelAnimations 
     interactiveObjects,
     mixers,
     path: "models/calcifer.glb",
-    position: [10, 1, -20],
+    position: [13, 0.5, -20],
     scale: 0.3,
     interactive: true,
     animated: true,
@@ -396,7 +396,7 @@ export const loadModels = ({ scene, interactiveObjects, mixers, modelAnimations 
     interactiveObjects,
     mixers,
     path: "models/kodama.glb",
-    position: [-20, 0, -25],
+    position: [-15.5, 0.5, -25],
     rotation: [0, -Math.PI * 0.25, 0],
     scale: 0.05,
     interactive: true,
@@ -605,9 +605,9 @@ export const loadModels = ({ scene, interactiveObjects, mixers, modelAnimations 
     interactiveObjects,
     mixers,
     path: "models/perruche-verte.glb",
-    position: [10, 10, -35],
-    rotation: [0, Math.PI * 1.3, 0],
-    scale: 3,
+    position: [19, 7.7, -33],
+    rotation: [0, Math.PI * 1.25, 0],
+    scale: 1,
     interactive: true,
     hitboxScale: [1, 1, 1],
     showHitbox: false,
@@ -703,8 +703,8 @@ export const loadModels = ({ scene, interactiveObjects, mixers, modelAnimations 
     interactiveObjects,
     mixers,
     path: "models/robot.glb",
-    position: [-17, 1, -27],
-    rotation: [0, -Math.PI * 0.5, 0],
+    position: [-11.5, 1, -19],
+    rotation: [0, Math.PI * -0.2, 0],
     scale: 0.03,
     interactive: true,
     hitboxScale: [1, 1, 1],
@@ -771,7 +771,7 @@ export const loadModels = ({ scene, interactiveObjects, mixers, modelAnimations 
     mixers,
     path: "models/totoro.glb",
     position: [-20, -1, -30],
-    rotation: [Math.PI * -0.5, 0, Math.PI * 0.5],
+    rotation: [Math.PI * -0.5, 0, Math.PI * 0.7],
     scale: 0.25,
     interactive: true,
     hitboxScale: [0.7, 1, 1],
@@ -827,44 +827,44 @@ export const loadModels = ({ scene, interactiveObjects, mixers, modelAnimations 
    * Décors
    */
   // ---- cerisier ----
-  loadInteractiveModel({
-    gltfLoader,
-    scene,
-    interactiveObjects,
-    mixers,
-    path: "models/assets/cerisier.glb",
-    position: [20, 0, -30],
-    rotation: [0, -Math.PI * 0.25, 0],
-    scale: 7,
-    interactive: true,
-    hitboxScale: [0.75, 1, 1],
-    showHitbox: false,
-    onLoad: (model) => {
-      model.traverse((child) => {
-        if (!child.isMesh || !child.material) return
+  // loadInteractiveModel({
+  //   gltfLoader,
+  //   scene,
+  //   interactiveObjects,
+  //   mixers,
+  //   path: "models/assets/cerisier.glb",
+  //   position: [20, 0, -30],
+  //   rotation: [0, -Math.PI * 0.25, 0],
+  //   scale: 7,
+  //   interactive: true,
+  //   hitboxScale: [0.75, 1, 1],
+  //   showHitbox: false,
+  //   onLoad: (model) => {
+  //     model.traverse((child) => {
+  //       if (!child.isMesh || !child.material) return
 
-        child.material = child.material.clone()
+  //       child.material = child.material.clone()
 
-        // branches / tronc
-        if (child.name.includes("Oak_Bark") || child.material.name.includes("SHD_trunk")) {
-          child.material.color.set("#af9f9f")
-          child.material.color.multiplyScalar(0.8)
-        }
+  //       // branches / tronc
+  //       if (child.name.includes("Oak_Bark") || child.material.name.includes("SHD_trunk")) {
+  //         child.material.color.set("#af9f9f")
+  //         child.material.color.multiplyScalar(0.8)
+  //       }
 
-        // fleurs
-        if (child.name.includes("rsSprite1") || child.material.name.includes("rsSprite1")) {
-          child.material.color.set("#fff2e7")
-          child.material.color.multiplyScalar(1)
-        }
+  //       // fleurs
+  //       if (child.name.includes("rsSprite1") || child.material.name.includes("rsSprite1")) {
+  //         child.material.color.set("#fff2e7")
+  //         child.material.color.multiplyScalar(1)
+  //       }
 
-        if ("envMapIntensity" in child.material) {
-          child.material.envMapIntensity = 0.6
-        }
+  //       if ("envMapIntensity" in child.material) {
+  //         child.material.envMapIntensity = 0.6
+  //       }
 
-        child.material.needsUpdate = true
-      })
-    },
-  })
+  //       child.material.needsUpdate = true
+  //     })
+  //   },
+  // })
 
   // ---- table ----
   loadInteractiveModel({

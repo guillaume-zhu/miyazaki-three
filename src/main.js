@@ -33,7 +33,7 @@ import { setupModelAnimation } from "./utils/setupModelAnimation.js"
  */
 // Camera
 let cameraControls = null
-const USE_ORBIT_CONTROLS = true
+const USE_ORBIT_CONTROLS = false
 
 // Raycaster
 const raycaster = new THREE.Raycaster()
