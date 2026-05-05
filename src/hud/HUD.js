@@ -38,6 +38,7 @@ export function closeHUD() {
             activeScreen.style.display = 'none'
             activeScreen.classList.remove('pop-out')
             if (interfaceMain) interfaceMain.style.display = 'none'
+            state.hudOpen = false
         }, 300)
     }
 }
@@ -56,6 +57,7 @@ window.closeRules = function () {
         rulesScreen.style.display = 'none'
         rulesScreen.classList.remove('pop-out')
         if (interfaceMain) interfaceMain.style.display = 'none'
+        state.hudOpen = false
     }, 300)
 }
 
@@ -75,6 +77,7 @@ export function openHUD(data, filmTmdb = null) {
 
     state.currentData = data
     state.currentFilmTmdb = filmTmdb
+    state.hudOpen = true
     const interfaceMain = document.querySelector('main')
 
     if (interfaceMain) interfaceMain.style.display = 'flex'
@@ -134,6 +137,7 @@ export function initGameInterface() {
         anecdoteScreen.style.display = 'none'
         interfaceMain.style.display = 'flex'
         rulesScreen.style.display = 'block'
+        state.hudOpen = true
         interfaceMain.addEventListener('click', (e) => e.stopPropagation())
     }
 }

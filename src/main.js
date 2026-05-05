@@ -19,6 +19,7 @@ import { OrbitControls } from "three/examples/jsm/Addons.js"
 import { CameraControls } from "./controls/CameraControls.js"
 import { MouseTracker } from "./controls/MouseTracker.js"
 import { openHUD } from "./hud/HUD.js"
+import { state } from "./state/gameState.js"
 import { MODELS_DATA } from "./data/models.js"
 import { chargerFilmsTMDB, FILMS_TMDB } from "./data/tmdb.js"
 
@@ -82,10 +83,9 @@ window.addEventListener("click", () => {
  */
 async function init() {
   /**
-   * Chargement des données TMDB au démarrage
-   * On attend que tous les films soient chargés avant de lancer la scène
+   * Chargement des données TMDB (statique, pas d'attente nécessaire)
    */
-  await chargerFilmsTMDB()
+  chargerFilmsTMDB()
 
   /**
    * Scene setup
@@ -219,6 +219,8 @@ async function init() {
 
   loadModels({
     scene,
+    camera,
+    renderer,
     interactiveObjects,
     mixers,
     modelAnimations,
@@ -228,6 +230,7 @@ async function init() {
    * Animation loop
    */
   const timer = new THREE.Timer()
+  let lastDebugUpdate = 0
 
   function animate() {
     requestAnimationFrame(animate)
@@ -253,22 +256,23 @@ async function init() {
       updateModelAnimation(delta, t)
     }
 
-    // ---- Raycaster update ---- //
-    raycaster.setFromCamera(mouseTracker.coords, camera)
-    const intersects = raycaster.intersectObjects(interactiveObjects, false)
-    let newHoveredModel = null
+    // ---- Raycaster update (désactivé quand HUD ouvert) ---- //
+    if (!state.hudOpen) {
+      raycaster.setFromCamera(mouseTracker.coords, camera)
+      const intersects = raycaster.intersectObjects(interactiveObjects, false)
+      let newHoveredModel = null
 
-    if (intersects.length) {
-      currentIntersect = intersects[0]
-      newHoveredModel = getModelFromIntersectedObject(currentIntersect.object)
+      if (intersects.length) {
+        currentIntersect = intersects[0]
+        newHoveredModel = getModelFromIntersectedObject(currentIntersect.object)
+        renderer.domElement.style.cursor = newHoveredModel ? "pointer" : "default"
+      } else {
+        currentIntersect = null
+        renderer.domElement.style.cursor = "default"
+      }
 
-      renderer.domElement.style.cursor = newHoveredModel ? "pointer" : "default"
-    } else {
-      currentIntersect = null
-      renderer.domElement.style.cursor = "default"
+      hoveredModel = updateHoverState(hoveredModel, newHoveredModel)
     }
-
-    hoveredModel = updateHoverState(hoveredModel, newHoveredModel)
 
     // ---- Camera test ---- //
     if (orbitControls) {
@@ -278,12 +282,15 @@ async function init() {
     // ---- Render ---- //
     renderer.render(scene, camera)
 
-    debugPanel.innerHTML = `
+    if (t - lastDebugUpdate > 1) {
+      lastDebugUpdate = t
+      debugPanel.innerHTML = `
   Triangles: ${renderer.info.render.triangles}<br>
   Draw calls: ${renderer.info.render.calls}<br>
   Geometries: ${renderer.info.memory.geometries}<br>
   Textures: ${renderer.info.memory.textures}
 `
+    }
 
     stats.end()
   }

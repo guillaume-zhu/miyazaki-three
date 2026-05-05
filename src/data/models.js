@@ -121,7 +121,7 @@ export const MODELS_DATA = {
         imageObjet: "./img/lanterne.png",
         choix: ["Ponyo sur la falaise", "Le Voyage de Chihiro", "Le Château Ambulant"],
         bonneReponse: "Le Voyage de Chihiro",
-        anecdote: "Miyazaki a confié que Ponyo était en partie une façon de se réconcilier avec l’animation après des années de productionsépuisantes. Il voulait retrouver le plaisir pur du dessin, sans message troplourd, juste la joie de mettre des images en mouvement.",
+        anecdote: "Les lanternes dans le film sont inspirées des lanternes flottantes traditionnelles japonaises, appelées tōrō. À l’origine, elles servaient à guider les esprits des ancêtres lors des festivals d’O-bon. Dans le film, elles sont utilisées pour éclairer le chemin des esprits et pour symboliser le lien entre le monde des vivants et celui des morts.",
         imageAnecdote: "./img/lanterne-ex.png",
         isFound: false,
     },
@@ -269,4 +269,13 @@ export const MODELS_DATA = {
         imageAnecdote: "./img/yuba-ex.png",
         isFound: false,
     },
+    "chateau-laputa":{
+        filmTmdbId: 8392,
+        imageObjet: "./img/chateau-laputa.png",
+        choix: ["Mon Voisin Totoro", "Le Voyage de Chihiro", "Le Château dans le Ciel"],
+        bonneReponse: "Le Château dans le Ciel",
+        anecdote: "À sa sortie, le film n'a pas été le grand succès commercial attendu. Sa réputation a grandi au fil des ans, devenant l'un des films cultes du studio et une référence de l'animation.",
+        imageAnecdote: "./img/chateau-laputa-ex.png",
+        isFound: false,
+    }
 }

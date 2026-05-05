@@ -78,7 +78,7 @@ const createMagicGoldAnimation = (
 /**
  * Import
  */
-export const loadModels = ({ scene, interactiveObjects, mixers, modelAnimations = [] }) => {
+export const loadModels = ({ scene, camera, renderer, interactiveObjects, mixers, modelAnimations = [] }) => {
   // ---------------------------------- LOGIQUE LOADER -----------------------------------------------------
   // --- Éléments du DOM ---
   const loaderBar = document.getElementById("loader-bar")
@@ -106,6 +106,12 @@ export const loadModels = ({ scene, interactiveObjects, mixers, modelAnimations 
     const progressGroup = document.getElementById("loader-progress-group")
     const launchBtn = document.getElementById("launch-btn")
     const loaderScreen = document.getElementById("loader-screen")
+
+    // Pré-compilation des shaders et upload des géométries/textures au GPU
+    // pendant l'écran de chargement → zéro freeze quand le joueur entre dans la scène
+    if (renderer && camera) {
+      renderer.compile(scene, camera)
+    }
 
     if (progressGroup) progressGroup.style.display = "none"
 
@@ -424,6 +430,9 @@ export const loadModels = ({ scene, interactiveObjects, mixers, modelAnimations 
     showHitbox: false,
     outlineBaseThickness: 0.005,
     outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.userData.modelKey = "lanterne"
+    },
   })
 
   // ---- Le Chateau ambulant ----
@@ -890,147 +899,33 @@ export const loadModels = ({ scene, interactiveObjects, mixers, modelAnimations 
     },
   })
 
-  // ---- rock ----
-  loadInteractiveModel({
-    gltfLoader,
-    scene,
-    interactiveObjects,
-    mixers,
-    path: "models/assets/rock.glb",
-    position: [6, 0, -24],
-    rotation: [0, Math.PI * 0.5, 0],
-    scale: 0.005,
-    interactive: true,
-    hitboxScale: [0, 0, 0],
-    showHitbox: false,
-    outlineBaseThickness: 0.01,
-    outlineHoverThickness: 0.01,
-    onLoad: (model) => {
-      model.traverse((child) => {
-        if (!child.isMesh || !child.material) return
+  // ---- rocks (1 seul chargement, 6 clones) ----
+  // La géométrie est uploadée une fois sur le GPU et partagée entre les 6 instances.
+  // Les 6 hitboxScale:[0,0,0] précédents sont supprimés → raycaster allégé.
+  gltfLoader.load("models/assets/rock.glb", (gltf) => {
+    const rockConfigs = [
+      { position: [6, 0, -24], rotation: [0, Math.PI * 0.5, 0], scale: 0.005 },
+      { position: [5, 0, -25], rotation: [0, 0, 0], scale: 0.0075 },
+      { position: [0, 0, -20], rotation: [0, Math.PI * 0.5, 0], scale: 0.005 },
+      { position: [-11, 0, -24], rotation: [0, 0, 0], scale: 0.005 },
+      { position: [-14, 0, -25], rotation: [0, Math.PI, 0], scale: 0.006 },
+      { position: [-14, -0.75, -32.5], rotation: [0, Math.PI, 0], scale: 0.006 },
+    ]
 
+    for (const { position, rotation, scale } of rockConfigs) {
+      const rock = gltf.scene.clone()
+      rock.position.set(...position)
+      rock.rotation.set(...rotation)
+      rock.scale.setScalar(scale)
+
+      // On clone le matériau pour que multiplyScalar soit indépendant par instance
+      rock.traverse((child) => {
+        if (!child.isMesh || !child.material) return
+        child.material = child.material.clone()
         child.material.color.multiplyScalar(1.5)
       })
-    },
-  })
 
-  // ---- rock2 ----
-  loadInteractiveModel({
-    gltfLoader,
-    scene,
-    interactiveObjects,
-    mixers,
-    path: "models/assets/rock.glb",
-    position: [5, 0, -25],
-    rotation: [0, 0, 0],
-    scale: 0.0075,
-    interactive: true,
-    hitboxScale: [0, 0, 0],
-    showHitbox: false,
-    outlineBaseThickness: 0.01,
-    outlineHoverThickness: 0.01,
-    onLoad: (model) => {
-      model.traverse((child) => {
-        if (!child.isMesh || !child.material) return
-
-        child.material.color.multiplyScalar(1.5)
-      })
-    },
-  })
-
-  // ---- rockcenter ----
-  loadInteractiveModel({
-    gltfLoader,
-    scene,
-    interactiveObjects,
-    mixers,
-    path: "models/assets/rock.glb",
-    position: [0, 0, -20],
-    rotation: [0, Math.PI * 0.5, 0],
-    scale: 0.005,
-    interactive: true,
-    hitboxScale: [0, 0, 0],
-    showHitbox: false,
-    outlineBaseThickness: 0.01,
-    outlineHoverThickness: 0.01,
-    onLoad: (model) => {
-      model.traverse((child) => {
-        if (!child.isMesh || !child.material) return
-
-        child.material.color.multiplyScalar(1.5)
-      })
-    },
-  })
-
-  // ---- rock kiki gauche 1 ----
-  loadInteractiveModel({
-    gltfLoader,
-    scene,
-    interactiveObjects,
-    mixers,
-    path: "models/assets/rock.glb",
-    position: [-11, 0, -24],
-    rotation: [0, 0, 0],
-    scale: 0.005,
-    interactive: true,
-    hitboxScale: [0, 0, 0],
-    showHitbox: false,
-    outlineBaseThickness: 0.01,
-    outlineHoverThickness: 0.01,
-    onLoad: (model) => {
-      model.traverse((child) => {
-        if (!child.isMesh || !child.material) return
-
-        child.material.color.multiplyScalar(1.5)
-      })
-    },
-  })
-
-  // ---- rock kiki gauche 2----
-  loadInteractiveModel({
-    gltfLoader,
-    scene,
-    interactiveObjects,
-    mixers,
-    path: "models/assets/rock.glb",
-    position: [-14, 0, -25],
-    rotation: [0, Math.PI, 0],
-    scale: 0.006,
-    interactive: true,
-    hitboxScale: [0, 0, 0],
-    showHitbox: false,
-    outlineBaseThickness: 0.01,
-    outlineHoverThickness: 0.01,
-    onLoad: (model) => {
-      model.traverse((child) => {
-        if (!child.isMesh || !child.material) return
-
-        child.material.color.multiplyScalar(1.5)
-      })
-    },
-  })
-
-  // ---- rock totoro bonhomme gauche 2----
-  loadInteractiveModel({
-    gltfLoader,
-    scene,
-    interactiveObjects,
-    mixers,
-    path: "models/assets/rock.glb",
-    position: [-14, -0.75, -32.5],
-    rotation: [0, Math.PI * 1, 0],
-    scale: 0.006,
-    interactive: true,
-    hitboxScale: [0, 0, 0],
-    showHitbox: false,
-    outlineBaseThickness: 0.01,
-    outlineHoverThickness: 0.01,
-    onLoad: (model) => {
-      model.traverse((child) => {
-        if (!child.isMesh || !child.material) return
-
-        child.material.color.multiplyScalar(1.5)
-      })
-    },
+      scene.add(rock)
+    }
   })
 }
