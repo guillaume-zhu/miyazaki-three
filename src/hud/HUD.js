@@ -8,6 +8,8 @@ let currentFilmTmdb = null
 let score = 0
 let currentUsername = null  // pseudo du joueur
 let selectedAvatar = null   // avatar sélectionné sur l'écran profil
+let profileReady = false    // l'utilisateur a un pseudo
+let modelsLoaded = false    // les modèles 3D sont chargés
 
 // ════════════════════════════════════════════
 // SON
@@ -37,43 +39,7 @@ function removeToken() {
 }
 === AUTH LEGACY END === */
 
-// ════════════════════════════════════════════
-// AUTH — Navigation entre les écrans
-// ════════════════════════════════════════════
-function hideAllAuthScreens() {
-    document.getElementById('auth-menu').style.display = 'none'
-    document.getElementById('auth-profile').style.display = 'none'
-}
-
-window.showMenu = function () {
-    hideAllAuthScreens()
-    document.getElementById('auth-menu').style.display = 'flex'
-}
-
-/* === AUTH LEGACY START ===
-window.showLogin = function () {
-    hideAllAuthScreens()
-    document.getElementById('auth-login').style.display = 'block'
-    document.getElementById('auth-error').innerText = ''
-}
-
-window.showRegister = function () {
-    hideAllAuthScreens()
-    document.getElementById('auth-register').style.display = 'block'
-    document.getElementById('register-error').innerText = ''
-}
-=== AUTH LEGACY END === */
-
-window.showProfileSetup = function () {
-    hideAllAuthScreens()
-    document.getElementById('auth-profile').style.display = 'block'
-    document.getElementById('profile-error').innerText = ''
-    selectedAvatar = null
-    // Réinitialiser la sélection visuelle
-    document.querySelectorAll('.avatar-card').forEach(card => {
-        card.classList.remove('selected')
-    })
-}
+/* Anciennes fonctions de navigation supprimées car il n'y a plus qu'un seul écran (loader) */
 
 // ════════════════════════════════════════════
 // AVATAR — Sélection
@@ -117,7 +83,25 @@ window.handleProfileSetup = function () {
     if (el) el.innerText = `${score} / 25`
 
     afficherPseudo()
-    onAuthSuccess()
+    
+    // Le profil est prêt, on cache le formulaire et on vérifie si les modèles sont chargés
+    document.getElementById('auth-profile').style.display = 'none'
+    profileReady = true
+    checkReadyState()
+}
+
+export function onModelsLoaded() {
+    modelsLoaded = true
+    checkReadyState()
+}
+
+function checkReadyState() {
+    if (profileReady && modelsLoaded) {
+        const launchBtn = document.getElementById('launch-btn')
+        if (launchBtn) {
+            launchBtn.style.display = 'inline-block'
+        }
+    }
 }
 
 /* === AUTH LEGACY START ===
@@ -191,25 +175,18 @@ window.handleRegister = async function () {
 // ════════════════════════════════════════════
 function afficherPseudo() {
     if (!currentUsername) return
-    // Dans le header à côté du score
-    const header = document.querySelector('.icon-right')
-    let pseudoEl = document.getElementById('header-pseudo')
-    if (!pseudoEl && header) {
-        pseudoEl = document.createElement('p')
-        pseudoEl.id = 'header-pseudo'
-        pseudoEl.className = 'header-pseudo'
-        header.prepend(pseudoEl)
-    }
+
+    const pseudoEl = document.getElementById('header-pseudo')
     if (pseudoEl) pseudoEl.innerText = currentUsername
+
+    const avatarEl = document.getElementById('header-avatar')
+    if (avatarEl) {
+        const savedAvatar = localStorage.getItem('miyaza_avatar')
+        if (savedAvatar) avatarEl.src = `/avatar/${savedAvatar}.svg`
+    }
 }
 
-// ════════════════════════════════════════════
-// Après connexion réussie :
-// Cache l'écran auth pour laisser apparaître le jeu
-// ════════════════════════════════════════════
-function onAuthSuccess() {
-    document.getElementById('screen-auth').style.display = 'none'
-}
+/* Fonction supprimée car le flux est géré par checkReadyState() */
 
 // ════════════════════════════════════════════
 // PROGRESSION — Charger depuis localStorage
@@ -421,45 +398,44 @@ function handleAnswer(btn, choix, data, container) {
 }
 
 // ════════════════════════════════════════════
-// ÉCRAN BRAVO
+// FIN DE SÉQUENCE + TROPHÉE
 // ════════════════════════════════════════════
-window.showBravo = function () {
+window.finishSequenceWithTrophy = function () {
     const anecdoteScreen = document.getElementById('screen-anecdote')
+    const interfaceMain = document.querySelector('main')
+
     anecdoteScreen.classList.add('pop-out')
 
     setTimeout(() => {
         anecdoteScreen.style.display = 'none'
         anecdoteScreen.classList.remove('pop-out')
         updateScore()
-
-        const bravoScore = document.getElementById('bravo-score')
-        if (bravoScore) {
-            const pseudo = currentUsername ? `Bravo ${currentUsername} !` : 'Bravo !'
-            bravoScore.innerText = `${pseudo} Tu as retrouvé ${score} souvenir${score > 1 ? 's' : ''} sur 25`
-        }
-
-        const bravoScreen = document.getElementById('screen-bravo').style.display = 'block'
-
-        const timer = setTimeout(() => {
-            bravoScreen.style.display = 'none'
-        }, 3000)
+        if (interfaceMain) interfaceMain.style.display = 'none'
+        showTrophyNotification()
     }, 300)
 }
 
-// ════════════════════════════════════════════
-// FIN DE SÉQUENCE
-// ════════════════════════════════════════════
-window.finishSequence = function () {
-    const bravoScreen = document.getElementById('screen-bravo')
-    const interfaceMain = document.querySelector('main')
+function showTrophyNotification() {
+    const toast = document.createElement('div')
+    toast.className = 'trophy-notification'
+    toast.innerHTML = `
+        <div class="trophy-icon">🏆</div>
+        <div class="trophy-content">
+            <p class="trophy-title">Souvenir retrouvé !</p>
+            <p class="trophy-count">${score} / 25 souvenirs</p>
+        </div>
+    `
+    document.body.appendChild(toast)
 
-    bravoScreen.classList.add('pop-out')
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => toast.classList.add('trophy-visible'))
+    })
 
     setTimeout(() => {
-        bravoScreen.style.display = 'none'
-        bravoScreen.classList.remove('pop-out')
-        if (interfaceMain) interfaceMain.style.display = 'none'
-    }, 300)
+        toast.classList.remove('trophy-visible')
+        toast.classList.add('trophy-hide')
+        setTimeout(() => toast.remove(), 500)
+    }, 3500)
 }
 
 // ════════════════════════════════════════════
@@ -557,27 +533,21 @@ export function initGameInterface() {
 }
 
 // ════════════════════════════════════════════
-// CHANGER DE JOUEUR (remplace l'ancien handleLogout)
+// CHANGER DE JOUEUR
 // ════════════════════════════════════════════
 window.handleChangePlayer = function () {
     localStorage.removeItem('miyaza_username')
     localStorage.removeItem('miyaza_avatar')
     localStorage.removeItem('miyaza_score')
     localStorage.removeItem('miyaza_foundObjects')
-    score = 0
-    currentUsername = null
-    selectedAvatar = null
-    for (const key of Object.keys(MODELS_DATA)) {
-        MODELS_DATA[key].isFound = false
-    }
-    const el = document.querySelector('.score-counter')
-    if (el) el.innerText = '0 / 25'
+    
+    // On recharge simplement la page pour recommencer le flux
+    window.location.reload()
+}
 
-    const pseudoEl = document.getElementById('header-pseudo')
-    if (pseudoEl) pseudoEl.remove()
-
-    document.getElementById('screen-auth').style.display = 'flex'
-    showMenu()
+window.togglePlayerDropdown = function () {
+    const dd = document.getElementById('player-dropdown')
+    if (dd) dd.style.display = dd.style.display === 'none' ? 'block' : 'none'
 }
 
 /* === AUTH LEGACY START ===
@@ -609,16 +579,13 @@ window.handleLogout = function () {
 document.addEventListener('DOMContentLoaded', () => {
     const savedUsername = localStorage.getItem('miyaza_username')
     if (savedUsername) {
-        // Pseudo trouvé → on charge la progression depuis localStorage
-        const success = chargerProgression()
-        if (success) {
-            document.getElementById('screen-auth').style.display = 'none'
-        } else {
-            showMenu()
-        }
+        // Pseudo trouvé → on charge la progression
+        chargerProgression()
+        profileReady = true
+        checkReadyState()
     } else {
-        // Pas de pseudo → on affiche le menu principal
-        showMenu()
+        // Pas de pseudo → on affiche le formulaire profil dans le loader
+        document.getElementById('auth-profile').style.display = 'block'
     }
 })
 

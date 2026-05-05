@@ -4,7 +4,7 @@ import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 
 import { loadInteractiveModel } from "../utils/loadInteractiveModel.js";
-import { initGameInterface } from "../hud/HUD.js";
+import { initGameInterface, onModelsLoaded } from "../hud/HUD.js";
 import { setGameReady } from "../main.js";
 
 // fonction du son:
@@ -119,7 +119,6 @@ export const loadModels = ({
         if (progressGroup) progressGroup.style.display = "none";
 
         if (launchBtn) {
-            launchBtn.style.display = "inline-block";
             launchBtn.onclick = () => {
                 playSound("./sound/Ghibli-sounds-shortened.MP3");
                 // 1. On cache le loader
@@ -138,6 +137,9 @@ export const loadModels = ({
                 }, 1500);
             };
         }
+
+        // On prévient HUD que le chargement est terminé
+        onModelsLoaded();
     };
 
     // --- Configuration des Loaders avec le Manager ---

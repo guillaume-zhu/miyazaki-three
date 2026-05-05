@@ -47,8 +47,73 @@ body {
 .icon-right {
     position: absolute;
     height: auto;
-    right: 100px;
-    top: 40px;
+    right: 40px;
+    top: 30px;
+}
+
+.player-hud {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    position: relative;
+}
+
+.player-score {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.puzzle-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+.player-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(6px);
+    border: 2px solid #000;
+    border-radius: 12px;
+    padding: 7px 14px;
+    box-shadow: 2px 2px 0px #000;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.player-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 3px 4px 0px #000;
+}
+
+.header-avatar-img {
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
+    object-fit: contain;
+}
+
+.dropdown-arrow {
+    font-size: 0.8rem;
+    color: #000;
+    line-height: 1;
+}
+
+.player-dropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 6px;
+    box-shadow: 2px 2px 0px #000;
+    z-index: 1000;
 }
 
 .flex-cross {
@@ -73,38 +138,92 @@ body {
 } */
 
 .score-counter {
-    margin: auto;
-    font-size: 20px;
+    font-size: 18px;
     font-family: "Police-Ghibli", sans-serif;
-    margin-top: 10px;
+    margin: 0;
 }
 
 .header-pseudo {
     font-family: "Police-Ghibli", sans-serif;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: bold;
-    text-align: center;
-    margin-top: 6px;
     color: #000;
+    margin: 0;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .change-player-btn {
-    margin-top: 8px;
     background: none;
     border: 2px solid #000;
-    border-radius: 12px;
-    padding: 4px 12px;
+    border-radius: 10px;
+    padding: 10px 20px;
     font-family: var(--font-lexend);
-    font-size: 0.75rem;
+    font-size: 0.9rem;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 2px 2px 0px #000;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    width: 100%;
+    white-space: nowrap;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
 .change-player-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 3px 4px 0px #000;
+    box-shadow: 2px 3px 0px #000;
+}
+
+/* ── Trophy notification (toast PlayStation-style) ── */
+.trophy-notification {
+    position: fixed;
+    right: -320px;
+    top: 110px;
+    width: 260px;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(12px);
+    border: 2px solid #000;
+    border-radius: 16px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 9999;
+    box-shadow: 4px 4px 0px #000;
+    font-family: "Police-Ghibli", sans-serif;
+    transition: right 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.trophy-notification.trophy-visible {
+    right: 40px;
+}
+
+.trophy-notification.trophy-hide {
+    right: -320px;
+    transition: right 0.35s ease-in;
+}
+
+.trophy-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.trophy-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.trophy-title {
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin: 0;
+    color: #000;
+}
+
+.trophy-count {
+    font-size: 0.78rem;
+    opacity: 0.7;
+    margin: 0;
+    color: #000;
 }
 
 .rules {
@@ -471,74 +590,19 @@ body {
     line-height: 1.6;
 }
 
-.bravo-score {
-    font-family: "Police-Ghibli", sans-serif;
-    font-size: 1.3rem;
-    margin-bottom: 30px;
-    text-align: center;
-}
-
 /* ════════════════════════════════════════════
-   ÉCRAN AUTH
+   ÉCRAN AUTH (Intégré dans le loader)
 ════════════════════════════════════════════ */
 
-#screen-auth {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 3000;
-    background: #e9e0db;
-}
-
-/* ── Menu principal ── */
-#auth-menu {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 40px;
-    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.auth-logo {
-    width: 320px;
-    max-width: 80vw;
-    height: auto;
-}
-
-.auth-menu-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    width: 260px;
-}
-
-/* Bouton secondaire (créer un compte) — fond transparent */
-.auth-btn-secondary {
-    background-color: transparent !important;
-    color: #000 !important;
-    text-shadow: none !important;
-    border: 2px solid #000;
-    box-shadow: 0px 4px 0px #000;
-}
-
-.auth-btn-secondary:hover {
-    background-color: rgba(0,0,0,0.05) !important;
-}
-
-/* ── Formulaires login / register ── */
-#auth-login,
-#auth-register {
-    width: 460px;
-    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-/* ── Profil (plus large pour la grille d'avatars) ── */
+/* ── Profil ── */
 #auth-profile {
-    width: 620px;
-    max-width: 90vw;
+    width: 100%;
+    max-width: 620px;
     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
 }
 
 .auth-form {
@@ -674,7 +738,11 @@ body {
 
 .loader-content {
     text-align: center;
-    width: 300px;
+    width: 100%;
+    max-width: 620px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .loader-title {
@@ -685,7 +753,8 @@ body {
 }
 
 .loader-bar-container {
-    width: 100%;
+    width: 300px;
+    margin: 0 auto;
     height: 10px;
     background: rgba(0, 0, 0, 0.1);
     border: 2px solid #000;

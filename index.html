@@ -27,87 +27,7 @@
         <canvas class="webgl"></canvas>
         <script type="module" src="/src/main.js"></script>
 
-        <!-- ══ ÉCRAN AUTH ══ -->
-        <div id="screen-auth">
-
-            <!-- 1. Menu principal -->
-            <section id="auth-menu">
-                <img src="/img/logo-miyazathree.png" alt="MiyazaThree" class="auth-logo" />
-                <div class="auth-menu-buttons">
-                    <button class="submit-btn" onclick="showProfileSetup()">Entrer dans le monde</button>
-                </div>
-            </section>
-
-            <!-- AUTH LEGACY START — Login (commenté, conservé pour réactivation)
-            <section id="auth-login" class="quiz-container" style="display: none">
-                <h1 class="quiz-title">Connexion</h1>
-                <div class="auth-form">
-                    <input type="email" id="auth-email" placeholder="Email" class="auth-input" />
-                    <input type="password" id="auth-password" placeholder="Mot de passe" class="auth-input" />
-                    <p id="auth-error" class="auth-error"></p>
-                    <button class="submit-btn" onclick="handleLogin()">Se connecter</button>
-                    <p class="auth-switch">Pas encore de compte ? <span onclick="showRegister()">S'inscrire</span></p>
-                    <p class="auth-switch"><span onclick="showMenu()">← Retour</span></p>
-                </div>
-            </section>
-            AUTH LEGACY END -->
-
-            <!-- AUTH LEGACY START — Register (commenté, conservé pour réactivation)
-            <section id="auth-register" class="quiz-container" style="display: none">
-                <h1 class="quiz-title">Créer un compte</h1>
-                <div class="auth-form">
-                    <input type="email" id="register-email" placeholder="Email" class="auth-input" />
-                    <input type="password" id="register-password" placeholder="Mot de passe (6 caractères min)" class="auth-input" />
-                    <p id="register-error" class="auth-error"></p>
-                    <button class="submit-btn" onclick="handleRegister()">Continuer</button>
-                    <p class="auth-switch">Déjà un compte ? <span onclick="showLogin()">Se connecter</span></p>
-                    <p class="auth-switch"><span onclick="showMenu()">← Retour</span></p>
-                </div>
-            </section>
-            AUTH LEGACY END -->
-
-            <!-- 2. Choix avatar + pseudo -->
-            <section id="auth-profile" class="quiz-container" style="display: none">
-                <h1 class="quiz-title">Ton identité</h1>
-                <p class="auth-profile-subtitle">Choisis ton avatar et ton pseudo</p>
-
-                <!-- Grille des 8 avatars -->
-                <div class="avatar-grid">
-                    <div class="avatar-card" data-avatar="avatar-1" onclick="selectAvatar('avatar-1')">
-                        <img src="/avatar/avatar-1.svg" alt="Avatar Totoro" class="avatar-img" />
-                    </div>
-                    <div class="avatar-card" data-avatar="avatar-2" onclick="selectAvatar('avatar-2')">
-                        <img src="/avatar/avatar-2.svg" alt="Avatar Calcifer" class="avatar-img" />
-                    </div>
-                    <div class="avatar-card" data-avatar="avatar-3" onclick="selectAvatar('avatar-3')">
-                        <img src="/avatar/avatar-3.svg" alt="Avatar Haku" class="avatar-img" />
-                    </div>
-                    <div class="avatar-card" data-avatar="avatar-4" onclick="selectAvatar('avatar-4')">
-                        <img src="/avatar/avatar-4.svg" alt="Avatar Ponyo" class="avatar-img" />
-                    </div>
-                    <div class="avatar-card" data-avatar="avatar-5" onclick="selectAvatar('avatar-5')">
-                        <img src="/avatar/avatar-5.svg" alt="Avatar Porco" class="avatar-img" />
-                    </div>
-                    <div class="avatar-card" data-avatar="avatar-6" onclick="selectAvatar('avatar-6')">
-                        <img src="/avatar/avatar-6.svg" alt="Avatar 6" class="avatar-img" />
-                    </div>
-                    <div class="avatar-card" data-avatar="avatar-7" onclick="selectAvatar('avatar-7')">
-                        <img src="/avatar/avatar-7.svg" alt="Avatar 7" class="avatar-img" />
-                    </div>
-                    <div class="avatar-card" data-avatar="avatar-8" onclick="selectAvatar('avatar-8')">
-                        <img src="/avatar/avatar-8.svg" alt="Avatar 8" class="avatar-img" />
-                    </div>
-                </div>
-
-                <div class="auth-form">
-                    <input type="text" id="profile-username" placeholder="Ton pseudo (2-20 caractères)" class="auth-input" maxlength="20" />
-                    <p id="profile-error" class="auth-error"></p>
-                    <button class="submit-btn" onclick="handleProfileSetup()">Entrer dans le monde</button>
-                </div>
-            </section>
-
-        </div>
-
+        <!-- 2. Choix avatar + pseudo (déplacé dans le loader) -->
         <div id="loader-screen">
             <div class="loader-content">
                 <h1 class="loader-title">MiyazaThree</h1>
@@ -120,10 +40,49 @@
                     <p id="loader-text">Récupération de la mémoire... 0%</p>
                 </div>
 
+                <section id="auth-profile" class="quiz-container" style="display: none; margin-top: 20px;">
+                    <h1 class="quiz-title">Ton identité</h1>
+                    <p class="auth-profile-subtitle">Choisis ton avatar et ton pseudo</p>
+
+                    <!-- Grille des 8 avatars -->
+                    <div class="avatar-grid">
+                        <div class="avatar-card" data-avatar="avatar-1" onclick="selectAvatar('avatar-1')">
+                            <img src="/avatar/avatar-1.svg" alt="Avatar Totoro" class="avatar-img" />
+                        </div>
+                        <div class="avatar-card" data-avatar="avatar-2" onclick="selectAvatar('avatar-2')">
+                            <img src="/avatar/avatar-2.svg" alt="Avatar Calcifer" class="avatar-img" />
+                        </div>
+                        <div class="avatar-card" data-avatar="avatar-3" onclick="selectAvatar('avatar-3')">
+                            <img src="/avatar/avatar-3.svg" alt="Avatar Haku" class="avatar-img" />
+                        </div>
+                        <div class="avatar-card" data-avatar="avatar-4" onclick="selectAvatar('avatar-4')">
+                            <img src="/avatar/avatar-4.svg" alt="Avatar Ponyo" class="avatar-img" />
+                        </div>
+                        <div class="avatar-card" data-avatar="avatar-5" onclick="selectAvatar('avatar-5')">
+                            <img src="/avatar/avatar-5.svg" alt="Avatar Porco" class="avatar-img" />
+                        </div>
+                        <div class="avatar-card" data-avatar="avatar-6" onclick="selectAvatar('avatar-6')">
+                            <img src="/avatar/avatar-6.svg" alt="Avatar 6" class="avatar-img" />
+                        </div>
+                        <div class="avatar-card" data-avatar="avatar-7" onclick="selectAvatar('avatar-7')">
+                            <img src="/avatar/avatar-7.svg" alt="Avatar 7" class="avatar-img" />
+                        </div>
+                        <div class="avatar-card" data-avatar="avatar-8" onclick="selectAvatar('avatar-8')">
+                            <img src="/avatar/avatar-8.svg" alt="Avatar 8" class="avatar-img" />
+                        </div>
+                    </div>
+
+                    <div class="auth-form">
+                        <input type="text" id="profile-username" placeholder="Ton pseudo (2-20 caractères)" class="auth-input" maxlength="20" />
+                        <p id="profile-error" class="auth-error"></p>
+                        <button class="submit-btn" onclick="handleProfileSetup()">Valider</button>
+                    </div>
+                </section>
+
                 <!-- Le bouton qui apparaîtra à la fin -->
                 <button
                     id="launch-btn"
-                    style="display: none"
+                    style="display: none; margin-top: 20px;"
                     class="submit-btn"
                 >
                     Entrer dans le monde
@@ -140,13 +99,20 @@
                     style="cursor: pointer"
                 />
                 <div class="icon-right">
-                    <img
-                        src="./img/puzzle-vector.png"
-                        alt="icone de puzzle"
-                        class=""
-                    />
-                    <p class="score-counter">0 / 25</p>
-                    <button class="change-player-btn" onclick="handleChangePlayer()">Changer de joueur</button>
+                    <div class="player-hud">
+                        <div class="player-score">
+                            <img src="./img/puzzle-vector.png" alt="icone de puzzle" class="puzzle-icon" />
+                            <p class="score-counter">0 / 25</p>
+                        </div>
+                        <div class="player-card" onclick="togglePlayerDropdown()">
+                            <img id="header-avatar" src="" alt="avatar" class="header-avatar-img" />
+                            <p id="header-pseudo" class="header-pseudo"></p>
+                            <span class="dropdown-arrow">▾</span>
+                        </div>
+                        <div id="player-dropdown" class="player-dropdown" style="display:none">
+                            <button class="change-player-btn" onclick="handleChangePlayer()">Changer de joueur</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>
@@ -226,14 +192,7 @@
                         </div>
                     </div>
 
-                    <button class="submit-btn" onclick="showBravo()">
-                        continuer
-                    </button>
-                </section>
-                <section id="screen-bravo" class="quiz-container" style="display: none">
-                    <h1 class="quiz-title">Souvenir retrouvé !</h1>
-                    <p id="bravo-score" class="bravo-score"></p>
-                    <button class="submit-btn" onclick="finishSequence()">
+                    <button class="submit-btn" onclick="finishSequenceWithTrophy()">
                         continuer
                     </button>
                 </section>
