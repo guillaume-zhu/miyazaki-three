@@ -124,7 +124,7 @@ export const loadModels = ({
 
     if (launchBtn) {
       launchBtn.onclick = () => {
-        playSound("./sound/Ghibli-sounds-shortened.MP3")
+        playSound("./sound/ghibli-music-mix.MP3")
         // 1. On cache le loader
         loaderScreen.classList.add("loader-hidden")
 
