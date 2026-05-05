@@ -18,10 +18,14 @@ export function createSetup() {
 
   /**
    * Renderer
+   * Sur écran Retina / mobile (dpr >= 2) : antialias inutile, les pixels sont
+   * déjà trop petits pour voir les crénelages → on le désactive pour économiser du GPU.
+   * Sur écran standard (dpr < 2) : antialias activé pour lisser les bords.
    */
-  const renderer = new THREE.WebGLRenderer({ antialias: true, canvas })
+  const pixelRatio = window.devicePixelRatio || 1
+  const renderer = new THREE.WebGLRenderer({ antialias: pixelRatio < 2, canvas })
   renderer.setSize(window.innerWidth, window.innerHeight)
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  renderer.setPixelRatio(Math.min(pixelRatio, 2))
   renderer.outputColorSpace = THREE.SRGBColorSpace
   renderer.toneMapping = THREE.LinearToneMapping
   renderer.toneMappingExposure = 1

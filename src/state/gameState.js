@@ -6,5 +6,6 @@ export const state = {
     selectedAvatar: null,
     profileReady: false,
     modelsLoaded: false,
-    isNewFind: false
+    isNewFind: false,
+    hudOpen: false   // true quand quiz/anecdote/règles est affiché → raycaster désactivé
 }
