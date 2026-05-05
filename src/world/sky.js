@@ -1,24 +1,27 @@
 import * as THREE from 'three'
 
 export function createSky(scene) {
-  const skyGeo = new THREE.SphereGeometry(200, 32, 32)
-  const loader = new THREE.TextureLoader()
+    const loader = new THREE.CubeTextureLoader()
 
-  const skyTexture = loader.load('/textures/sky.png')
-  skyTexture.colorSpace = THREE.SRGBColorSpace
-  skyTexture.minFilter = THREE.LinearFilter
-  skyTexture.magFilter = THREE.LinearFilter
+    const skyTexture = loader.load([
+            '/textures/px.png',
+            '/textures/nx.png',
+            '/textures/py.png',
+            '/textures/ny.png',
+            '/textures/pz.png',
+            '/textures/nz.png'
+        ])
 
-  const skyMat = new THREE.MeshBasicMaterial({
-    map: skyTexture,
-    side: THREE.BackSide,
-    depthWrite: false,
-    fog: false,
-  })
 
-  const sky = new THREE.Mesh(skyGeo, skyMat)
-  sky.rotation.y = Math.PI
-  scene.add(sky)
+    skyTexture.colorSpace = THREE.SRGBColorSpace
 
-  return sky
+    scene.background = skyTexture
+
+    scene.environment = skyTexture 
+
+    scene.backgroundRotation.y = -120
+
+    scene.environmentRotation.y = -120
+
+    return skyTexture 
 }

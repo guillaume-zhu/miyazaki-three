@@ -1,8 +1,18 @@
+import * as THREE from "three"
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js"
-import { DRACOLoader } from "three/examples/jsm/Addons.js"
+import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js"
 import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js"
 
 import { loadInteractiveModel } from "../utils/loadInteractiveModel.js"
+import { initGameInterface, onModelsLoaded } from "../hud/HUD.js"
+import { setGameReady } from "../main.js"
+
+// fonction du son:
+function playSound(file, vol = 1.0) {
+  let audio = new Audio(file)
+  audio.volume = vol
+  audio.play()
+}
 
 /**
  * Animations
@@ -69,10 +79,65 @@ const createMagicGoldAnimation = (
  * Import
  */
 export const loadModels = ({ scene, interactiveObjects, mixers, modelAnimations = [] }) => {
-  const dracoLoader = new DRACOLoader()
+  // ---------------------------------- LOGIQUE LOADER -----------------------------------------------------
+  // --- Éléments du DOM ---
+  const loaderBar = document.getElementById("loader-bar")
+  const loaderText = document.getElementById("loader-text")
+  const loaderScreen = document.getElementById("loader-screen")
+
+  // --- Initialisation du Loading Manager ---
+  const loadingManager = new THREE.LoadingManager()
+
+  loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+    const progressRatio = (itemsLoaded / itemsTotal) * 100
+    // On utilise requestAnimationFrame pour synchroniser la mise à jour avec l'écran
+    window.requestAnimationFrame(() => {
+      if (loaderBar) {
+        loaderBar.style.width = `${progressRatio}%`
+      }
+      if (loaderText) {
+        // On arrondit pour éviter les chiffres à virgule qui bougent trop
+        loaderText.innerText = `Récupération de la mémoire... ${Math.round(progressRatio)}%`
+      }
+    })
+  }
+
+  loadingManager.onLoad = () => {
+    const progressGroup = document.getElementById("loader-progress-group")
+    const launchBtn = document.getElementById("launch-btn")
+    const loaderScreen = document.getElementById("loader-screen")
+
+    if (progressGroup) progressGroup.style.display = "none"
+
+    if (launchBtn) {
+      launchBtn.onclick = () => {
+        playSound("./sound/Ghibli-sounds-shortened.MP3")
+        // 1. On cache le loader
+        loaderScreen.classList.add("loader-hidden")
+
+        // 2. ON APPELLE LES RÈGLES (C'est ce qui manquait !)
+        // On attend un tout petit peu que le fondu du loader commence
+        setTimeout(() => {
+          initGameInterface()
+        }, 1000)
+
+        // 3. On autorise le clic sur les modèles 3D après un délai
+        // pour éviter que le clic du bouton ne traverse et n'ouvre un quiz
+        setTimeout(() => {
+          setGameReady() // On utilise la fonction importée de main.js
+        }, 1500)
+      }
+    }
+
+    // On prévient HUD que le chargement est terminé
+    onModelsLoaded()
+  }
+
+  // --- Configuration des Loaders avec le Manager ---
+  const dracoLoader = new DRACOLoader(loadingManager)
   dracoLoader.setDecoderPath("/draco/")
 
-  const gltfLoader = new GLTFLoader()
+  const gltfLoader = new GLTFLoader(loadingManager)
   gltfLoader.setDRACOLoader(dracoLoader)
   gltfLoader.setMeshoptDecoder(MeshoptDecoder)
 
@@ -687,6 +752,7 @@ export const loadModels = ({ scene, interactiveObjects, mixers, modelAnimations 
     outlineBaseThickness: 0.01,
     outlineHoverThickness: 0.02,
     onLoad: (model) => {
+      model.userData.modelKey = "train"
       modelAnimations.push(
         createTrainXAnimation(model, {
           distance: 20,

@@ -7,6 +7,9 @@ export function createGrass(scene, platformMesh) {
   const RAY_ORIGIN_Y       = 50
   const TEXTURE_REPEAT     = 3
 
+  const EXCLUSION_CENTER   = new THREE.Vector2(13, -20)
+  const EXCLUSION_RADIUS   = 4
+
   const box = new THREE.Box3().setFromObject(platformMesh)
   const size = new THREE.Vector3()
   box.getSize(size)
@@ -120,6 +123,9 @@ export function createGrass(scene, platformMesh) {
     const x = center.x+Math.cos(angle)*radius
     const z = center.z+Math.sin(angle)*radius
     if (!isInVisibleArc(x, z)) continue
+    const dxExcl = x - EXCLUSION_CENTER.x
+    const dzExcl = z - EXCLUSION_CENTER.y
+    if (dxExcl * dxExcl + dzExcl * dzExcl < EXCLUSION_RADIUS * EXCLUSION_RADIUS) continue
     const surfaceY = getSurfaceY(x, z)
     if (surfaceY === null) continue
     validOffsets.push(x, surfaceY, z)
