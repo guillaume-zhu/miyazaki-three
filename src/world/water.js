@@ -1,6 +1,8 @@
 import * as THREE from "three"
 import { Reflector } from "three/examples/jsm/objects/Reflector.js"
 
+const WATER_COLOR = "#aeb7b4"
+
 /* ── Gaussian blur séparable (9-tap) ── */
 const blurShader = {
   vertexShader: /* glsl */ `
@@ -16,6 +18,10 @@ const blurShader = {
     uniform float strength;
     uniform vec2 resolution;
     varying vec2 vUv;
+    uniform float saturation;
+    uniform float brightness;
+    uniform vec3 reflectionTint;
+    uniform float tintStrength;
 
     void main() {
       vec2 off = direction * strength / resolution;
@@ -30,19 +36,35 @@ const blurShader = {
       sum      += texture2D(tDiffuse, vUv + 3.0 * off) * 0.0540540541;
       sum      += texture2D(tDiffuse, vUv + 4.0 * off) * 0.0162162162;
 
+      float gray = dot(sum.rgb, vec3(0.2126, 0.7152, 0.0722));
+      sum.rgb = mix(vec3(gray), sum.rgb, saturation);
+      sum.rgb *= brightness;
+      sum.rgb = mix(sum.rgb, reflectionTint, tintStrength);
+
       gl_FragColor = sum;
     }
   `,
 }
 
 /* ── Helpers pour le full-screen pass ── */
-function createBlurMaterial(dir, res) {
+function createBlurMaterial(
+  dir,
+  res,
+  saturation = 1.0,
+  brightness = 1.0,
+  tintColor = new THREE.Color(WATER_COLOR),
+  tintStrength = 0.0,
+) {
   return new THREE.ShaderMaterial({
     uniforms: {
       tDiffuse: { value: null },
       direction: { value: dir },
       strength: { value: 2.0 },
       resolution: { value: res },
+      saturation: { value: saturation },
+      brightness: { value: brightness },
+      reflectionTint: { value: tintColor },
+      tintStrength: { value: tintStrength },
     },
     vertexShader: blurShader.vertexShader,
     fragmentShader: blurShader.fragmentShader,
@@ -66,7 +88,7 @@ export function createWater(scene) {
     textureWidth: texW,
     textureHeight: texH,
     clipBias: 0.003,
-    color: new THREE.Color("#abb3b2"),
+    color: new THREE.Color(WATER_COLOR),
   })
   water.rotation.x = -Math.PI / 2
   water.position.y = -3
@@ -79,8 +101,22 @@ export function createWater(scene) {
   })
 
   /* ── Matériaux blur H & V ── */
-  const matH = createBlurMaterial(new THREE.Vector2(1, 0), res)
-  const matV = createBlurMaterial(new THREE.Vector2(0, 1), res)
+  const matH = createBlurMaterial(
+    new THREE.Vector2(1, 0),
+    res,
+    1.0,
+    1.0,
+    new THREE.Color(WATER_COLOR),
+    0.0,
+  )
+  const matV = createBlurMaterial(
+    new THREE.Vector2(0, 1),
+    res,
+    0.88,
+    1.1,
+    new THREE.Color(WATER_COLOR),
+    0.25,
+  )
 
   /* ── Full-screen quad pour les passes ── */
   const fsQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2))
@@ -134,10 +170,25 @@ export function createWater(scene) {
     iterations = Math.max(1, n)
   }
 
+  const setReflectionSaturation = (amount) => {
+    matV.uniforms.saturation.value = THREE.MathUtils.clamp(amount, 0, 1.5)
+  }
+
+  const setReflectionBrightness = (amount) => {
+    matV.uniforms.brightness.value = THREE.MathUtils.clamp(amount, 0.5, 2.0)
+  }
+
+  const setReflectionTintStrength = (amount) => {
+    matV.uniforms.tintStrength.value = THREE.MathUtils.clamp(amount, 0, 1)
+  }
+
   return {
     mesh: water,
     material: water.material,
     setBlur, // setBlur(8)  → plus flou   |  setBlur(0) → net
     setIterations, // setIterations(3) → blur très large
+    setReflectionSaturation,
+    setReflectionBrightness,
+    setReflectionTintStrength,
   }
 }
