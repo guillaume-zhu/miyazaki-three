@@ -28,10 +28,10 @@ export class RotationControls {
     this.rotationSpeed = 0.003
     this.smoothingFactor = 0.08
 
-    this.minYaw = -Math.PI / 4
-    this.maxYaw = Math.PI / 4
-    this.minPitch = -0.3
-    this.maxPitch = 0.3
+    this.minYaw = -Math.PI / 5
+    this.maxYaw = Math.PI / 5
+    this.minPitch = -0.2
+    this.maxPitch = 0.2
 
     this.init()
     this.startSmoothing()
