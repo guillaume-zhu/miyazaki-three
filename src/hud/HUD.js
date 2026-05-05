@@ -1,4 +1,5 @@
 import { MODELS_DATA } from '../data/models.js'
+import naughtyWords from 'naughty-words'
 
 // ════════════════════════════════════════════
 // STATE
@@ -10,6 +11,7 @@ let currentUsername = null  // pseudo du joueur
 let selectedAvatar = null   // avatar sélectionné sur l'écran profil
 let profileReady = false    // l'utilisateur a un pseudo
 let modelsLoaded = false    // les modèles 3D sont chargés
+let isNewFind = false       // vrai uniquement lors d'une première découverte
 
 // ════════════════════════════════════════════
 // SON
@@ -23,8 +25,6 @@ function playSound(file, vol = 1.0) {
 /* === AUTH LEGACY START ===
 // ════════════════════════════════════════════
 // TOKEN JWT — Stockage dans localStorage
-// Le token prouve que le joueur est connecté.
-// On le garde entre les sessions (rechargements de page).
 // ════════════════════════════════════════════
 function getToken() {
     return localStorage.getItem('miyaza_token')
@@ -56,6 +56,22 @@ window.selectAvatar = function (avatarKey) {
 }
 
 // ════════════════════════════════════════════
+// PROFIL — Filtre de mots interdits
+// ════════════════════════════════════════════
+const BADWORDS = new Set([
+    ...naughtyWords.fr,
+    ...naughtyWords.en
+])
+
+function containsBadWords(text) {
+    const normalized = text.toLowerCase().trim()
+    for (const word of BADWORDS) {
+        if (normalized.includes(word)) return true
+    }
+    return false
+}
+
+// ════════════════════════════════════════════
 // PROFIL — Rejoindre le jeu avec pseudo + avatar
 // Stockage en localStorage (pas d'appel serveur)
 // ════════════════════════════════════════════
@@ -70,6 +86,10 @@ window.handleProfileSetup = function () {
     }
     if (username.length < 2) {
         errorEl.innerText = 'Pseudo trop court (2 caractères minimum)'
+        return
+    }
+    if (containsBadWords(username)) {
+        errorEl.innerText = "Ce pseudo n'est pas autorisé 🚫"
         return
     }
 
@@ -87,6 +107,11 @@ window.handleProfileSetup = function () {
     // Le profil est prêt, on cache le formulaire et on vérifie si les modèles sont chargés
     document.getElementById('auth-profile').style.display = 'none'
     profileReady = true
+    
+    if (!modelsLoaded) {
+        document.getElementById('loader-progress-group').style.display = 'block'
+    }
+
     checkReadyState()
 }
 
@@ -390,6 +415,7 @@ function handleAnswer(btn, choix, data, container) {
             b.style.pointerEvents = 'none'
         })
         playSound('/sound/correct.wav', 0.5)
+        isNewFind = true
         setTimeout(() => showAnecdote(), 800)
     } else {
         btn.classList.add('answer-wrong')
@@ -411,7 +437,10 @@ window.finishSequenceWithTrophy = function () {
         anecdoteScreen.classList.remove('pop-out')
         updateScore()
         if (interfaceMain) interfaceMain.style.display = 'none'
-        showTrophyNotification()
+        if (isNewFind) {
+            showTrophyNotification()
+            isNewFind = false
+        }
     }, 300)
 }
 
@@ -419,7 +448,7 @@ function showTrophyNotification() {
     const toast = document.createElement('div')
     toast.className = 'trophy-notification'
     toast.innerHTML = `
-        <div class="trophy-icon">🏆</div>
+        <img src="/img/trophe.svg" alt="trophée" class="trophy-icon" />
         <div class="trophy-content">
             <p class="trophy-title">Souvenir retrouvé !</p>
             <p class="trophy-count">${score} / 25 souvenirs</p>
@@ -428,7 +457,12 @@ function showTrophyNotification() {
     document.body.appendChild(toast)
 
     requestAnimationFrame(() => {
-        requestAnimationFrame(() => toast.classList.add('trophy-visible'))
+        requestAnimationFrame(() => {
+            toast.classList.add('trophy-visible')
+            const sfx = new Audio('/sound/trophy-sound.mp3')
+            sfx.volume = 0.35
+            sfx.play().catch(() => {})
+        })
     })
 
     setTimeout(() => {
@@ -475,6 +509,7 @@ export function openHUD(data, filmTmdb = null) {
     if (interfaceMain) interfaceMain.style.display = 'flex'
 
     if (data.isFound) {
+        isNewFind = false
         showAnecdote()
     } else {
         const questionImg = document.getElementById('question-image')
@@ -586,6 +621,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         // Pas de pseudo → on affiche le formulaire profil dans le loader
         document.getElementById('auth-profile').style.display = 'block'
+        document.getElementById('loader-progress-group').style.display = 'none'
     }
 })
 
