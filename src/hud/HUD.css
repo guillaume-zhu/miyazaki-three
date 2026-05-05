@@ -697,11 +697,17 @@ body {
     box-shadow: 4px 6px 0px var(--border-color);
 }
 
-/* Carte sélectionnée → fond vert */
+.avatar-card:active {
+    transform: translateY(2px);
+    box-shadow: 1px 1px 0px var(--border-color);
+}
+
+/* Carte sélectionnée → effet "pressé" et couleur différente */
 .avatar-card.selected {
-    background: #8ecc7f;
-    transform: translateY(-4px);
-    box-shadow: 4px 6px 0px var(--border-color);
+    background: #e9e0db;
+    transform: translateY(2px) scale(0.98);
+    box-shadow: inset 4px 4px 0px rgba(0,0,0,0.1), 0px 0px 0px var(--border-color);
+    border-color: #000;
 }
 
 .avatar-img {
