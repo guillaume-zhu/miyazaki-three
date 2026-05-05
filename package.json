@@ -19,6 +19,7 @@
     "naughty-words": "^1.2.0",
     "node-fetch": "^3.3.2",
     "stats": "^1.0.0",
-    "three": "^0.183.2"
+    "three": "^0.183.2",
+    "three-mesh-bvh": "^0.9.9"
   }
 }
