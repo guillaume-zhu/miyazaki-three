@@ -1,13 +1,16 @@
 :root {
-    --bg-color: #e9e0db; /* Couleur de fond des boutons */
+    --bg-color: #e9e0db;
+    /* Couleur de fond des boutons */
     --border-color: #000000;
     --border-width: 4px;
-    --font-lexend: 'Lexend', sans-serif;
+    --font-lexend: "Lexend", sans-serif;
 }
 
 @font-face {
-    font-family: "Police-Ghibli"; /* Le nom que tu choisiras pour l'utiliser plus tard */
-    src: url("/fonts/AvantGarde-Medium.otf") format("opentype"); /* Vérifie bien le chemin et le format */
+    font-family: "Police-Ghibli";
+    /* Le nom que tu choisiras pour l'utiliser plus tard */
+    src: url("/fonts/AvantGarde-Medium.otf") format("opentype");
+    /* Vérifie bien le chemin et le format */
     font-weight: normal;
     font-style: normal;
 }
@@ -18,13 +21,11 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background: url("/img/fond-genshin.png") no-repeat center center fixed;
     background-size: cover;
     font-family: "Police-Ghibli", sans-serif;
-    cursor: image-set(
-        url("/img/Figma-Cursor.png") 1x,
-        url("/img/Figma-Cursor.png") 2x
-    );
+    cursor: image-set(url("/img/Figma-Cursor.png") 1x,
+            url("/img/Figma-Cursor.png") 2x);
+
     ul {
         list-style-type: none;
     }
@@ -45,19 +46,188 @@ body {
 
 .icon-right {
     position: absolute;
-    right: 100px;
-    top: 40px;
+    height: auto;
+    right: 40px;
+    top: 30px;
 }
 
-.score-counter {
+.player-hud {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    position: relative;
+}
+
+.player-score {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.puzzle-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+.player-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(6px);
+    border: 2px solid #000;
+    border-radius: 12px;
+    padding: 7px 14px;
+    box-shadow: 2px 2px 0px #000;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.player-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 3px 4px 0px #000;
+}
+
+.header-avatar-img {
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
+    object-fit: contain;
+}
+
+.dropdown-arrow {
+    font-size: 0.8rem;
+    color: #000;
+    line-height: 1;
+}
+
+.player-dropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 6px;
+    box-shadow: 2px 2px 0px #000;
+    z-index: 1000;
+}
+
+.flex-cross {
+    display: flex;
+    justify-content: right;
+    align-items: right;
+    margin-bottom: 20px;
+}
+
+#hud-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* .icon-right img {
     margin: auto;
-    font-size: 25px;
+    width: 60px;
+    height: auto;
+} */
+
+.score-counter {
+    font-size: 18px;
     font-family: "Police-Ghibli", sans-serif;
-    margin-top: 10px;
+    margin: 0;
+}
+
+.header-pseudo {
+    font-family: "Police-Ghibli", sans-serif;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #000;
+    margin: 0;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.change-player-btn {
+    background: none;
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-family: var(--font-lexend);
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    white-space: nowrap;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.change-player-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 2px 3px 0px #000;
+}
+
+/* ── Trophy notification (toast PlayStation-style) ── */
+.trophy-notification {
+    position: fixed;
+    right: -320px;
+    top: 110px;
+    width: 260px;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(12px);
+    border: 2px solid #000;
+    border-radius: 16px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 9999;
+    box-shadow: 4px 4px 0px #000;
+    font-family: "Police-Ghibli", sans-serif;
+    transition: right 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.trophy-notification.trophy-visible {
+    right: 40px;
+}
+
+.trophy-notification.trophy-hide {
+    right: -320px;
+    transition: right 0.35s ease-in;
+}
+
+.trophy-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.trophy-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.trophy-title {
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin: 0;
+    color: #000;
+}
+
+.trophy-count {
+    font-size: 0.78rem;
+    opacity: 0.7;
+    margin: 0;
+    color: #000;
 }
 
 .rules {
-    text-align: left;
+    text-align: center;
     font-size: 26px;
 }
 
@@ -75,16 +245,16 @@ body {
     border: var(--border-width) solid var(--border-color);
     border-radius: 40px;
     padding: 40px;
-    width: 700px;
+    width: 800px;
     text-align: center;
 }
 
 .quiz-title {
-    font-size: 40px;
+    font-size: 28px;
     font-weight: bold;
     margin-bottom: 30px;
     text-transform: uppercase;
-    font-family: "Bebas Neue", sans-serif;
+    font-family: "Police-Ghibli", sans-serif;
 }
 
 /* Zone 3D */
@@ -137,7 +307,7 @@ body {
 /* Boutons de réponse — Style cartoon WikiLearn */
 .answer-btn {
     position: relative;
-    background-color: #FFFFFF;
+    background-color: #ffffff;
     border: 2px solid #000000;
     border-radius: 19px;
     box-shadow: 4px 4px 0px #000000;
@@ -156,12 +326,15 @@ body {
     /* Effet text-shadow cartoon (contour noir) */
     text-shadow:
         -1.5px -1.5px 0 #000,
-         1.5px -1.5px 0 #000,
-        -1.5px  1.5px 0 #000,
-         1.5px  1.5px 0 #000,
-         0px 2.5px 0 #000;
-    color: #FFFFFF;
-    transition: transform 0.2s ease, box-shadow 0.15s ease, background-color 0.2s ease;
+        1.5px -1.5px 0 #000,
+        -1.5px 1.5px 0 #000,
+        1.5px 1.5px 0 #000,
+        0px 2.5px 0 #000;
+    color: #ffffff;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.15s ease,
+        background-color 0.2s ease;
 }
 
 .answer-btn:hover {
@@ -176,26 +349,45 @@ body {
 
 /* Bonne réponse → fond vert */
 .answer-correct {
-    background-color: #8ECC7F !important;
+    background-color: #8ecc7f !important;
     border-color: #000000;
     pointer-events: none;
 }
 
 /* Mauvaise réponse → fond rouge + tremblement */
 .answer-wrong {
-    background-color: #E35050 !important;
+    background-color: #e35050 !important;
     border-color: #000000;
     animation: shake 0.4s ease-in-out;
     pointer-events: none;
 }
 
 @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    15%      { transform: translateX(-6px); }
-    30%      { transform: translateX(5px); }
-    45%      { transform: translateX(-4px); }
-    60%      { transform: translateX(3px); }
-    75%      { transform: translateX(-2px); }
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    15% {
+        transform: translateX(-6px);
+    }
+
+    30% {
+        transform: translateX(5px);
+    }
+
+    45% {
+        transform: translateX(-4px);
+    }
+
+    60% {
+        transform: translateX(3px);
+    }
+
+    75% {
+        transform: translateX(-2px);
+    }
 }
 
 /* Bouton d'action (continuer, retrouver la mémoire) — Style WikiLearn */
@@ -212,12 +404,14 @@ body {
     /* Texte cartoon blanc avec contour */
     text-shadow:
         -1.5px -1.5px 0 #000,
-         1.5px -1.5px 0 #000,
-        -1.5px  1.5px 0 #000,
-         1.5px  1.5px 0 #000,
-         0px 2.5px 0 #000;
-    color: #FFFFFF;
-    transition: transform 0.2s ease, box-shadow 0.15s ease;
+        1.5px -1.5px 0 #000,
+        -1.5px 1.5px 0 #000,
+        1.5px 1.5px 0 #000,
+        0px 2.5px 0 #000;
+    color: #ffffff;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.15s ease;
 }
 
 .submit-btn:hover {
@@ -239,12 +433,14 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    pointer-events: none; /* Laisse passer les clics vers Three.js par défaut */
+    pointer-events: none;
+    /* Laisse passer les clics vers Three.js par défaut */
     z-index: 999;
 }
 
 .quiz-container {
-    pointer-events: auto; /* Réactive les clics sur la fenêtre de quiz */
+    pointer-events: auto;
+    /* Réactive les clics sur la fenêtre de quiz */
     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -253,6 +449,7 @@ body {
         transform: scale(0.8);
         opacity: 0;
     }
+
     100% {
         transform: scale(1);
         opacity: 1;
@@ -262,7 +459,8 @@ body {
 /* Classe que l'on ajoutera en JS pour fermer la fenêtre */
 .pop-out {
     animation: popOut 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    pointer-events: none; /* Empêche de cliquer pendant l'animation */
+    pointer-events: none;
+    /* Empêche de cliquer pendant l'animation */
 }
 
 @keyframes popOut {
@@ -270,8 +468,317 @@ body {
         transform: scale(1);
         opacity: 1;
     }
+
     100% {
         transform: scale(0.8);
         opacity: 0;
     }
+}
+
+/* ═══════════════════════════════════════════════
+   ÉCRAN ANECDOTE — Layout 3 blocs empilés
+═══════════════════════════════════════════════ */
+
+/* ── BLOC 1 : Poster + Infos film (ligne horizontale) ── */
+.film-bloc {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: flex-start;
+    text-align: left;
+    margin-bottom: 16px;
+    background: rgba(255, 255, 255, 0.3);
+    border: var(--border-width) solid var(--border-color);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 4px 4px 0px var(--border-color);
+}
+
+#film-poster {
+    width: 110px;
+    min-width: 110px;
+    border-radius: 10px;
+    border: var(--border-width) solid var(--border-color);
+    box-shadow: 3px 3px 0px var(--border-color);
+    object-fit: cover;
+}
+
+/* Infos à droite du poster */
+.film-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+#film-title-year {
+    font-family: "Police-Ghibli", sans-serif;
+    font-size: 1.05rem;
+    font-weight: bold;
+    margin: 0;
+    line-height: 1.3;
+}
+
+#film-note {
+    font-family: var(--font-lexend);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+#film-trailer {
+    display: inline-block;
+    background-color: var(--bg-color);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 6px 14px;
+    font-family: var(--font-lexend);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    color: #000;
+    box-shadow: 3px 3px 0px var(--border-color);
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+    width: fit-content;
+}
+
+#film-trailer:hover {
+    transform: translateY(-2px);
+    box-shadow: 4px 5px 0px var(--border-color);
+}
+
+#film-overview {
+    font-family: var(--font-lexend);
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: #333;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ── BLOC 2 : Anecdote pleine largeur ── */
+.anecdote-bloc {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.anecdote-label {
+    font-family: "Police-Ghibli", sans-serif;
+    font-size: 1rem;
+    font-weight: bold;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.anecdote-box {
+    background-color: var(--bg-color);
+    border: var(--border-width) solid var(--border-color);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 4px 4px 0px var(--border-color);
+    font-family: "Police-Ghibli", sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* ════════════════════════════════════════════
+   ÉCRAN AUTH (Intégré dans le loader)
+════════════════════════════════════════════ */
+
+/* ── Profil ── */
+#auth-profile {
+    width: 100%;
+    max-width: 620px;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 14px 18px;
+    border: var(--border-width) solid var(--border-color);
+    border-radius: 16px;
+    font-family: var(--font-lexend);
+    font-size: 1rem;
+    background: #ffffff;
+    box-shadow: 3px 3px 0px var(--border-color);
+    outline: none;
+    transition: box-shadow 0.15s ease;
+    box-sizing: border-box;
+}
+
+.auth-input:focus {
+    box-shadow: 5px 5px 0px var(--border-color);
+}
+
+.auth-error {
+    font-family: var(--font-lexend);
+    font-size: 0.85rem;
+    color: #e35050;
+    font-weight: 700;
+    min-height: 20px;
+    margin: 0;
+}
+
+.auth-switch {
+    font-family: var(--font-lexend);
+    font-size: 0.9rem;
+    text-align: center;
+    margin: 0;
+}
+
+.auth-switch span {
+    font-weight: 700;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.auth-switch span:hover {
+    opacity: 0.7;
+}
+
+/* ── Écran profil ── */
+.auth-profile-subtitle {
+    font-family: var(--font-lexend);
+    font-size: 1.15rem;
+    text-align: center;
+    margin-bottom: 32px;
+    color: #555;
+}
+
+/* Grille des 8 avatars */
+.avatar-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 36px;
+}
+
+.avatar-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    padding: 12px;
+    border: var(--border-width) solid var(--border-color);
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 3px 3px 0px var(--border-color);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.avatar-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 4px 6px 0px var(--border-color);
+}
+
+/* Carte sélectionnée → fond vert */
+.avatar-card.selected {
+    background: #8ecc7f;
+    transform: translateY(-4px);
+    box-shadow: 4px 6px 0px var(--border-color);
+}
+
+.avatar-img {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.avatar-emoji {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.avatar-name {
+    font-family: var(--font-lexend);
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* ------------------------------------------- LOADER ------------------------------------------- */
+
+#loader-screen {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #e9e0db;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000; /* Doit être au-dessus de tout */
+    transition: opacity 0.8s ease-in-out;
+}
+
+.loader-content {
+    text-align: center;
+    width: 100%;
+    max-width: 620px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.loader-title {
+    font-family: "Police-Ghibli", sans-serif;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #000;
+}
+
+.loader-bar-container {
+    width: 300px;
+    margin: 0 auto;
+    height: 10px;
+    background: rgba(0, 0, 0, 0.1);
+    border: 2px solid #000;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+#loader-bar {
+    width: 0%;
+    height: 100%;
+    background: #8ecc7f; /* Vert Ghibli */
+    transition: width 0.4s ease-out;
+}
+
+#loader-text {
+    font-family: "Lexend", sans-serif;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+/* Classe pour faire disparaître le loader */
+.loader-hidden {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease-out;
 }
