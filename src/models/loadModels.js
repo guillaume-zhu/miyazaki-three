@@ -6,13 +6,8 @@ import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js"
 import { loadInteractiveModel } from "../utils/loadInteractiveModel.js"
 import { initGameInterface, onModelsLoaded } from "../hud/HUD.js"
 import { setGameReady } from "../main.js"
+import { playBackgroundMusic } from '../utils/sound.js'
 
-// fonction du son:
-function playSound(file, vol = 1.0) {
-  let audio = new Audio(file)
-  audio.volume = vol
-  audio.play()
-}
 
 /**
  * Animations
@@ -124,7 +119,7 @@ export const loadModels = ({
 
     if (launchBtn) {
       launchBtn.onclick = () => {
-        playSound("./sound/ghibli-music-mix.MP3")
+        playBackgroundMusic("/sound/ghibli-music-mix.MP3", 0.4)
         // 1. On cache le loader
         loaderScreen.classList.add("loader-hidden")
 

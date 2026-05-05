@@ -3,6 +3,23 @@ import { chargerProgression } from '../data/progression.js'
 import { showAnecdote, handleAnswer } from './quiz.js'
 import { playSound } from '../utils/sound.js'
 import '../auth/profile.js' // Importer pour attacher les fonctions globales (profil/auth)
+import { toggleAllSounds } from "../utils/sound.js";
+
+
+// fonction désactivation du  son 
+document.addEventListener("DOMContentLoaded", () => {
+    const volIcon = document.getElementById('btn-test-quiz'); 
+    
+    if (volIcon) {
+        volIcon.addEventListener('click', () => {
+            const muted = toggleAllSounds();
+            
+            //Changement visuel de l'icône
+            volIcon.style.opacity = muted ? "0.5" : "1";
+            volIcon.style.filter = muted ? "grayscale(100%)" : "none";
+        });
+    }
+});
 
 // ════════════════════════════════════════════
 // VÉRIFICATION D'ÉTAT (MODÈLES & PROFIL)
