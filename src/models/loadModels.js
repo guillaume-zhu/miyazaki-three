@@ -104,7 +104,7 @@ export const loadModels = ({
       }
       if (loaderText) {
         // On arrondit pour éviter les chiffres à virgule qui bougent trop
-        loaderText.innerText = `Récupération de la mémoire... ${Math.round(progressRatio)}%`
+        loaderText.innerText = `Fragments de mémoire retrouvés... ${Math.round(progressRatio)}%`
       }
     })
   }
