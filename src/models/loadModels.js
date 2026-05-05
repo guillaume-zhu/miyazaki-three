@@ -459,7 +459,7 @@ export const loadModels = ({ scene, interactiveObjects, mixers, modelAnimations 
     outlineBaseThickness: 0.005,
     outlineHoverThickness: 0.01,
     onLoad: (model) => {
-      model.userData.modelKey = "lanterne"
+      model.userData.modelKey = "chateau-laputa"
     },
   })
 
