@@ -54,6 +54,18 @@ export const loadTrees = (scene) => {
       treeE.rotation.y = Math.PI * 0.9
       treeE.scale.setScalar(1.5)
 
+      // Totoro
+      const treeF = tree02Source.clone(true)
+      treeF.position.set(-26, 0, -32)
+      treeF.rotation.y = Math.PI * 0.9
+      treeF.scale.setScalar(1.5)
+
+      // Bonhomme totoro
+      const treeG = tree01Source.clone(true)
+      treeG.position.set(-16, 0, -35)
+      treeG.rotation.y = Math.PI * 0.9
+      treeG.scale.setScalar(3)
+
       // BUISSON
       // Plus a gauche - buisson
       const buissonA = tree08Source.clone(true)
@@ -73,7 +85,13 @@ export const loadTrees = (scene) => {
       buissonC.rotation.y = Math.PI
       buissonC.scale.setScalar(0.425)
 
-      scene.add(treeA, treeB, treeC, treeD, treeE, buissonB)
+      // Arbre a droite - buisson
+      const buissonD = tree08Source.clone(true)
+      buissonD.position.set(18, -5, -28)
+      buissonD.rotation.y = Math.PI * -0.75
+      buissonD.scale.setScalar(0.425)
+
+      scene.add(treeA, treeB, treeC, treeD, treeE, treeF, treeG, buissonB, buissonD)
     },
     undefined,
     (error) => {
