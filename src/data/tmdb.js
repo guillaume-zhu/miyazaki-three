@@ -1,19 +1,7 @@
-const API_URL = 'http://localhost:3000'
+import { FILMS_DATA } from './films.js'
 
-// Stockage en mémoire des films TMDB
-export const FILMS_TMDB = {}
+export const FILMS_TMDB = FILMS_DATA
 
 export async function chargerFilmsTMDB() {
-    try {
-        const response = await fetch(`${API_URL}/api/films/miyazaki`)
-        const films = await response.json()
-
-        for (const film of films) {
-            FILMS_TMDB[film.id] = film
-        }
-
-        console.log('✅ Films TMDB chargés :', Object.keys(FILMS_TMDB).length, 'films')
-    } catch (error) {
-        console.error('❌ Impossible de charger les films TMDB :', error)
-    }
+    console.log('✅ Films TMDB chargés (statique) :', Object.keys(FILMS_TMDB).length, 'films')
 }

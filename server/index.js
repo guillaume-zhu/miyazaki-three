@@ -12,7 +12,7 @@ import Player from './models/Player.js'
 
 const app = express()
 
-app.use(cors({ origin: 'http://localhost:5173' }))
+app.use(cors())
 app.use(express.json()) // pour lire le body des requêtes POST
 
 const PORT = process.env.PORT || 3000
