@@ -1,92 +1,110 @@
 <!doctype html>
 <html lang="fr-FR">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>MiyazaThree</title>
-        <meta
-            name="description"
-            content="En arrivant dans ce lycéé², tu découvres une forge secrète. En l'activant, tu libères un esprit qui te propose de relever un défi : deviner dans lequel de ces films cet objet est présent."
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MiyazaThree</title>
+    <meta
+      name="description"
+      content="En arrivant dans ce lycéé², tu découvres une forge secrète. En l'activant, tu libères un esprit qui te propose de relever un défi : deviner dans lequel de ces films cet objet est présent."
+    />
+    <link rel="stylesheet" href="./src/style.css" />
+    <link rel="stylesheet" href="./src/hud/HUD.css" />
+    <link rel="shortcut icon" href="./img/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script type="module" src="./src/hud/HUD.js"></script>
+  </head>
+  <body>
+    <canvas class="webgl"></canvas>
+    <script type="module" src="/src/main.js"></script>
+
+    <!-- 2. Choix avatar + pseudo (déplacé dans le loader) -->
+    <div id="loader-screen">
+      <div class="loader-content">
+        <img src="/img/logo.svg" alt="MiyazaThree Logo" class="loader-logo" />
+
+        <!-- La barre et le texte de progression -->
+        <div id="loader-progress-group">
+          <div class="loader-bar-container">
+            <div id="loader-bar"></div>
+          </div>
+          <p id="loader-text">Les souvenirs refont surface... 0%</p>
+        </div>
+
+        <section id="auth-profile" class="quiz-container" style="display: none; margin-top: 20px">
+          <h1 class="quiz-title">Ton identité</h1>
+          <p class="auth-profile-subtitle">Choisis ton avatar et ton pseudo</p>
+
+          <!-- Grille des 8 avatars -->
+          <div class="avatar-grid">
+            <div class="avatar-card" data-avatar="avatar-1" onclick="selectAvatar('avatar-1')">
+              <img src="/avatar/avatar-1.svg" alt="Avatar Totoro" class="avatar-img" />
+            </div>
+            <div class="avatar-card" data-avatar="avatar-2" onclick="selectAvatar('avatar-2')">
+              <img src="/avatar/avatar-2.svg" alt="Avatar Calcifer" class="avatar-img" />
+            </div>
+            <div class="avatar-card" data-avatar="avatar-3" onclick="selectAvatar('avatar-3')">
+              <img src="/avatar/avatar-3.svg" alt="Avatar Haku" class="avatar-img" />
+            </div>
+            <div class="avatar-card" data-avatar="avatar-4" onclick="selectAvatar('avatar-4')">
+              <img src="/avatar/avatar-4.svg" alt="Avatar Ponyo" class="avatar-img" />
+            </div>
+            <div class="avatar-card" data-avatar="avatar-5" onclick="selectAvatar('avatar-5')">
+              <img src="/avatar/avatar-5.svg" alt="Avatar Porco" class="avatar-img" />
+            </div>
+            <div class="avatar-card" data-avatar="avatar-6" onclick="selectAvatar('avatar-6')">
+              <img src="/avatar/avatar-6.svg" alt="Avatar 6" class="avatar-img" />
+            </div>
+            <div class="avatar-card" data-avatar="avatar-7" onclick="selectAvatar('avatar-7')">
+              <img src="/avatar/avatar-7.svg" alt="Avatar 7" class="avatar-img" />
+            </div>
+            <div class="avatar-card" data-avatar="avatar-8" onclick="selectAvatar('avatar-8')">
+              <img src="/avatar/avatar-8.svg" alt="Avatar 8" class="avatar-img" />
+            </div>
+          </div>
+
+          <div class="auth-form">
+            <input
+              type="text"
+              id="profile-username"
+              placeholder="Ton pseudo (2-20 caractères)"
+              class="auth-input"
+              maxlength="20"
+            />
+            <p id="profile-error" class="auth-error"></p>
+            <button class="submit-btn" onclick="handleProfileSetup()">Valider</button>
+          </div>
+        </section>
+
+        <!-- Le bouton qui apparaîtra à la fin -->
+        <button id="launch-btn" style="display: none; margin-top: 20px" class="submit-btn">
+          Entrer dans le monde
+        </button>
+      </div>
+    </div>
+    <header>
+      <div class="icon-container">
+        <img
+          id="btn-test-quiz"
+          src="./img/volume-icon.svg"
+          alt="icon de volume"
+          class="icon-left"
+          style="cursor: pointer"
         />
-        <link rel="stylesheet" href="./src/style.css" />
-        <link rel="stylesheet" href="./src/hud/HUD.css" />
-        <link rel="shortcut icon" href="./img/favicon.svg" type="image/svg+xml" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap"
-            rel="stylesheet"
-        />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700&display=swap"
-            rel="stylesheet"
-        />
-        <script type="module" src="./src/hud/HUD.js"></script>
-    </head>
-    <body>
-        <canvas class="webgl"></canvas>
-        <script type="module" src="/src/main.js"></script>
-
-        <!-- 2. Choix avatar + pseudo (déplacé dans le loader) -->
-        <div id="loader-screen">
-            <div class="loader-content">
-                <img src="/img/logo.svg" alt="MiyazaThree Logo" class="loader-logo" />
-
-                <!-- La barre et le texte de progression -->
-                <div id="loader-progress-group">
-                    <div class="loader-bar-container">
-                        <div id="loader-bar"></div>
-                    </div>
-                    <p id="loader-text">Récupération de la mémoire... 0%</p>
-                </div>
-
-                <section id="auth-profile" class="quiz-container" style="display: none; margin-top: 20px;">
-                    <h1 class="quiz-title">Ton identité</h1>
-                    <p class="auth-profile-subtitle">Choisis ton avatar et ton pseudo</p>
-
-                    <!-- Grille des 8 avatars -->
-                    <div class="avatar-grid">
-                        <div class="avatar-card" data-avatar="avatar-1" onclick="selectAvatar('avatar-1')">
-                            <img src="/avatar/avatar-1.svg" alt="Avatar Totoro" class="avatar-img" />
-                        </div>
-                        <div class="avatar-card" data-avatar="avatar-2" onclick="selectAvatar('avatar-2')">
-                            <img src="/avatar/avatar-2.svg" alt="Avatar Calcifer" class="avatar-img" />
-                        </div>
-                        <div class="avatar-card" data-avatar="avatar-3" onclick="selectAvatar('avatar-3')">
-                            <img src="/avatar/avatar-3.svg" alt="Avatar Haku" class="avatar-img" />
-                        </div>
-                        <div class="avatar-card" data-avatar="avatar-4" onclick="selectAvatar('avatar-4')">
-                            <img src="/avatar/avatar-4.svg" alt="Avatar Ponyo" class="avatar-img" />
-                        </div>
-                        <div class="avatar-card" data-avatar="avatar-5" onclick="selectAvatar('avatar-5')">
-                            <img src="/avatar/avatar-5.svg" alt="Avatar Porco" class="avatar-img" />
-                        </div>
-                        <div class="avatar-card" data-avatar="avatar-6" onclick="selectAvatar('avatar-6')">
-                            <img src="/avatar/avatar-6.svg" alt="Avatar 6" class="avatar-img" />
-                        </div>
-                        <div class="avatar-card" data-avatar="avatar-7" onclick="selectAvatar('avatar-7')">
-                            <img src="/avatar/avatar-7.svg" alt="Avatar 7" class="avatar-img" />
-                        </div>
-                        <div class="avatar-card" data-avatar="avatar-8" onclick="selectAvatar('avatar-8')">
-                            <img src="/avatar/avatar-8.svg" alt="Avatar 8" class="avatar-img" />
-                        </div>
-                    </div>
-
-                    <div class="auth-form">
-                        <input type="text" id="profile-username" placeholder="Ton pseudo (2-20 caractères)" class="auth-input" maxlength="20" />
-                        <p id="profile-error" class="auth-error"></p>
-                        <button class="submit-btn" onclick="handleProfileSetup()">Valider</button>
-                    </div>
-                </section>
-
-                <!-- Le bouton qui apparaîtra à la fin -->
-                <button
-                    id="launch-btn"
-                    style="display: none; margin-top: 20px;"
-                    class="submit-btn"
-                >
-                    Entrer dans le monde
-                </button>
+        <div class="icon-right">
+          <div class="player-hud">
+            <div class="player-score">
+              <img src="./img/puzzle-vector.png" alt="icone de puzzle" class="puzzle-icon" />
+              <p class="score-counter">0 / 25</p>
             </div>
         </div>
         <header>
@@ -119,88 +137,64 @@
                     </div>
                 </div>
             </div>
-        </header>
-        <main style="display: none">
-            <div
-                id="hud-overlay"
-                style="position: fixed; inset: 0; z-index: 998; cursor: pointer"
-            ></div>
-            <div id="game-interface">
-                <section id="screen-rules" class="quiz-container">
-                    <h1 class="quiz-title">COMMENT FAIRE</h1>
-                    <div class="rules">
-                        <ul>
-                            <li>
-                                1. Trouve les références de ta mémoire perdue
-                            </li>
-                            <li>
-                                2. Clique dessus et essaye de te rappeler d'où
-                                ils viennent
-                            </li>
-                            <li>
-                                3. Récolte toutes les pièces pour découvrir des
-                                surprises
-                            </li>
-                        </ul>
-                    </div>
-                    <button class="submit-btn" onclick="closeRules()">
-                        retrouver la mémoire
-                    </button>
-                </section>
-
-                <section
-                    id="screen-quiz"
-                    class="quiz-container"
-                    style="display: none"
-                >
-                    <div class="flex-cross">
-                        <button id="hud-close">✕</button>
-                    </div>
-                    <h1 class="quiz-title">
-                        DANS LEQUEL DE CES FILMS CET OBJET EST PRÉSENT ?
-                    </h1>
-                    <div class="model-viewport" id="question-image"></div>
-                    <div class="answers-group" id="answers-list"></div>
-                </section>
-
-                <section
-                    id="screen-anecdote"
-                    class="quiz-container"
-                    style="display: none"
-                >
-                    <h1 class="quiz-title">ANECDOTE</h1>
-
-                    <!-- BLOC 1 : Poster (gauche) + infos film (droite) -->
-                    <div class="film-bloc">
-                        <img id="film-poster" src="" alt="Affiche du film" />
-                        <div class="film-info">
-                            <p id="film-title-year"></p>
-                            <p id="film-note"></p>
-                            <a
-                                id="film-trailer"
-                                href="#"
-                                target="_blank"
-                                rel="noopener"
-                            >
-                                ▶ Bande annonce
-                            </a>
-                            <p id="film-overview"></p>
-                        </div>
-                    </div>
-
-                    <!-- BLOC 2 : Anecdote pleine largeur -->
-                    <div class="anecdote-bloc">
-                        <h2 class="anecdote-label">LE SAVIEZ-VOUS ?</h2>
-                        <div class="anecdote-box">
-                            <p id="anecdote-text"></p>
-                        </div>
-                    </div>
-
-                    <button class="submit-btn" onclick="finishSequenceWithTrophy()">
-                        continuer
-                    </button>
-                </section>
+            <div id="player-dropdown" class="player-dropdown" style="display: none">
+              <button class="change-player-btn" onclick="handleChangePlayer()">
+                Changer de joueur
+              </button>
             </div>
-        </main>
-    </body>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main style="display: none">
+      <div id="hud-overlay" style="position: fixed; inset: 0; z-index: 998; cursor: pointer"></div>
+      <div id="game-interface">
+        <section id="screen-rules" class="quiz-container">
+          <h1 class="quiz-title">COMMENT JOUER</h1>
+          <div class="rules">
+            <ul>
+              <li>1. Des fragments de mémoire sont dispersés. Retrouve-les.</li>
+              <li>2. Clique sur chaque fragment et retrouve son film d’origine.</li>
+              <li>3. Réunis les fragments et découvre les récits qu’ils renferment.</li>
+            </ul>
+          </div>
+          <button class="submit-btn" onclick="closeRules()">Commencer l’exploration</button>
+        </section>
+
+        <section id="screen-quiz" class="quiz-container" style="display: none">
+          <div class="flex-cross">
+            <button id="hud-close">✕</button>
+          </div>
+          <h1 class="quiz-title">DANS LEQUEL DE CES FILMS CET OBJET EST PRÉSENT ?</h1>
+          <div class="model-viewport" id="question-image"></div>
+          <div class="answers-group" id="answers-list"></div>
+        </section>
+
+        <section id="screen-anecdote" class="quiz-container" style="display: none">
+          <h1 class="quiz-title">ANECDOTE</h1>
+
+          <!-- BLOC 1 : Poster (gauche) + infos film (droite) -->
+          <div class="film-bloc">
+            <img id="film-poster" src="" alt="Affiche du film" />
+            <div class="film-info">
+              <p id="film-title-year"></p>
+              <p id="film-note"></p>
+              <a id="film-trailer" href="#" target="_blank" rel="noopener"> ▶ Bande annonce </a>
+              <p id="film-overview"></p>
+            </div>
+          </div>
+
+          <!-- BLOC 2 : Anecdote pleine largeur -->
+          <div class="anecdote-bloc">
+            <h2 class="anecdote-label">LE SAVIEZ-VOUS ?</h2>
+            <div class="anecdote-box">
+              <p id="anecdote-text"></p>
+            </div>
+          </div>
+
+          <button class="submit-btn" onclick="finishSequenceWithTrophy()">continuer</button>
+        </section>
+      </div>
+    </main>
+  </body>
 </html>

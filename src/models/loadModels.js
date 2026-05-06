@@ -98,7 +98,7 @@ export const loadModels = ({
       }
       if (loaderText) {
         // On arrondit pour éviter les chiffres à virgule qui bougent trop
-        loaderText.innerText = `Récupération de la mémoire... ${Math.round(progressRatio)}%`
+        loaderText.innerText = `Fragments de mémoire retrouvés... ${Math.round(progressRatio)}%`
       }
     })
   }
@@ -986,7 +986,7 @@ export const loadModels = ({
       model.traverse((child) => {
         if (!child.isMesh || !child.material) return
 
-        child.material.color.multiplyScalar(1.5)
+        child.material.color.multiplyScalar(0.9)
       })
     },
   })
@@ -1010,7 +1010,7 @@ export const loadModels = ({
       model.traverse((child) => {
         if (!child.isMesh || !child.material) return
         child.material = child.material.clone()
-        child.material.color.multiplyScalar(1.5)
+        child.material.color.multiplyScalar(0.9)
       })
     },
   })
@@ -1058,7 +1058,7 @@ export const loadModels = ({
       model.traverse((child) => {
         if (!child.isMesh || !child.material) return
 
-        child.material.color.multiplyScalar(1.5)
+        child.material.color.multiplyScalar(0.9)
       })
     },
   })
@@ -1082,7 +1082,7 @@ export const loadModels = ({
       model.traverse((child) => {
         if (!child.isMesh || !child.material) return
 
-        child.material.color.multiplyScalar(1.5)
+        child.material.color.multiplyScalar(0.9)
       })
     },
   })
@@ -1106,7 +1106,7 @@ export const loadModels = ({
       model.traverse((child) => {
         if (!child.isMesh || !child.material) return
 
-        child.material.color.multiplyScalar(1.5)
+        child.material.color.multiplyScalar(0.9)
       })
     },
   })
@@ -1130,7 +1130,7 @@ export const loadModels = ({
       model.traverse((child) => {
         if (!child.isMesh || !child.material) return
 
-        child.material.color.multiplyScalar(1.5)
+        child.material.color.multiplyScalar(0.9)
       })
     },
   })

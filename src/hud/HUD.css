@@ -23,8 +23,10 @@ body {
     margin: 0;
     background-size: cover;
     font-family: "Police-Ghibli", sans-serif;
-    cursor: image-set(url("/img/Figma-Cursor.png") 1x,
-            url("/img/Figma-Cursor.png") 2x);
+    cursor: image-set(
+        url("/img/Figma-Cursor.png") 1x,
+        url("/img/Figma-Cursor.png") 2x
+    );
 
     ul {
         list-style-type: none;
@@ -165,7 +167,9 @@ body {
     cursor: pointer;
     width: 100%;
     white-space: nowrap;
-    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    transition:
+        transform 0.12s ease,
+        box-shadow 0.12s ease;
 }
 
 .change-player-btn:hover {
@@ -368,7 +372,6 @@ body {
 }
 
 @keyframes shake {
-
     0%,
     100% {
         transform: translateX(0);
@@ -692,7 +695,10 @@ body {
     background: #fff;
     box-shadow: 3px 3px 0px var(--border-color);
     cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        background 0.15s ease;
 }
 
 .avatar-card:hover {
@@ -707,7 +713,7 @@ body {
 
 /* Carte sélectionnée → effet "pressé" et couleur différente */
 .avatar-card.selected {
-    background: #e9e0db;
+    background: #3fa7dd;
     transform: translateY(2px) scale(0.98);
     box-shadow: inset 4px 4px 0px rgba(0, 0, 0, 0.1), 0px 0px 0px var(--border-color);
     border-color: #000;
