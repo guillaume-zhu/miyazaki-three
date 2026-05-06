@@ -1,7 +1,7 @@
 import { state } from '../state/gameState.js'
 import { chargerProgression } from '../data/progression.js'
 import { showAnecdote, handleAnswer } from './quiz.js'
-import { playSound } from '../utils/sound.js'
+import { playSound, toggleAllSounds, getMuted } from '../utils/sound.js'
 import '../auth/profile.js' // Importer pour attacher les fonctions globales (profil/auth)
 import { loadSavedTheme, loadSavedBadge } from './settings.js'
 
@@ -150,6 +150,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // Appliquer les préférences sauvegardées dès le démarrage
     loadSavedTheme()
     loadSavedBadge()
+
+    // ── Bouton volume (haut-gauche) ──
+    const volumeBtn = document.getElementById('btn-test-quiz')
+    if (volumeBtn) {
+        const _updateVolumeBtn = () => {
+            const muted = getMuted()
+            const label = document.getElementById('volume-label')
+            if (label) label.textContent = muted ? 'Désactivée' : 'Activée'
+            volumeBtn.classList.toggle('toggle-on', !muted)
+            volumeBtn.classList.toggle('toggle-off', muted)
+            volumeBtn.title = muted ? 'Activer le son' : 'Couper le son'
+        }
+        volumeBtn.addEventListener('click', () => {
+            toggleAllSounds()
+            _updateVolumeBtn()
+        })
+        _updateVolumeBtn()
+    }
 
     const savedUsername = localStorage.getItem('miyaza_username')
     if (savedUsername) {

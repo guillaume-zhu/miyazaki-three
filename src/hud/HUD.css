@@ -40,8 +40,37 @@ body {
 
 .icon-left {
     position: absolute;
-    left: 100px;
-    top: 40px;
+    left: 30px;
+    top: 30px;
+}
+
+/* ── Volume toggle button (top-left) ── */
+.volume-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 2px solid #000;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-family: var(--font-lexend);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 2px 2px 0px #000;
+    transition:
+        transform 0.12s ease,
+        box-shadow 0.12s ease;
+}
+
+.volume-toggle-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 3px 4px 0px #000;
+}
+
+.volume-icon-img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
 }
 
 .icon-right {
@@ -373,7 +402,7 @@ body {
 
 /* Bonne réponse → fond vert/accent */
 .answer-correct {
-    background-color: var(--accent-color) !important;
+    background-color: #8ecc7f !important;
     border-color: #000000;
     pointer-events: none;
 }
@@ -878,7 +907,7 @@ body {
 .milestone-icon-box {
     width: 100px;
     height: 100px;
-    background: var(--accent-color);
+    background: #d6cdc8;
     border: 4px solid #000000;
     border-radius: 20px;
     box-shadow: 4px 4px 0px #000000;
@@ -887,6 +916,13 @@ body {
     align-items: center;
     font-size: 3.5rem;
     margin-bottom: 24px;
+    overflow: hidden;
+}
+
+.milestone-avatar-img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
 }
 
 .milestone-reward {
@@ -963,8 +999,8 @@ body {
 /* --- Tooltip Externe — à gauche du pseudo --- */
 .milestone-tooltip {
     position: fixed;
-    top: 36px;
-    right: 248px;
+    top: 80px;
+    right: 210px;
     background: var(--bg-color);
     border: 3px solid #000000;
     border-radius: 12px;
@@ -1428,7 +1464,7 @@ body {
 /* ── Bouton sauvegarde ── */
 .settings-save-btn {
     width: 100%;
-    margin-top: 4px;
+    margin-top: 16px;
 }
 
 /* Responsive */

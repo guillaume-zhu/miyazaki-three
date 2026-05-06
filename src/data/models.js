@@ -200,10 +200,10 @@ export const MODELS_DATA = {
         isFound: false,
     },
     "sceau": {
-        filmTmdbId: 129,
+        filmTmdbId: 12429,
         imageObjet: "./img/quiz/ponyo-sceau.webp",
-        choix: ["Le Château Ambulant", "Le Voyage de Chihiro", "Ponyo"],
-        bonneReponse: "Ponyo",
+        choix: ["Le Château Ambulant", "Le Voyage de Chihiro", "Ponyo sur la falaise"],
+        bonneReponse: "Ponyo sur la falaise",
         anecdote: "Miyazaki a confié que Ponyo était en partie une façon de se réconcilier avec l’animation après des années de productions épuisantes. Il voulait retrouver le plaisir pur du dessin, sans message trop lourd, juste la joie de mettre des images en mouvement.",
         isFound: false,
     },
