@@ -1499,9 +1499,10 @@ body {
 }
 
 .settings-icon-svg {
-    width: 36px;
-    height: 36px;
+    width: 20px;
+    height: 20px;
     vertical-align: middle;
+    margin-right: 3px;
 }
 
 .badge-icon {

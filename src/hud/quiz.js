@@ -83,12 +83,22 @@ window.finishSequenceWithTrophy = function () {
 
 // ── Gestionnaire de pile de toasts ──
 const _toastStack = []
-const TOAST_BASE_TOP = 110  // px — position du premier toast
-const TOAST_STEP    = 82    // px — hauteur toast (64px) + gap (18px)
+const TOAST_STEP = 82    // px — hauteur toast (64px) + gap (18px)
+
+function _getToastBaseTop() {
+    // Ancre dynamiquement sous la player card (top-right HUD)
+    const playerHud = document.querySelector('.player-hud')
+    if (playerHud) {
+        const rect = playerHud.getBoundingClientRect()
+        return rect.bottom + 14  // 14px de marge sous la card
+    }
+    return 130  // fallback
+}
 
 function _reflowToasts() {
+    const base = _getToastBaseTop()
     _toastStack.forEach((t, i) => {
-        t.style.top = (TOAST_BASE_TOP + i * TOAST_STEP) + 'px'
+        t.style.top = (base + i * TOAST_STEP) + 'px'
     })
 }
 
@@ -104,7 +114,7 @@ export function showTrophyNotification() {
     `
 
     // Position dans la pile avant d'ajouter au DOM
-    toast.style.top = (TOAST_BASE_TOP + _toastStack.length * TOAST_STEP) + 'px'
+    toast.style.top = (_getToastBaseTop() + _toastStack.length * TOAST_STEP) + 'px'
     _toastStack.push(toast)
     document.body.appendChild(toast)
 

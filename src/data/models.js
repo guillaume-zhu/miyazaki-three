@@ -240,7 +240,7 @@ export const MODELS_DATA = {
         isFound: false,
     },
     "chateau-laputa":{
-        filmTmdbId: 8392,
+        filmTmdbId: 10515,
         imageObjet: "./img/quiz/laputa.jpg",
         choix: ["Mon Voisin Totoro", "Le Voyage de Chihiro", "Le Château dans le Ciel"],
         bonneReponse: "Le Château dans le Ciel",
