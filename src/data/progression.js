@@ -23,7 +23,7 @@ export function chargerProgression() {
     }
 
     const el = document.querySelector('.score-counter')
-    if (el) el.innerText = `${state.score} / 25`
+    if (el) el.innerText = `${state.score} / 32`
 
     afficherPseudo()
     return true
@@ -71,7 +71,7 @@ export async function chargerProgressionLegacy() {
         }
 
         const el = document.querySelector('.score-counter')
-        if (el) el.innerText = `${state.score} / 25`
+        if (el) el.innerText = `${state.score} / 32`
 
         const meRes = await fetch(`${API_URL}/api/auth/me`, {
             headers: { Authorization: `Bearer ${token}` }

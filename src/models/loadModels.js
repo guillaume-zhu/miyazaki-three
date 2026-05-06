@@ -270,8 +270,7 @@ export const loadModels = ({
 
     if (launchBtn) {
       launchBtn.onclick = () => {
-        playBackgroundMusic("/sound/ghibli-music-mix.MP3", 0.4)
-        // 1. On cache le loader
+        initMusic()
         loaderScreen.classList.add("loader-hidden")
 
         // 2. ON APPELLE LES RÈGLES (C'est ce qui manquait !)
@@ -636,6 +635,9 @@ export const loadModels = ({
     showHitbox: false,
     outlineBaseThickness: 0.005,
     outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.userData.modelKey = "chateau-ambulant"
+    },
   })
 
   // ---- Le Chateau laputa ----

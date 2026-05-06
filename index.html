@@ -85,55 +85,80 @@
           </div>
         </section>
 
-        <!-- Le bouton qui apparaîtra à la fin -->
-        <button id="launch-btn" style="display: none; margin-top: 20px" class="submit-btn">
-          Entrer dans le monde
-        </button>
-      </div>
-    </div>
-    <header>
-      <div class="icon-container">
-        <img
-          id="btn-test-quiz"
-          src="./img/volume-icon.svg"
-          alt="icon de volume"
-          class="icon-left"
-          style="cursor: pointer"
-        />
-        <div class="icon-right">
-          <div class="player-hud">
-            <div class="player-score">
-              <img src="./img/puzzle-vector.png" alt="icone de puzzle" class="puzzle-icon" />
-              <p class="score-counter">0 / 25</p>
+                <!-- Le bouton qui apparaîtra à la fin -->
+                <button
+                    id="launch-btn"
+                    style="display: none; margin-top: 20px;"
+                    class="submit-btn"
+                >
+                    Entrer dans le monde
+                </button>
             </div>
-            <div class="player-card" onclick="togglePlayerDropdown()">
-              <img id="header-avatar" src="" alt="avatar" class="header-avatar-img" />
-              <p id="header-pseudo" class="header-pseudo"></p>
-              <span class="dropdown-arrow">▾</span>
-            </div>
-            <div id="player-dropdown" class="player-dropdown" style="display: none">
-              <button class="change-player-btn" onclick="handleChangePlayer()">
-                Changer de joueur
-              </button>
-            </div>
-          </div>
         </div>
-      </div>
-    </header>
-    <main style="display: none">
-      <div id="hud-overlay" style="position: fixed; inset: 0; z-index: 998; cursor: pointer"></div>
-      <div id="game-interface">
-        <section id="screen-rules" class="quiz-container">
-          <h1 class="quiz-title">COMMENT JOUER</h1>
-          <div class="rules">
-            <ul>
-              <li>1. Des fragments de mémoire sont dispersés. Retrouve-les.</li>
-              <li>2. Clique sur chaque fragment et retrouve son film d’origine.</li>
-              <li>3. Réunis les fragments et découvre les récits qu’ils renferment.</li>
-            </ul>
-          </div>
-          <button class="submit-btn" onclick="closeRules()">Commencer l’exploration</button>
-        </section>
+        <header>
+            <div class="icon-container">
+                <button
+                    id="btn-test-quiz"
+                    class="icon-left volume-toggle-btn toggle-on"
+                >
+                    <img src="./img/volume-icon.svg" alt="" class="volume-icon-img" />
+                    <span id="volume-label">Activée</span>
+                </button>
+                <div class="icon-right">
+                    <div class="player-hud">
+                        <div class="player-score">
+                            <img src="./img/puzzle-vector.png" alt="icone de puzzle" class="puzzle-icon" />
+                            <p class="score-counter">0 / 32</p>
+                        </div>
+                        <div class="player-card" onclick="togglePlayerDropdown()">
+                            <img id="header-avatar" src="" alt="avatar" class="header-avatar-img" />
+                            <div>
+                                <p id="header-pseudo" class="header-pseudo"></p>
+                                <p id="header-badge"></p>
+                            </div>
+                            <span class="dropdown-arrow">▾</span>
+                        </div>
+                        <div id="player-dropdown" class="player-dropdown" style="display:none">
+                            <button class="settings-btn" onclick="openSettings()"><img src="/assets/settings.svg" class="settings-icon-svg" alt="" /> Paramètres</button>
+                            <button class="change-player-btn" onclick="handleChangePlayer()">Changer de joueur</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main style="display: none">
+            <div
+                id="hud-overlay"
+                style="position: fixed; inset: 0; z-index: 998; cursor: pointer"
+            ></div>
+            <div id="game-interface">
+                <section id="screen-rules" class="quiz-container">
+                    <h1 class="quiz-title">COMMENT FAIRE</h1>
+                    <div class="rules">
+                        <ul>
+                            <li>
+                                1. Trouve les références de ta mémoire perdue
+                            </li>
+                            <li>
+                                2. Maintiens le clic pour faire tourner la caméra et explorer les alentours
+                            </li>
+                            <li>
+                                3. Scrolles pour zoomer sur les objets qui t'entourent
+                            </li>
+                            <li>
+                                4. Clique dessus et essaye de te rappeler d'où
+                                ils viennent
+                            </li>
+                            <li>
+                                5. Récolte toutes les pièces pour découvrir des
+                                surprises
+                            </li>
+                        </ul>
+                    </div>
+                    <button class="submit-btn" onclick="closeRules()">
+                        retrouver la mémoire
+                    </button>
+                </section>
 
         <section id="screen-quiz" class="quiz-container" style="display: none">
           <div class="flex-cross">

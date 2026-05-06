@@ -57,6 +57,7 @@ let isGameReady = false
 window.addEventListener("click", () => {
   // if (!canClickObjects) return; // BLOQUE TOUT TANT QUE PAS PRÊT
   if (!isGameReady) return
+  if (state.hudOpen) return
   if (cameraControls?.hasMoved) {
     return
   }
