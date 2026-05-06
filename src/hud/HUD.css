@@ -85,7 +85,9 @@ body {
     border-radius: 12px;
     padding: 7px 14px;
     box-shadow: 2px 2px 0px #000;
-    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    transition:
+        transform 0.12s ease,
+        box-shadow 0.12s ease;
 }
 
 .player-card:hover {
@@ -195,7 +197,8 @@ body {
     z-index: 9999;
     box-shadow: 4px 4px 0px #000;
     font-family: "Police-Ghibli", sans-serif;
-    transition: right 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    transition:
+        right 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275),
         top 0.3s ease;
 }
 
@@ -266,7 +269,7 @@ body {
     font-family: "Police-Ghibli", sans-serif;
 }
 
-/* Zone 3D */
+/* image du quiz */
 .model-viewport {
     /* background: #000; */
     background: url("/img/Arc-Mahito-ex.png") no-repeat center center;
@@ -281,6 +284,20 @@ body {
     font-size: 32px;
     -webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: #000;
+    /* --- AJOUTE CES LIGNES POUR LE FORMAT PAYSAGE --- */
+
+    /* 'contain' force l'image à tenir entièrement dans la div sans être coupée */
+    background-size: contain;
+
+    /* Empêche l'image de se répéter si elle est plus petite que la div */
+    background-repeat: no-repeat;
+
+    /* Centre l'image horizontalement et verticalement */
+    background-position: center center;
+
+    /* Optionnel : ajoute une couleur de fond neutre pour remplir les bords 
+       si l'image originale n'est pas au format paysage */
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
 #canvas-container {
@@ -715,7 +732,9 @@ body {
 .avatar-card.selected {
     background: #3fa7dd;
     transform: translateY(2px) scale(0.98);
-    box-shadow: inset 4px 4px 0px rgba(0,0,0,0.1), 0px 0px 0px var(--border-color);
+    box-shadow:
+        inset 4px 4px 0px rgba(0, 0, 0, 0.1),
+        0px 0px 0px var(--border-color);
     border-color: #000;
 }
 
@@ -965,7 +984,9 @@ body {
     gap: 8px;
     opacity: 0;
     transform: translateY(-10px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
     pointer-events: none;
 }
 
@@ -976,7 +997,7 @@ body {
 
 /* Petite flèche en CSS pointant vers le haut */
 .milestone-tooltip::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -10px;
     right: 20px;
@@ -988,7 +1009,7 @@ body {
 }
 
 .milestone-tooltip::after {
-    content: '';
+    content: "";
     position: absolute;
     top: -6px;
     right: 22px;
@@ -1038,7 +1059,9 @@ body {
     width: 100%;
     white-space: nowrap;
     margin-bottom: 6px;
-    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    transition:
+        transform 0.12s ease,
+        box-shadow 0.12s ease;
 }
 
 .settings-btn:hover {
@@ -1237,14 +1260,20 @@ body {
     font-size: 0.85rem;
     font-weight: 700;
     cursor: pointer;
-    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    transition:
+        transform 0.12s ease,
+        box-shadow 0.12s ease;
     box-shadow: 2px 2px 0px #000;
 }
 
 .toggle-on {
     background: var(--accent-color);
     color: #fff;
-    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    text-shadow:
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
 }
 
 .toggle-off {
@@ -1282,7 +1311,9 @@ body {
     cursor: pointer;
     background: var(--bg-color);
     box-shadow: 2px 2px 0px var(--border-color);
-    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    transition:
+        transform 0.12s ease,
+        box-shadow 0.12s ease;
 }
 
 .settings-badge-option:hover {
@@ -1293,7 +1324,9 @@ body {
 .badge-selected {
     background: var(--bg-color);
     transform: translateY(2px) !important;
-    box-shadow: inset 2px 2px 0px rgba(0, 0, 0, 0.15), 0px 0px 0px #000 !important;
+    box-shadow:
+        inset 2px 2px 0px rgba(0, 0, 0, 0.15),
+        0px 0px 0px #000 !important;
 }
 
 /* ── Theme list ── */
@@ -1317,7 +1350,9 @@ body {
     align-items: center;
     gap: 8px;
     box-shadow: 3px 3px 0px #000;
-    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    transition:
+        transform 0.12s ease,
+        box-shadow 0.12s ease;
 }
 
 .settings-theme-option:hover {
@@ -1327,7 +1362,9 @@ body {
 
 .theme-selected {
     transform: translateY(2px) !important;
-    box-shadow: inset 2px 2px 0px rgba(0, 0, 0, 0.2), 0px 0px 0px #000 !important;
+    box-shadow:
+        inset 2px 2px 0px rgba(0, 0, 0, 0.2),
+        0px 0px 0px #000 !important;
     outline: 3px solid #000;
     outline-offset: 2px;
 }
