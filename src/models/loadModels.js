@@ -6,6 +6,7 @@ import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js"
 import { loadInteractiveModel } from "../utils/loadInteractiveModel.js"
 import { initGameInterface, onModelsLoaded } from "../hud/HUD.js"
 import { setGameReady } from "../main.js"
+import { playBackgroundMusic } from '../utils/sound.js'
 
 // fonction du son:
 function playSound(file, vol = 1.0) {
@@ -124,8 +125,7 @@ export const loadModels = ({
 
     if (launchBtn) {
       launchBtn.onclick = () => {
-        playSound("./sound/Ghibli-sounds-shortened.MP3")
-        // 1. On cache le loader
+        playBackgroundMusic("/sound/ghibli-music-mix.MP3", 0.4)
         loaderScreen.classList.add("loader-hidden")
 
         // 2. ON APPELLE LES RÈGLES (C'est ce qui manquait !)
