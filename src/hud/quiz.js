@@ -99,7 +99,7 @@ export function showTrophyNotification() {
         <img src="/img/trophe.svg" alt="trophée" class="trophy-icon" />
         <div class="trophy-content">
             <p class="trophy-title">Souvenir retrouvé !</p>
-            <p class="trophy-count">${state.score} / 25 souvenirs</p>
+            <p class="trophy-count">${state.score} / 32 souvenirs</p>
         </div>
     `
 
@@ -137,7 +137,7 @@ export function updateScore() {
         state.currentData.isFound = true
 
         const el = document.querySelector('.score-counter')
-        if (el) el.innerText = `${state.score} / 25`
+        if (el) el.innerText = `${state.score} / 32`
 
         // On sauvegarde en base à chaque nouvel objet trouvé
         sauvegarderProgression()

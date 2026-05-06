@@ -1,6 +1,6 @@
 import { state } from '../state/gameState.js'
 import { afficherPseudo } from '../auth/profile.js'
-import { toggleMusic, isMusicEnabled } from '../utils/music.js'
+import { toggleAllSounds, getMuted, nextTrack, prevTrack, getCurrentTrackLabel } from '../utils/sound.js'
 
 // ── Seuils de déblocage (synchronisés avec milestones.js) ──
 const UNLOCK = { music: 5, avatar: 10, badge: 15, theme: 20 }
@@ -99,7 +99,7 @@ function sectionWrap(id, emoji, label, threshold, score, contentHTML) {
                     <span class="settings-emoji">${emoji}</span>
                     <div>
                         <p class="settings-section-label">${label}</p>
-                        ${!unlocked ? `<p class="settings-lock-hint">Débloqué à ${threshold} / 25 souvenirs</p>` : ''}
+                        ${!unlocked ? `<p class="settings-lock-hint">Débloqué à ${threshold} / 32 souvenirs</p>` : ''}
                     </div>
                 </div>
                 <span class="${unlocked ? 'settings-chevron' : 'settings-lock-icon'}" id="chevron-${id}">
@@ -116,13 +116,19 @@ function sectionWrap(id, emoji, label, threshold, score, contentHTML) {
 // ════════════════════════════════════════════
 
 function buildMusicSection(score) {
-    const on = isMusicEnabled()
+    const on = !getMuted()
+    const label = getCurrentTrackLabel()
     const content = `
         <div class="settings-toggle-row">
             <span class="settings-toggle-label">Musique d'ambiance</span>
             <button class="settings-toggle-btn ${on ? 'toggle-on' : 'toggle-off'}" id="music-toggle">
                 ${on ? '🔊 Activée' : '🔇 Désactivée'}
             </button>
+        </div>
+        <div class="settings-track-row">
+            <button class="track-nav-btn" id="track-prev">‹</button>
+            <span class="track-label" id="track-label">${label}</span>
+            <button class="track-nav-btn" id="track-next">›</button>
         </div>
     `
     return sectionWrap('music', '<img src="/assets/musique.svg" class="settings-icon-svg" alt="" />', "Musique d'ambiance", UNLOCK.music, score, content)
@@ -201,10 +207,27 @@ function wireAccordion(id) {
 function wireMusicSection() {
     document.getElementById('music-toggle')?.addEventListener('click', (e) => {
         e.stopPropagation()
-        const enabled = toggleMusic()
+        const muted = toggleAllSounds()
+        const enabled = !muted
         const btn = document.getElementById('music-toggle')
         btn.textContent = enabled ? '🔊 Activée' : '🔇 Désactivée'
         btn.className = `settings-toggle-btn ${enabled ? 'toggle-on' : 'toggle-off'}`
+    })
+
+    document.getElementById('track-prev')?.addEventListener('click', (e) => {
+        e.stopPropagation()
+        prevTrack()
+    })
+
+    document.getElementById('track-next')?.addEventListener('click', (e) => {
+        e.stopPropagation()
+        nextTrack()
+    })
+
+    // Mise à jour du label quand la piste change (flèches ou auto-avance)
+    window.addEventListener('miyaza:trackchange', () => {
+        const labelEl = document.getElementById('track-label')
+        if (labelEl) labelEl.textContent = getCurrentTrackLabel()
     })
 }
 

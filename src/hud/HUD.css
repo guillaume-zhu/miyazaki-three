@@ -23,10 +23,8 @@ body {
     margin: 0;
     background-size: cover;
     font-family: "Police-Ghibli", sans-serif;
-    cursor: image-set(
-        url("/img/Figma-Cursor.png") 1x,
-        url("/img/Figma-Cursor.png") 2x
-    );
+    cursor: image-set(url("/img/Figma-Cursor.png") 1x,
+            url("/img/Figma-Cursor.png") 2x);
 
     ul {
         list-style-type: none;
@@ -372,6 +370,7 @@ body {
 }
 
 @keyframes shake {
+
     0%,
     100% {
         transform: translateX(0);
@@ -715,7 +714,7 @@ body {
 .avatar-card.selected {
     background: #3fa7dd;
     transform: translateY(2px) scale(0.98);
-    box-shadow: inset 4px 4px 0px rgba(0,0,0,0.1), 0px 0px 0px var(--border-color);
+    box-shadow: inset 4px 4px 0px rgba(0, 0, 0, 0.1), 0px 0px 0px var(--border-color);
     border-color: #000;
 }
 
@@ -1208,6 +1207,7 @@ body {
     width: 100px;
     height: 100px;
     padding: 12px;
+
 }
 
 .settings-section-content .avatar-img {
@@ -1255,6 +1255,49 @@ body {
 .settings-toggle-btn:hover {
     transform: translateY(-2px);
     box-shadow: 3px 4px 0px #000;
+}
+
+/* ── Track selector ── */
+.settings-track-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 8px 12px;
+    background: var(--bg-color);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+}
+
+.track-label {
+    flex: 1;
+    text-align: center;
+    font-family: var(--font-lexend);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--border-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.track-nav-btn {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--border-color);
+    cursor: pointer;
+    padding: 0 6px;
+    line-height: 1;
+    transition: transform 0.1s ease, opacity 0.1s ease;
+    flex-shrink: 0;
+}
+
+.track-nav-btn:hover {
+    transform: scale(1.3);
+    opacity: 0.7;
 }
 
 /* ── Avatar grid (réutilise les classes existantes) ── */
