@@ -30,7 +30,7 @@ export function checkMilestone(score) {
         // Sauvegarder l'affichage
         shownMilestones.push(milestone.id);
         localStorage.setItem('miyaza_milestonesShown', JSON.stringify(shownMilestones));
-    }, 3800); // 3.8s — le popup arrive pendant le fade-out du toast trophée
+    }, 600); // 0.6s — le popup arrive juste après le toast, les deux sont visibles ensemble
 }
 
 /**

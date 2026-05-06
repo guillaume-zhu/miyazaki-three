@@ -77,7 +77,7 @@ window.handleProfileSetup = function () {
     state.currentUsername = username
 
     const el = document.querySelector('.score-counter')
-    if (el) el.innerText = `${state.score} / 25`
+    if (el) el.innerText = `${state.score} / 32`
 
     afficherPseudo()
     
@@ -209,7 +209,7 @@ window.handleLogout = async function () {
         MODELS_DATA[key].isFound = false
     }
     const el = document.querySelector('.score-counter')
-    if (el) el.innerText = '0 / 25'
+    if (el) el.innerText = '0 / 32'
 
     const pseudoEl = document.getElementById('header-pseudo')
     if (pseudoEl) pseudoEl.remove()

@@ -108,14 +108,18 @@
                     <div class="player-hud">
                         <div class="player-score">
                             <img src="./img/puzzle-vector.png" alt="icone de puzzle" class="puzzle-icon" />
-                            <p class="score-counter">0 / 25</p>
+                            <p class="score-counter">0 / 32</p>
                         </div>
                         <div class="player-card" onclick="togglePlayerDropdown()">
                             <img id="header-avatar" src="" alt="avatar" class="header-avatar-img" />
-                            <p id="header-pseudo" class="header-pseudo"></p>
+                            <div>
+                                <p id="header-pseudo" class="header-pseudo"></p>
+                                <p id="header-badge"></p>
+                            </div>
                             <span class="dropdown-arrow">▾</span>
                         </div>
                         <div id="player-dropdown" class="player-dropdown" style="display:none">
+                            <button class="settings-btn" onclick="openSettings()"><img src="/assets/settings.svg" class="settings-icon-svg" alt="" /> Paramètres</button>
                             <button class="change-player-btn" onclick="handleChangePlayer()">Changer de joueur</button>
                         </div>
                     </div>
