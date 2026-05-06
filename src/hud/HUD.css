@@ -298,33 +298,26 @@ body {
 
 /* image du quiz */
 .model-viewport {
-    /* background: #000; */
-    background: url("/img/Arc-Mahito-ex.png") no-repeat center center;
     border: var(--border-width) solid var(--border-color);
     border-radius: 25px;
-    height: 300px;
-    width: 70%;
     overflow: hidden;
     position: relative;
-    margin: auto;
-    margin-bottom: 30px;
-    font-size: 32px;
     -webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: #000;
-    /* --- AJOUTE CES LIGNES POUR LE FORMAT PAYSAGE --- */
-
-    /* 'contain' force l'image à tenir entièrement dans la div sans être coupée */
-    background-size: contain;
-
-    /* Empêche l'image de se répéter si elle est plus petite que la div */
+    /* Utilise l'aspect-ratio pour que la div s'adapte à l'image */
+    aspect-ratio: 16 / 9; 
+    height: auto; 
+    width: 80%; /* Ou 70% selon tes tests */
+    margin: auto;
+    margin-bottom: 30px;
+    border: var(--border-width) solid var(--border-color);
+    border-radius: 25px;
+    overflow: hidden;
+    position: relative;
+    /* REMPLISSAGE TOTAL */
+    background-size: cover; 
+    background-position: center;
     background-repeat: no-repeat;
-
-    /* Centre l'image horizontalement et verticalement */
-    background-position: center center;
-
-    /* Optionnel : ajoute une couleur de fond neutre pour remplir les bords 
-       si l'image originale n'est pas au format paysage */
-    background-color: rgba(0, 0, 0, 0.05);
 }
 
 #canvas-container {

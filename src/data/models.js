@@ -1,7 +1,7 @@
 export const MODELS_DATA = {
     "avion": {
         filmTmdbId: 149870,
-        imageObjet: "./img/quiz/avion.jpeg",
+        imageObjet: "./img/quiz/avion.jpg",
         choix: ["Porco Rosso", "Le Vent se lève", "Nausicaä"],
         bonneReponse: "Le Vent se lève",
         anecdote: "Jiro Horikoshi, personnage principal de ce film, était un véritable ingénieur aéronautique japonais qui a réellement existé. Miyazaki à utiliser sa biographie comme miroire pour créer des choses belles sachant qu'elles seront utilisées pour la guerre",
@@ -34,9 +34,9 @@ export const MODELS_DATA = {
     "chapeau-paille": {
         filmTmdbId: 8392,
         imageObjet: "./img/quiz/mugiwara.jpg",
-        choix: ["Ponyo sur la falaise", "Mon Voisin Totoro", "Nausicaä"],
-        bonneReponse: "Mon Voisin Totoro",
-        anecdote: "À l’origine, le Chapeau de Paille n’était pas du tout destiné à Satsuki ou Mei. Il avait été dessiné pour un autre personnage, un jeune garçon qui accompagnait les héroïnes. Mais lors du développement, l’équipe a jugé que ce chapeau serait visuellement plus fort sur Satsuki, la sœur aînée. Le personnage masculin a finalement été supprimé du scénario, mais le chapeau, lui, est resté.",
+        choix: ["Ponyo sur la falaise", "Le Vent se lève", "Nausicaä"],
+        bonneReponse: "Le Vent se lève",
+        anecdote: "Le titre français Le Vent se lève reprend un vers du poète Paul Valéry : “Le vent se lève… il faut tenter de vivre.” Miyazaki avait lu ce vers des décennies avant de faire le film et attendait le bon momentpour l’honorer.",
         isFound: false,
     },
     "calcifer": {
@@ -137,7 +137,7 @@ export const MODELS_DATA = {
     },
     "haku-queue": {
         filmTmdbId: 129,
-        imageObjet: "./img/quiz/haku-dragon",
+        imageObjet: "./img/quiz/haku-dragon.webp",
         choix: ["Princesse Mononoké", "Ponyo sur la falaise", "Le Voyage de Chihiro"],
         bonneReponse: "Le Voyage de Chihiro",
         anecdote: "À l’origine, Haku devait être un personnage secondaire, presque fantomatique. Mais Miyazaki s’est pris de passion pour son design et lui a donné une histoire beaucoup plus développée, jusqu’à faire de son destin tragique l’un des arcs émotionnels centraux du film.",
@@ -145,7 +145,7 @@ export const MODELS_DATA = {
     },
     "pepite-or": {
         filmTmdbId: 129,
-        imageObjet: "./img/quiz/gold.webp",
+        imageObjet: "./img/quiz/gold.png",
         choix: ["Le Voyage de Chihiro", "Porco Rosso", "Le Château Ambulant"],
         bonneReponse: "Le Voyage de Chihiro",
         anecdote: "Miyazaki a décrit Sans-Visage comme une métaphore de la vacuité consumériste : une entité qui n’existe que par ce qu’elle absorbe des autres, incapable d’exister par elle-même. Un portrait peu flatteur de la société de consommation.",
@@ -193,7 +193,7 @@ export const MODELS_DATA = {
     },
     "robot": {
         filmTmdbId: 10515,
-        imageObjet: "./img/quiz/robot.webp",
+        imageObjet: "./img/quiz/robot.png",
         choix: ["Le Château dans le Ciel", "Nausicaä", "Le Garçon et le Héron"],
         bonneReponse: "Le Château dans le Ciel",
         anecdote: "Les robots géants gardiens du château s’inspirent des illustrations de guerre du début du XXe siècle.Miyazaki souhaitait qu’ils dégagent à la fois une puissance terrifiante et une mélancolie presque humaine.",
