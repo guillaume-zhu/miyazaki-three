@@ -37,3 +37,9 @@ body {
 
   pointer-events: none;
 }
+
+/* --------------- à décommenter quand on debug ------------ */
+
+/* #loader-screen {
+  display: none !important;
+} */

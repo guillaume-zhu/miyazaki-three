@@ -1,20 +1,301 @@
+import * as THREE from "three"
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js"
-import { DRACOLoader } from "three/examples/jsm/Addons.js"
+import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js"
 import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js"
 
 import { loadInteractiveModel } from "../utils/loadInteractiveModel.js"
+import { initGameInterface, onModelsLoaded } from "../hud/HUD.js"
+import { setGameReady } from "../main.js"
+import { initMusic } from "../utils/sound.js"
 
+/**
+ * Animations
+ */
+
+// Avion
+const createPlaneAnimation = (
+  model,
+  {
+    startX = 50,
+    endX = -30,
+    speed = 5,
+    floatAmplitude = 0.35,
+    floatSpeed = 1.5,
+    pauseDuration = 0.5,
+    rotationSpeed = 4,
+    rotationLeft = Math.PI * 1.5,
+    rotationRight = Math.PI * 0.5,
+  } = {},
+) => {
+  const baseY = model.position.y
+
+  let direction = -1
+  let pauseTimer = 0
+  let targetRotationY = rotationLeft
+
+  model.rotation.y = rotationLeft
+
+  return (delta, t) => {
+    model.position.y = baseY + Math.sin(t * floatSpeed) * floatAmplitude
+
+    model.rotation.y = THREE.MathUtils.damp(model.rotation.y, targetRotationY, rotationSpeed, delta)
+
+    if (pauseTimer > 0) {
+      pauseTimer -= delta
+      return
+    }
+
+    model.position.x += direction * speed * delta
+
+    if (direction === -1 && model.position.x <= endX) {
+      model.position.x = endX
+      direction = 1
+      targetRotationY = rotationRight
+      pauseTimer = pauseDuration
+    }
+
+    if (direction === 1 && model.position.x >= startX) {
+      model.position.x = startX
+      direction = -1
+      targetRotationY = rotationLeft
+      pauseTimer = pauseDuration
+    }
+  }
+}
+
+// Bateau Ponyo
+const createPonyoBoatAnimation = (
+  model,
+  { startX = 86, endX = -50, speed = 4, pauseDuration = 1.5, rotationSpeed = 4 } = {},
+) => {
+  let direction = -1
+  let pauseTimer = 0
+
+  const rotationLeft = Math.PI * -0.5
+  const rotationRight = Math.PI * 0.5
+
+  let targetRotationY = rotationLeft
+  model.rotation.y = rotationLeft
+
+  return (delta) => {
+    // Rotation progressive, même pendant la pause
+    model.rotation.y = THREE.MathUtils.damp(model.rotation.y, targetRotationY, rotationSpeed, delta)
+
+    if (pauseTimer > 0) {
+      pauseTimer -= delta
+      return
+    }
+
+    model.position.x += direction * speed * delta
+
+    if (direction === -1 && model.position.x <= endX) {
+      model.position.x = endX
+      direction = 1
+      targetRotationY = rotationRight
+      pauseTimer = pauseDuration
+    }
+
+    if (direction === 1 && model.position.x >= startX) {
+      model.position.x = startX
+      direction = -1
+      targetRotationY = rotationLeft
+      pauseTimer = pauseDuration
+    }
+  }
+}
+
+// Chateau Laputa
+const createLaputaCastleAnimation = (
+  model,
+  { floatAmplitude = 0.35, floatSpeed = 0.6, rotationSpeed = 0.05 } = {},
+) => {
+  const baseY = model.position.y
+
+  return (delta, t) => {
+    model.position.y = baseY + Math.sin(t * floatSpeed) * floatAmplitude
+    model.rotation.y += rotationSpeed * delta
+  }
+}
+
+// Chihiro
+const createCircularWalkAnimation = (
+  model,
+  { radius = 2.5, angularSpeed = 0.35, startAngle = 0, clockwise = true, rotationOffset = 0 } = {},
+) => {
+  const baseY = model.position.y
+  const initialX = model.position.x
+  const initialZ = model.position.z
+
+  const direction = clockwise ? -1 : 1
+
+  // Permet de garder la position initiale comme point de départ du cercle
+  const centerX = initialX - Math.cos(startAngle) * radius
+  const centerZ = initialZ - Math.sin(startAngle) * radius
+
+  let angle = startAngle
+
+  return (delta) => {
+    angle += direction * angularSpeed * delta
+
+    const x = centerX + Math.cos(angle) * radius
+    const z = centerZ + Math.sin(angle) * radius
+
+    model.position.set(x, baseY, z)
+
+    // Direction tangentielle du cercle
+    const tangentX = -Math.sin(angle) * direction
+    const tangentZ = Math.cos(angle) * direction
+
+    // Oriente Chihiro dans le sens de la marche
+    model.rotation.y = Math.atan2(tangentX, tangentZ) + rotationOffset
+  }
+}
+
+// Train
+const createTrainXAnimation = (model, { distance = 9, speed = 3, pauseDuration = 2.5 } = {}) => {
+  const startX = model.position.x
+  const endX = startX + distance
+
+  let direction = 1
+  let pauseTimer = pauseDuration
+
+  return (delta) => {
+    if (pauseTimer > 0) {
+      pauseTimer -= delta
+      return
+    }
+
+    model.position.x += direction * speed * delta
+
+    if (direction === 1 && model.position.x >= endX) {
+      model.position.x = endX
+      direction = -1
+      pauseTimer = pauseDuration
+    }
+
+    if (direction === -1 && model.position.x <= startX) {
+      model.position.x = startX
+      direction = 1
+      pauseTimer = pauseDuration
+    }
+  }
+}
+
+// Gold
+const createMagicGoldAnimation = (
+  model,
+  materials,
+  {
+    floatAmplitude = 0.08,
+    floatSpeed = 2,
+    pulseBase = 2.5,
+    pulseAmplitude = 0.4,
+    pulseSpeed = 4,
+    rotationSpeed = 1,
+  } = {},
+) => {
+  const baseY = model.position.y
+
+  return (delta, t) => {
+    model.position.y = baseY + Math.sin(t * floatSpeed) * floatAmplitude
+    model.rotation.y += rotationSpeed * delta
+
+    for (const material of materials) {
+      if ("emissiveIntensity" in material) {
+        material.emissiveIntensity = pulseBase + Math.sin(t * pulseSpeed) * pulseAmplitude
+      }
+    }
+  }
+}
+
+// Warawara
+const createWarawaraAnimation = (
+  model,
+  { floatAmplitude = 0.18, floatSpeed = 1.5, rotationSpeed = 0.45 } = {},
+) => {
+  const baseY = model.position.y
+
+  return (delta, t) => {
+    model.position.y = baseY + Math.sin(t * floatSpeed) * floatAmplitude
+    model.rotation.z += rotationSpeed * delta
+  }
+}
+
+/**
+ * Import
+ */
 export const loadModels = ({
   scene,
+  camera,
+  renderer,
   interactiveObjects,
   mixers,
-  magicGoldMaterials,
-  magicGoldModels,
+  modelAnimations = [],
 }) => {
-  const dracoLoader = new DRACOLoader()
+  // ---------------------------------- LOGIQUE LOADER -----------------------------------------------------
+  // --- Éléments du DOM ---
+  const loaderBar = document.getElementById("loader-bar")
+  const loaderText = document.getElementById("loader-text")
+  const loaderScreen = document.getElementById("loader-screen")
+
+  // --- Initialisation du Loading Manager ---
+  const loadingManager = new THREE.LoadingManager()
+
+  loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+    const progressRatio = (itemsLoaded / itemsTotal) * 100
+    // On utilise requestAnimationFrame pour synchroniser la mise à jour avec l'écran
+    window.requestAnimationFrame(() => {
+      if (loaderBar) {
+        loaderBar.style.width = `${progressRatio}%`
+      }
+      if (loaderText) {
+        // On arrondit pour éviter les chiffres à virgule qui bougent trop
+        loaderText.innerText = `Fragments de mémoire retrouvés... ${Math.round(progressRatio)}%`
+      }
+    })
+  }
+
+  loadingManager.onLoad = () => {
+    const progressGroup = document.getElementById("loader-progress-group")
+    const launchBtn = document.getElementById("launch-btn")
+    const loaderScreen = document.getElementById("loader-screen")
+
+    // Pré-compilation des shaders et upload des géométries/textures au GPU
+    // pendant l'écran de chargement → zéro freeze quand le joueur entre dans la scène
+    if (renderer && camera) {
+      renderer.compile(scene, camera)
+    }
+
+    if (progressGroup) progressGroup.style.display = "none"
+
+    if (launchBtn) {
+      launchBtn.onclick = () => {
+        initMusic()
+        loaderScreen.classList.add("loader-hidden")
+
+        // 2. ON APPELLE LES RÈGLES (C'est ce qui manquait !)
+        // On attend un tout petit peu que le fondu du loader commence
+        setTimeout(() => {
+          initGameInterface()
+        }, 1000)
+
+        // 3. On autorise le clic sur les modèles 3D après un délai
+        // pour éviter que le clic du bouton ne traverse et n'ouvre un quiz
+        setTimeout(() => {
+          setGameReady() // On utilise la fonction importée de main.js
+        }, 1500)
+      }
+    }
+
+    // On prévient HUD que le chargement est terminé
+    onModelsLoaded()
+  }
+
+  // --- Configuration des Loaders avec le Manager ---
+  const dracoLoader = new DRACOLoader(loadingManager)
   dracoLoader.setDecoderPath("/draco/")
 
-  const gltfLoader = new GLTFLoader()
+  const gltfLoader = new GLTFLoader(loadingManager)
   gltfLoader.setDRACOLoader(dracoLoader)
   gltfLoader.setMeshoptDecoder(MeshoptDecoder)
 
@@ -25,12 +306,29 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/avion.glb",
-    position: [25, 10, -100],
+    position: [50, 18, -60],
     rotation: [0, Math.PI * 1.5, 0],
     interactive: true,
     animated: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
+    onLoad: (model) => {
+      model.userData.modelKey = "avion"
+
+      modelAnimations.push(
+        createPlaneAnimation(model, {
+          startX: 50,
+          endX: -30,
+          speed: 5,
+          floatAmplitude: 1,
+          floatSpeed: 1.5,
+          pauseDuration: 0.5,
+          rotationSpeed: 4,
+          rotationLeft: Math.PI * 1.5,
+          rotationRight: Math.PI * 0.5,
+        }),
+      )
+    },
   })
 
   // ---- Adriano ----
@@ -41,12 +339,15 @@ export const loadModels = ({
     mixers,
     path: "models/adriano.glb",
     position: [0, -3, -125],
-    scale: 0.5,
+    scale: 1,
     interactive: true,
     hitboxScale: [0.7, 1, 0.3],
-    showHitbox: true,
+    showHitbox: false,
     // outlineBaseThickness: 0.001,
     // outlineHoverThickness: 0.001,
+    onLoad: (model) => {
+      model.userData.modelKey = "adriano"
+    },
   })
 
   // ---- Balais KIki ----
@@ -56,14 +357,17 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/balais-kiki.glb",
-    position: [-2, 8, -5],
-    rotation: [0, Math.PI * 0.5, 0],
-    scale: 0.07,
+    position: [-10, 8, -23],
+    rotation: [Math.PI * 0.25, Math.PI, 0],
+    scale: 0.2,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
-    outlineBaseThickness: 0.01,
-    outlineHoverThickness: 0.02,
+    showHitbox: false,
+    outlineBaseThickness: 0.0001,
+    outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.userData.modelKey = "balais-kiki"
+    },
   })
 
   // ---- Bateau Ponyo ----
@@ -73,13 +377,64 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/bateau-ponyo.glb",
-    position: [0, -3, -90],
+    position: [-50, -3, -80],
     rotation: [0, Math.PI * 0.5, 0],
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.03,
     outlineHoverThickness: 0.05,
+    onLoad: (model) => {
+      model.userData.modelKey = "bateau-ponyo"
+      modelAnimations.push(
+        createPonyoBoatAnimation(model, {
+          startX: 86,
+          endX: -50,
+          speed: 4,
+          pauseDuration: 1.5,
+          rotationSpeed: 4,
+        }),
+      )
+    },
+  })
+
+  // ---- Calcifer ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/calcifer.glb",
+    position: [13, 0.5, -20],
+    rotation: [0, -Math.PI * 0.25, 0],
+    scale: 0.3,
+    interactive: true,
+    animated: true,
+    hitboxScale: [0.3, 0.5, 0.3],
+    showHitbox: false,
+    onLoad: (model) => {
+      model.userData.modelKey = "calcifer"
+    },
+  })
+
+  // ---- Canne ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/canne.glb",
+    position: [21, 6.15, -28.5],
+    rotation: [Math.PI * 0.1, Math.PI * -0.4, 0],
+    scale: 2,
+    interactive: true,
+    hitboxScale: [1, 1, 1],
+    showHitbox: false,
+    outlineBaseThickness: 0.01,
+    outlineHoverThickness: 0.02,
+    onLoad: (model) => {
+      model.userData.modelKey = "canne"
+    },
   })
 
   // ---- Chapeau de paille ----
@@ -89,14 +444,16 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/chapeau-paille.glb",
-    position: [-1, 1, -10],
+    position: [-6, 1.55, -32],
     scale: 0.2,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.025,
     outlineHoverThickness: 0.05,
     onLoad: (model) => {
+      model.userData.modelKey = "chapeau-paille"
+
       model.traverse((child) => {
         if (!child.isMesh || !child.material) return
 
@@ -119,21 +476,6 @@ export const loadModels = ({
     },
   })
 
-  // ---- Calcifer ----
-  loadInteractiveModel({
-    gltfLoader,
-    scene,
-    interactiveObjects,
-    mixers,
-    path: "models/calcifer.glb",
-    position: [20, 1, -15],
-    scale: 0.3,
-    interactive: true,
-    animated: true,
-    hitboxScale: [0.3, 0.5, 0.3],
-    showHitbox: true,
-  })
-
   // ---- Chihiro ----
   loadInteractiveModel({
     gltfLoader,
@@ -141,29 +483,24 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/chihiro.glb",
-    position: [8, 0, -10],
+    position: [18, 0, -20],
     rotation: [0, Math.PI * 1.5, 0],
     scale: 0.35,
     interactive: true,
     animated: true,
     hitboxScale: [0.3, 1, 1],
-    showHitbox: true,
-  })
-
-  // ---- Canne ----
-  loadInteractiveModel({
-    gltfLoader,
-    scene,
-    interactiveObjects,
-    mixers,
-    path: "models/canne.glb",
-    position: [5, 2, -10],
-    scale: 2,
-    interactive: true,
-    hitboxScale: [1, 1, 1],
-    showHitbox: true,
-    outlineBaseThickness: 0.01,
-    outlineHoverThickness: 0.02,
+    showHitbox: false,
+    onLoad: (model) => {
+      model.userData.modelKey = "chihiro"
+      modelAnimations.push(
+        createCircularWalkAnimation(model, {
+          radius: 5,
+          angularSpeed: 0.6,
+          clockwise: true,
+          rotationOffset: 0,
+        }),
+      )
+    },
   })
 
   // ---- Couteau ----
@@ -173,14 +510,17 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/couteau.glb",
-    position: [-10, 10, -10],
-    rotation: [0, 0, Math.PI * -0.75],
-    scale: 0.002,
+    position: [-10, 8, -18.9],
+    rotation: [0, Math.PI * 0.5, Math.PI * -0.75],
+    scale: 0.001,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     // outlineBaseThickness: 2,
     // outlineHoverThickness: 40000,
+    onLoad: (model) => {
+      model.userData.modelKey = "couteau"
+    },
   })
 
   // ---- Epouvantail ----
@@ -190,11 +530,14 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/epouvantail.glb",
-    position: [10, 2, -100],
-    scale: 0.5,
+    position: [34, 7, -98],
+    scale: 0.4,
     interactive: true,
     hitboxScale: [0.8, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
+    onLoad: (model) => {
+      model.userData.modelKey = "epouvantail"
+    },
   })
 
   // ---- Fleche ----
@@ -204,14 +547,17 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/fleche.glb",
-    position: [15, 3, -15],
-    scale: 1,
-    rotation: [Math.PI * 0.5, 0, Math.PI * 0.5],
+    position: [19.5, 3, -31.25],
+    scale: 2,
+    rotation: [Math.PI * -0.5, Math.PI * 0.25, Math.PI * 0.25],
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
-    outlineBaseThickness: 0.01,
-    outlineHoverThickness: 0.015,
+    showHitbox: false,
+    outlineBaseThickness: 0.015,
+    outlineHoverThickness: 0.03,
+    onLoad: (model) => {
+      model.userData.modelKey = "fleche"
+    },
   })
 
   // ---- Kiki ----
@@ -221,14 +567,17 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/kiki.glb",
-    position: [-5, 0, -10],
-    rotation: [0, Math.PI, 0],
+    position: [-12.5, 0, -25.25],
+    rotation: [0, Math.PI * -0.75, 0],
     scale: 2.75,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.01,
     outlineHoverThickness: 0.015,
+    onLoad: (model) => {
+      model.userData.modelKey = "kiki"
+    },
   })
 
   // ---- Kodama ----
@@ -238,14 +587,17 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/kodama.glb",
-    position: [-7, 0, -10],
-    rotation: [0, -Math.PI * 0.5, 0],
+    position: [-15.5, 0.5, -25],
+    rotation: [0, -Math.PI * 0.25, 0],
     scale: 0.05,
     interactive: true,
     hitboxScale: [0.5, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.025,
     outlineHoverThickness: 0.05,
+    onLoad: (model) => {
+      model.userData.modelKey = "kodama"
+    },
   })
 
   // ---- Lanterne ----
@@ -255,14 +607,70 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/lanterne.glb",
-    position: [-9, 0, -10],
+    position: [-12, 0, -35],
     rotation: [0, Math.PI * 0.5, 0],
     scale: 5,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.005,
     outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.userData.modelKey = "lanterne"
+    },
+  })
+
+  // ---- Le Chateau ambulant ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/chateau-ambulant.glb",
+    position: [54, 1, -84],
+    rotation: [0, -Math.PI * 0.5, 0],
+    scale: 0.25,
+    interactive: true,
+    hitboxScale: [1, 1, 1],
+    showHitbox: false,
+    outlineBaseThickness: 0.005,
+    outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.userData.modelKey = "chateau-ambulant"
+    },
+  })
+
+  // ---- Le Chateau laputa ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/chateau-laputa.glb",
+    position: [80, 20, -150],
+    rotation: [0, 0, 0],
+    scale: 10,
+    interactive: true,
+    hitboxScale: [1, 1, 1],
+    showHitbox: false,
+    outlineBaseThickness: 0.0025,
+    outlineHoverThickness: 0.005,
+    onLoad: (model) => {
+      model.userData.modelKey = "chateau-laputa"
+      model.traverse((child) => {
+        if (!child.isMesh || !child.material) return
+
+        child.material.color.multiplyScalar(0.5)
+      })
+
+      modelAnimations.push(
+        createLaputaCastleAnimation(model, {
+          floatAmplitude: 0.35,
+          floatSpeed: 0.6,
+          rotationSpeed: 0.05,
+        }),
+      )
+    },
   })
 
   // ---- Masque Sans Visage ----
@@ -272,14 +680,17 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/masque-sans-visage.glb",
-    position: [-3, 1, -10],
-    rotation: [0, Math.PI * -0.5, 0],
+    position: [-9.5, 4, -24.25],
+    rotation: [0, Math.PI * -0.3, 0],
     scale: 1.8,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.015,
     outlineHoverThickness: 0.03,
+    onLoad: (model) => {
+      model.userData.modelKey = "masque-sans-visage"
+    },
   })
 
   // ---- Masque Mononoke ----
@@ -289,14 +700,17 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/masque-mononoke.glb",
-    position: [1, 1, -10],
-    rotation: [Math.PI * -0.25, 0, 0],
+    position: [-2.8, 1.15, -29.2],
+    rotation: [Math.PI * -0.2, Math.PI * 0, 0],
     scale: 0.5,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.025,
     outlineHoverThickness: 0.05,
+    onLoad: (model) => {
+      model.userData.modelKey = "masque-mononoke"
+    },
   })
 
   // ---- Noiraude ----
@@ -306,14 +720,17 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/noiraude.glb",
-    position: [10, 1, -15],
+    position: [13, 1, -23],
     rotation: [0, 0, 0],
-    scale: 1,
+    scale: 0.5,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.025,
     outlineHoverThickness: 0.05,
+    onLoad: (model) => {
+      model.userData.modelKey = "noiraude"
+    },
   })
 
   // ---- haku-queue ----
@@ -323,14 +740,17 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/haku-queue.glb",
-    position: [-10, 5, -20],
-    rotation: [0, Math.PI * 0.5, 0],
+    position: [4, 15, -30],
+    rotation: [Math.PI * -0.5, 0, Math.PI * 0.5],
     scale: 10,
     interactive: true,
-    hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    hitboxScale: [0.5, 1, 0.9],
+    showHitbox: false,
     outlineBaseThickness: 0.005,
-    outlineHoverThickness: 0.01,
+    outlineHoverThickness: 0.0075,
+    onLoad: (model) => {
+      model.userData.modelKey = "haku-queue"
+    },
   })
 
   // ---- pepite-or ----
@@ -340,17 +760,18 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/pepite-or.glb",
-    position: [4, 5, -10],
+    position: [-10.25, 1.75, -24],
     rotation: [0, Math.PI * 0.5, 0],
-    scale: 0.05,
+    scale: 0.0075,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.02,
     outlineHoverThickness: 0.04,
     onLoad: (model) => {
-      model.userData.baseY = model.position.y
-      magicGoldModels.push(model)
+      model.userData.modelKey = "pepite-or"
+
+      const goldMaterials = []
 
       model.traverse((child) => {
         if (!child.isMesh || !child.material) return
@@ -371,8 +792,19 @@ export const loadModels = ({
         }
 
         child.material.needsUpdate = true
-        magicGoldMaterials.push(child.material)
+        goldMaterials.push(child.material)
       })
+
+      modelAnimations.push(
+        createMagicGoldAnimation(model, goldMaterials, {
+          floatAmplitude: 0.08,
+          floatSpeed: 2,
+          pulseBase: 2.5,
+          pulseAmplitude: 0.4,
+          pulseSpeed: 4,
+          rotationSpeed: 1,
+        }),
+      )
     },
   })
 
@@ -383,14 +815,17 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/perruche-verte.glb",
-    position: [10, 10, -20],
-    rotation: [0, Math.PI * 1.5, 0],
-    scale: 3,
+    position: [19, 7.7, -33],
+    rotation: [0, Math.PI * 1.25, 0],
+    scale: 1,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.02,
     outlineHoverThickness: 0.04,
+    onLoad: (model) => {
+      model.userData.modelKey = "perruche-verte"
+    },
   })
 
   // ---- perruche-rose ----
@@ -400,14 +835,17 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/perruche-rose.glb",
-    position: [12, 10, -20],
-    rotation: [0, Math.PI * 1.5, 0],
-    scale: 3,
+    position: [18, 7.7, -33],
+    rotation: [0, Math.PI * 1.25, 0],
+    scale: 1,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.02,
     outlineHoverThickness: 0.04,
+    onLoad: (model) => {
+      model.userData.modelKey = "perruche-rose"
+    },
   })
 
   // ---- perruche-bleue ----
@@ -417,14 +855,17 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/perruche-bleue.glb",
-    position: [14, 10, -20],
-    rotation: [0, Math.PI * 1.5, 0],
-    scale: 3,
+    position: [20, 7.7, -33],
+    rotation: [0, Math.PI * 1.25, 0],
+    scale: 1,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.02,
     outlineHoverThickness: 0.04,
+    onLoad: (model) => {
+      model.userData.modelKey = "perruche-bleue"
+    },
   })
 
   // ---- bonhomme-totoro ----
@@ -434,14 +875,17 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/bonhomme-totoro.glb",
-    position: [-8, 0, -15],
-    rotation: [0, 0, 0],
-    scale: 3,
+    position: [-15, 0.8, -31],
+    rotation: [0, Math.PI * 0.25, 0],
+    scale: 1.25,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.005,
     outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.userData.modelKey = "bonhomme-totoro"
+    },
   })
 
   // ---- ramen ----
@@ -451,12 +895,15 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/ramen.glb",
-    position: [0, 1, -20],
+    position: [-4.5, 2.65, -31],
     rotation: [0, 0, 0],
     scale: 0.01,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
+    onLoad: (model) => {
+      model.userData.modelKey = "ramen"
+    },
   })
 
   // ---- robot ----
@@ -466,14 +913,17 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/robot.glb",
-    position: [-12, 1, -15],
-    rotation: [0, -Math.PI * 0.5, 0],
+    position: [-11.5, 1, -19],
+    rotation: [0, Math.PI * -0.2, 0],
     scale: 0.03,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.005,
     outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.userData.modelKey = "robot"
+    },
   })
 
   // ---- sceau ----
@@ -483,16 +933,45 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/sceau.glb",
-    position: [0, 1, -15],
+    position: [-4.5, 1, -27],
     rotation: [0, -Math.PI * 0.5, 0],
     scale: 1.2,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     // outlineBaseThickness: 0.001,
     // outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.userData.modelKey = "sceau"
+    },
   })
 
+  // ---- train ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/train.glb",
+    position: [47, 18, -100],
+    rotation: [0, 0, 0],
+    scale: 0.5,
+    interactive: true,
+    hitboxScale: [1, 1, 1],
+    showHitbox: false,
+    outlineBaseThickness: 0.01,
+    outlineHoverThickness: 0.02,
+    onLoad: (model) => {
+      model.userData.modelKey = "train"
+      modelAnimations.push(
+        createTrainXAnimation(model, {
+          distance: 20,
+          speed: 3,
+          pauseDuration: 2.5,
+        }),
+      )
+    },
+  })
 
   // ---- totoro ----
   loadInteractiveModel({
@@ -501,14 +980,17 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/totoro.glb",
-    position: [-10, -1, -10],
-    rotation: [Math.PI * -0.5, 0, Math.PI * 0.5],
+    position: [-20, -1, -30],
+    rotation: [Math.PI * -0.5, 0, Math.PI * 0.7],
     scale: 0.25,
     interactive: true,
     hitboxScale: [0.7, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.005,
     outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.userData.modelKey = "totoro"
+    },
   })
 
   // ---- warawara ----
@@ -518,14 +1000,24 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/warawara.glb",
-    position: [10, 5, -20],
-    rotation: [0, -Math.PI * 0.5, 0],
+    position: [11, 4.5, -30],
+    rotation: [0, -Math.PI * 0.75, Math.PI * 0.1],
     scale: 1,
     interactive: true,
     hitboxScale: [1, 1, 1],
-    showHitbox: true,
+    showHitbox: false,
     outlineBaseThickness: 0.025,
     outlineHoverThickness: 0.05,
+    onLoad: (model) => {
+      model.userData.modelKey = "warawara"
+      modelAnimations.push(
+        createWarawaraAnimation(model, {
+          floatAmplitude: 0.18,
+          floatSpeed: 1.5,
+          rotationSpeed: 0.45,
+        }),
+      )
+    },
   })
 
   // ---- yuba ----
@@ -535,13 +1027,308 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/yuba.glb",
-    position: [5, 0, -20],
-    rotation: [0, Math.PI * 0.85, 0],
+    position: [8, 0, -29],
+    rotation: [0, Math.PI * 0.8, 0],
     scale: 1.25,
     interactive: true,
-    hitboxScale: [0.75, 1, 1],
-    showHitbox: true,
+    hitboxScale: [0.6, 1, 1],
+    showHitbox: false,
+    outlineBaseThickness: 0.0075,
+    outlineHoverThickness: 0.015,
+    onLoad: (model) => {
+      model.userData.modelKey = "yuba"
+    },
+  })
+
+  /**
+   * Décors
+   */
+
+  // ---- buche haut ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/assets/buche.glb",
+    position: [13, 0.6, -23],
+    rotation: [0, Math.PI * 0.5, 0],
+    scale: 0.5,
+    interactive: true,
+    hitboxScale: [0, 0, 0],
+    showHitbox: false,
     outlineBaseThickness: 0.01,
-    outlineHoverThickness: 0.02,
+    outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.traverse((child) => {
+        if (!child.isMesh || !child.material) return
+
+        child.material.color.multiplyScalar(0.2)
+      })
+    },
+  })
+
+  // ---- buche gauche ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/assets/buche.glb",
+    position: [10.5, 0.6, -20],
+    rotation: [0, 0, 0],
+    scale: 0.5,
+    interactive: true,
+    hitboxScale: [0, 0, 0],
+    showHitbox: false,
+    outlineBaseThickness: 0.01,
+    outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.traverse((child) => {
+        if (!child.isMesh || !child.material) return
+
+        child.material.color.multiplyScalar(0.2)
+      })
+    },
+  })
+
+  // ---- buche droite ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/assets/buche.glb",
+    position: [15.5, 0.6, -20],
+    rotation: [0, Math.PI, 0],
+    scale: 0.5,
+    interactive: true,
+    hitboxScale: [0, 0, 0],
+    showHitbox: false,
+    outlineBaseThickness: 0.01,
+    outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.traverse((child) => {
+        if (!child.isMesh || !child.material) return
+
+        child.material.color.multiplyScalar(0.2)
+      })
+    },
+  })
+
+  // ---- buche bas ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/assets/buche.glb",
+    position: [13, 0.6, -17.5],
+    rotation: [0, Math.PI * 0.5, 0],
+    scale: 0.5,
+    interactive: true,
+    hitboxScale: [0, 0, 0],
+    showHitbox: false,
+    outlineBaseThickness: 0.01,
+    outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.traverse((child) => {
+        if (!child.isMesh || !child.material) return
+
+        child.material.color.multiplyScalar(0.2)
+      })
+    },
+  })
+
+  // ---- table ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/assets/table.glb",
+    position: [-5, 1.5, -30],
+    rotation: [0, Math.PI * 0.25, 0],
+    scale: 3,
+    interactive: true,
+    hitboxScale: [0, 0, 0],
+    showHitbox: false,
+    outlineBaseThickness: 0.01,
+    outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.traverse((child) => {
+        if (!child.isMesh || !child.material) return
+
+        child.material.color.multiplyScalar(0.6)
+      })
+    },
+  })
+
+  // ---- rock yuba droites ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/assets/rock.glb",
+    position: [6, 0, -24],
+    rotation: [0, Math.PI * 0.5, 0],
+    scale: 0.005,
+    interactive: true,
+    hitboxScale: [0, 0, 0],
+    showHitbox: false,
+    outlineBaseThickness: 0.01,
+    outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.traverse((child) => {
+        if (!child.isMesh || !child.material) return
+
+        child.material.color.multiplyScalar(0.9)
+      })
+    },
+  })
+
+  // ---- rock yuba gauche ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/assets/rock.glb",
+    position: [5, 0, -25],
+    rotation: [0, 0, 0],
+    scale: 0.0075,
+    interactive: true,
+    hitboxScale: [0, 0, 0],
+    showHitbox: false,
+    outlineBaseThickness: 0.01,
+    outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.traverse((child) => {
+        if (!child.isMesh || !child.material) return
+        child.material = child.material.clone()
+        child.material.color.multiplyScalar(0.9)
+      })
+    },
+  })
+
+  // ---- rock center repere ----
+  // loadInteractiveModel({
+  //   gltfLoader,
+  //   scene,
+  //   interactiveObjects,
+  //   mixers,
+  //   path: "models/assets/rock.glb",
+  //   position: [0, 0, -20],
+  //   rotation: [0, Math.PI * 0.5, 0],
+  //   scale: 0.005,
+  //   interactive: true,
+  //   hitboxScale: [0, 0, 0],
+  //   showHitbox: false,
+  //   outlineBaseThickness: 0.01,
+  //   outlineHoverThickness: 0.01,
+  //   onLoad: (model) => {
+  //     model.traverse((child) => {
+  //       if (!child.isMesh || !child.material) return
+
+  //       child.material.color.multiplyScalar(1.5)
+  //     })
+  //   },
+  // })
+
+  // ---- rock kiki droite ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/assets/rock.glb",
+    position: [-11, 0, -24],
+    rotation: [0, 0, 0],
+    scale: 0.005,
+    interactive: true,
+    hitboxScale: [0, 0, 0],
+    showHitbox: false,
+    outlineBaseThickness: 0.01,
+    outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.traverse((child) => {
+        if (!child.isMesh || !child.material) return
+
+        child.material.color.multiplyScalar(0.9)
+      })
+    },
+  })
+
+  // ---- rock kiki gauche ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/assets/rock.glb",
+    position: [-14, 0, -25],
+    rotation: [0, Math.PI, 0],
+    scale: 0.006,
+    interactive: true,
+    hitboxScale: [0, 0, 0],
+    showHitbox: false,
+    outlineBaseThickness: 0.01,
+    outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.traverse((child) => {
+        if (!child.isMesh || !child.material) return
+
+        child.material.color.multiplyScalar(0.9)
+      })
+    },
+  })
+
+  // ---- rock totoro bonhomme ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/assets/rock.glb",
+    position: [-14, -0.75, -32.5],
+    rotation: [0, Math.PI * 1, 0],
+    scale: 0.006,
+    interactive: true,
+    hitboxScale: [0, 0, 0],
+    showHitbox: false,
+    outlineBaseThickness: 0.01,
+    outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.traverse((child) => {
+        if (!child.isMesh || !child.material) return
+
+        child.material.color.multiplyScalar(0.9)
+      })
+    },
+  })
+
+  // ---- rock arbre a droite ----
+  loadInteractiveModel({
+    gltfLoader,
+    scene,
+    interactiveObjects,
+    mixers,
+    path: "models/assets/rock.glb",
+    position: [19, 0, -30],
+    rotation: [0, Math.PI * 0.5, 0],
+    scale: 0.0075,
+    interactive: true,
+    hitboxScale: [0, 0, 0],
+    showHitbox: false,
+    outlineBaseThickness: 0.01,
+    outlineHoverThickness: 0.01,
+    onLoad: (model) => {
+      model.traverse((child) => {
+        if (!child.isMesh || !child.material) return
+
+        child.material.color.multiplyScalar(0.9)
+      })
+    },
   })
 }

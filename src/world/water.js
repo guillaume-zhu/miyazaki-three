@@ -1,113 +1,197 @@
 import * as THREE from "three"
+import { Reflector } from "three/examples/jsm/objects/Reflector.js"
 
-export function createWater(scene) {
-  const floorGeo = new THREE.CircleGeometry(500, 64)
-  const floorMat = new THREE.MeshBasicMaterial({
-    color: "#bde2eb",
-    side: THREE.DoubleSide,
-  })
-  const floor = new THREE.Mesh(floorGeo, floorMat)
-  floor.rotation.x = -Math.PI / 2
-  floor.position.y = -3.05
-  floor.renderOrder = 0
-  scene.add(floor)
+const WATER_COLOR = "#aeb7b4"
 
-  const geometry = new THREE.CircleGeometry(300, 64)
+/* ── Gaussian blur séparable (9-tap) ── */
+const blurShader = {
+  vertexShader: /* glsl */ `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = vec4(position.xy, 0.0, 1.0);
+    }
+  `,
+  fragmentShader: /* glsl */ `
+    uniform sampler2D tDiffuse;
+    uniform vec2 direction;   // (1,0) horizontal  |  (0,1) vertical
+    uniform float strength;
+    uniform vec2 resolution;
+    varying vec2 vUv;
+    uniform float saturation;
+    uniform float brightness;
+    uniform vec3 reflectionTint;
+    uniform float tintStrength;
 
-  const material = new THREE.ShaderMaterial({
+    void main() {
+      vec2 off = direction * strength / resolution;
+
+      vec4 sum  = texture2D(tDiffuse, vUv - 4.0 * off) * 0.0162162162;
+      sum      += texture2D(tDiffuse, vUv - 3.0 * off) * 0.0540540541;
+      sum      += texture2D(tDiffuse, vUv - 2.0 * off) * 0.1216216216;
+      sum      += texture2D(tDiffuse, vUv - 1.0 * off) * 0.1945945946;
+      sum      += texture2D(tDiffuse, vUv)              * 0.2270270270;
+      sum      += texture2D(tDiffuse, vUv + 1.0 * off) * 0.1945945946;
+      sum      += texture2D(tDiffuse, vUv + 2.0 * off) * 0.1216216216;
+      sum      += texture2D(tDiffuse, vUv + 3.0 * off) * 0.0540540541;
+      sum      += texture2D(tDiffuse, vUv + 4.0 * off) * 0.0162162162;
+
+      float gray = dot(sum.rgb, vec3(0.2126, 0.7152, 0.0722));
+      sum.rgb = mix(vec3(gray), sum.rgb, saturation);
+      sum.rgb *= brightness;
+      sum.rgb = mix(sum.rgb, reflectionTint, tintStrength);
+
+      gl_FragColor = sum;
+    }
+  `,
+}
+
+/* ── Helpers pour le full-screen pass ── */
+function createBlurMaterial(
+  dir,
+  res,
+  saturation = 1.0,
+  brightness = 1.0,
+  tintColor = new THREE.Color(WATER_COLOR),
+  tintStrength = 0.0,
+) {
+  return new THREE.ShaderMaterial({
     uniforms: {
-      uTime: { value: 0 },
-      uColor: { value: new THREE.Color("#bde2eb") },
-      uColorWave: { value: new THREE.Color("#ffffff") },
-      uTextureSize: { value: 3.0 },
-      uWaveSpeed: { value: 0.4 },
-      uWaveAmplitude: { value: 0.03 },
+      tDiffuse: { value: null },
+      direction: { value: dir },
+      strength: { value: 2.0 },
+      resolution: { value: res },
+      saturation: { value: saturation },
+      brightness: { value: brightness },
+      reflectionTint: { value: tintColor },
+      tintStrength: { value: tintStrength },
     },
-
-    vertexShader: /* glsl */ `
-      uniform float uTime;
-      uniform float uWaveSpeed;
-      uniform float uWaveAmplitude;
-
-      varying vec2 vUv;
-
-      void main() {
-        vUv = uv;
-        vec3 pos = position;
-        pos.y += sin(uTime * uWaveSpeed) * uWaveAmplitude;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-      }
-    `,
-
-    fragmentShader: /* glsl */ `
-      uniform float uTime;
-      uniform vec3  uColor;
-      uniform vec3  uColorWave;
-      uniform float uTextureSize;
-
-      varying vec2 vUv;
-
-      vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-      vec2 mod289v2(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-      vec3 permute(vec3 x) { return mod289(((x * 34.0) + 1.0) * x); }
-
-      float snoise(vec2 v) {
-        const vec4 C = vec4(0.211324865405187,  0.366025403784439,
-                           -0.577350269189626,  0.024390243902439);
-        vec2 i  = floor(v + dot(v, C.yy));
-        vec2 x0 = v - i + dot(i, C.xx);
-        vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-        vec4 x12 = x0.xyxy + C.xxzz;
-        x12.xy -= i1;
-        i = mod289v2(i);
-        vec3 p  = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
-        vec3 m  = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
-        m = m * m; m = m * m;
-        vec3 x_ = 2.0 * fract(p * C.www) - 1.0;
-        vec3 h  = abs(x_) - 0.5;
-        vec3 ox = floor(x_ + 0.5);
-        vec3 a0 = x_ - ox;
-        m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
-        vec3 g;
-        g.x  = a0.x  * x0.x  + h.x  * x0.y;
-        g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-        return 130.0 * dot(m, g);
-      }
-
-      void main() {
-        float textureSize = 100.0 - uTextureSize;
-
-        vec3 color = uColor;
-
-        float noiseBase = snoise(vUv * (textureSize * 2.8) + sin(uTime * 0.08));
-        noiseBase = noiseBase * 0.5 + 0.5;
-        float foam = smoothstep(0.04, 0.001, noiseBase);
-        foam = step(0.5, foam);
-
-        float noiseWaves = snoise(vUv * textureSize + sin(uTime * -0.03));
-        noiseWaves = noiseWaves * 0.5 + 0.5;
-        float threshold = 0.6 + 0.01 * sin(uTime * 0.6);
-        float waveEffect = 1.0 - (
-          smoothstep(threshold + 0.03, threshold + 0.032, noiseWaves) +
-          smoothstep(threshold, threshold - 0.01, noiseWaves)
-        );
-        waveEffect = step(0.5, waveEffect);
-
-        float combined = min(waveEffect + foam, 1.0);
-        color = mix(color, uColorWave, combined * 0.35);
-
-        gl_FragColor = vec4(color, 1.0);
-      }
-    `,
-
-    side: THREE.DoubleSide,
+    vertexShader: blurShader.vertexShader,
+    fragmentShader: blurShader.fragmentShader,
+    depthTest: false,
+    depthWrite: false,
   })
+}
 
-  const water = new THREE.Mesh(geometry, material)
+/* ══════════════════════════════════════════
+  createWater  –  Reflector + blurred reflection
+   ══════════════════════════════════════════ */
+export function createWater(scene) {
+  const reflectionFog = new THREE.Fog("#ff8000", 800, 3000)
+
+  const texW = 1024
+  const texH = 1024
+  const res = new THREE.Vector2(texW, texH)
+
+  const geometry = new THREE.CircleGeometry(4000, 64)
+  const water = new Reflector(geometry, {
+    textureWidth: texW,
+    textureHeight: texH,
+    clipBias: 0.003,
+    color: new THREE.Color(WATER_COLOR),
+  })
   water.rotation.x = -Math.PI / 2
   water.position.y = -3
-  water.renderOrder = 1
   scene.add(water)
 
-  return material
+  /* ── Render target intermédiaire (ping-pong) ── */
+  const blurRT = new THREE.WebGLRenderTarget(texW, texH, {
+    minFilter: THREE.LinearFilter,
+    magFilter: THREE.LinearFilter,
+  })
+
+  /* ── Matériaux blur H & V ── */
+  const matH = createBlurMaterial(
+    new THREE.Vector2(1, 0),
+    res,
+    1.0,
+    1.0,
+    new THREE.Color(WATER_COLOR),
+    0.0,
+  )
+  const matV = createBlurMaterial(
+    new THREE.Vector2(0, 1),
+    res,
+    0.88,
+    1.1,
+    new THREE.Color(WATER_COLOR),
+    0.25,
+  )
+
+  /* ── Full-screen quad pour les passes ── */
+  const fsQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2))
+  const fsScene = new THREE.Scene()
+  fsScene.add(fsQuad)
+  const fsCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1)
+
+  /* ── Config ── */
+  let iterations = 1 // nombre de passes H+V (plus = plus flou)
+
+  /* ── Hook sur le cycle de rendu du Reflector ── */
+  const originalOnBeforeRender = water.onBeforeRender.bind(water)
+
+  water.onBeforeRender = function (renderer, scene, camera) {
+    const savedFog = scene.fog
+    scene.fog = reflectionFog
+    // 1. Rendu normal de la réflexion dans le renderTarget interne
+    originalOnBeforeRender(renderer, scene, camera)
+
+    const reflectionRT = water.getRenderTarget()
+    const savedRT = renderer.getRenderTarget()
+    const savedAutoClear = renderer.autoClear
+    renderer.autoClear = false
+
+    for (let i = 0; i < iterations; i++) {
+      // 2. Pass horizontal : reflectionRT → blurRT
+      matH.uniforms.tDiffuse.value = reflectionRT.texture
+      fsQuad.material = matH
+      renderer.setRenderTarget(blurRT)
+      renderer.clear()
+      renderer.render(fsScene, fsCam)
+
+      // 3. Pass vertical : blurRT → reflectionRT
+      matV.uniforms.tDiffuse.value = blurRT.texture
+      fsQuad.material = matV
+      renderer.setRenderTarget(reflectionRT)
+      renderer.clear()
+      renderer.render(fsScene, fsCam)
+    }
+
+    // Restaurer l'état du renderer
+    renderer.setRenderTarget(savedRT)
+    renderer.autoClear = savedAutoClear
+    scene.fog = savedFog
+  }
+
+  /* ── API publique ── */
+  const setBlur = (amount) => {
+    matH.uniforms.strength.value = amount
+    matV.uniforms.strength.value = amount
+  }
+
+  const setIterations = (n) => {
+    iterations = Math.max(1, n)
+  }
+
+  const setReflectionSaturation = (amount) => {
+    matV.uniforms.saturation.value = THREE.MathUtils.clamp(amount, 0, 1.5)
+  }
+
+  const setReflectionBrightness = (amount) => {
+    matV.uniforms.brightness.value = THREE.MathUtils.clamp(amount, 0.5, 2.0)
+  }
+
+  const setReflectionTintStrength = (amount) => {
+    matV.uniforms.tintStrength.value = THREE.MathUtils.clamp(amount, 0, 1)
+  }
+
+  return {
+    mesh: water,
+    material: water.material,
+    setBlur, // setBlur(8)  → plus flou   |  setBlur(0) → net
+    setIterations, // setIterations(3) → blur très large
+    setReflectionSaturation,
+    setReflectionBrightness,
+    setReflectionTintStrength,
+  }
 }

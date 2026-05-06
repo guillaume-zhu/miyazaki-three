@@ -19,8 +19,6 @@ export const loadInteractiveModel = ({
   onLoad = null,
 }) => {
   gltfLoader.load(path, (gltf) => {
-    console.log(`${path} chargé`, gltf)
-
     const model = gltf.scene
 
     // Transformations

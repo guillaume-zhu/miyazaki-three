@@ -10,11 +10,6 @@ export function createSetup() {
   // Scene
   const scene = new THREE.Scene()
 
-  // Fog
-  const fogColor = "#d6e4f0"
-  scene.fog = new THREE.FogExp2(fogColor, 0.006)
-  scene.background = new THREE.Color(fogColor)
-
   /**
    * Camera
    */
@@ -23,13 +18,17 @@ export function createSetup() {
 
   /**
    * Renderer
+   * Sur écran Retina / mobile (dpr >= 2) : antialias inutile, les pixels sont
+   * déjà trop petits pour voir les crénelages → on le désactive pour économiser du GPU.
+   * Sur écran standard (dpr < 2) : antialias activé pour lisser les bords.
    */
-  const renderer = new THREE.WebGLRenderer({ antialias: true, canvas })
+  const pixelRatio = window.devicePixelRatio || 1
+  const renderer = new THREE.WebGLRenderer({ antialias: pixelRatio < 2, canvas })
   renderer.setSize(window.innerWidth, window.innerHeight)
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  renderer.setPixelRatio(Math.min(pixelRatio, 2))
   renderer.outputColorSpace = THREE.SRGBColorSpace
   renderer.toneMapping = THREE.LinearToneMapping
-  renderer.toneMappingExposure = 1.0
+  renderer.toneMappingExposure = 1
 
   /**
    * Resize
