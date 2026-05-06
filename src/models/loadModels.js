@@ -6,7 +6,7 @@ import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js"
 import { loadInteractiveModel } from "../utils/loadInteractiveModel.js"
 import { initGameInterface, onModelsLoaded } from "../hud/HUD.js"
 import { setGameReady } from "../main.js"
-import { playBackgroundMusic } from "../utils/sound.js"
+import { initMusic } from "../utils/sound.js"
 
 /**
  * Animations
