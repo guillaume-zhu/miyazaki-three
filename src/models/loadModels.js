@@ -6,7 +6,13 @@ import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js"
 import { loadInteractiveModel } from "../utils/loadInteractiveModel.js"
 import { initGameInterface, onModelsLoaded } from "../hud/HUD.js"
 import { setGameReady } from "../main.js"
-import { initMusic } from "../utils/music.js"
+
+// fonction du son:
+function playSound(file, vol = 1.0) {
+  let audio = new Audio(file)
+  audio.volume = vol
+  audio.play()
+}
 
 /**
  * Animations
@@ -98,7 +104,7 @@ export const loadModels = ({
       }
       if (loaderText) {
         // On arrondit pour éviter les chiffres à virgule qui bougent trop
-        loaderText.innerText = `Récupération de la mémoire... ${Math.round(progressRatio)}%`
+        loaderText.innerText = `Fragments de mémoire retrouvés... ${Math.round(progressRatio)}%`
       }
     })
   }
@@ -118,7 +124,7 @@ export const loadModels = ({
 
     if (launchBtn) {
       launchBtn.onclick = () => {
-        initMusic()
+        playSound("./sound/Ghibli-sounds-shortened.MP3")
         // 1. On cache le loader
         loaderScreen.classList.add("loader-hidden")
 
@@ -986,7 +992,7 @@ export const loadModels = ({
       model.traverse((child) => {
         if (!child.isMesh || !child.material) return
 
-        child.material.color.multiplyScalar(1.5)
+        child.material.color.multiplyScalar(0.9)
       })
     },
   })
@@ -1010,7 +1016,7 @@ export const loadModels = ({
       model.traverse((child) => {
         if (!child.isMesh || !child.material) return
         child.material = child.material.clone()
-        child.material.color.multiplyScalar(1.5)
+        child.material.color.multiplyScalar(0.9)
       })
     },
   })
@@ -1058,7 +1064,7 @@ export const loadModels = ({
       model.traverse((child) => {
         if (!child.isMesh || !child.material) return
 
-        child.material.color.multiplyScalar(1.5)
+        child.material.color.multiplyScalar(0.9)
       })
     },
   })
@@ -1082,7 +1088,7 @@ export const loadModels = ({
       model.traverse((child) => {
         if (!child.isMesh || !child.material) return
 
-        child.material.color.multiplyScalar(1.5)
+        child.material.color.multiplyScalar(0.9)
       })
     },
   })
@@ -1106,7 +1112,7 @@ export const loadModels = ({
       model.traverse((child) => {
         if (!child.isMesh || !child.material) return
 
-        child.material.color.multiplyScalar(1.5)
+        child.material.color.multiplyScalar(0.9)
       })
     },
   })
@@ -1130,7 +1136,7 @@ export const loadModels = ({
       model.traverse((child) => {
         if (!child.isMesh || !child.material) return
 
-        child.material.color.multiplyScalar(1.5)
+        child.material.color.multiplyScalar(0.9)
       })
     },
   })

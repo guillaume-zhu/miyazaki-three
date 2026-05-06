@@ -3,7 +3,6 @@ import { chargerProgression } from '../data/progression.js'
 import { showAnecdote, handleAnswer } from './quiz.js'
 import { playSound } from '../utils/sound.js'
 import '../auth/profile.js' // Importer pour attacher les fonctions globales (profil/auth)
-import { loadSavedTheme, loadSavedBadge } from './settings.js'
 
 // ════════════════════════════════════════════
 // VÉRIFICATION D'ÉTAT (MODÈLES & PROFIL)
