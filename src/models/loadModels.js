@@ -6,11 +6,150 @@ import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js"
 import { loadInteractiveModel } from "../utils/loadInteractiveModel.js"
 import { initGameInterface, onModelsLoaded } from "../hud/HUD.js"
 import { setGameReady } from "../main.js"
-import { initMusic } from '../utils/sound.js'
+import { playBackgroundMusic } from "../utils/sound.js"
 
 /**
  * Animations
  */
+
+// Avion
+const createPlaneAnimation = (
+  model,
+  {
+    startX = 50,
+    endX = -30,
+    speed = 5,
+    floatAmplitude = 0.35,
+    floatSpeed = 1.5,
+    pauseDuration = 0.5,
+    rotationSpeed = 4,
+    rotationLeft = Math.PI * 1.5,
+    rotationRight = Math.PI * 0.5,
+  } = {},
+) => {
+  const baseY = model.position.y
+
+  let direction = -1
+  let pauseTimer = 0
+  let targetRotationY = rotationLeft
+
+  model.rotation.y = rotationLeft
+
+  return (delta, t) => {
+    model.position.y = baseY + Math.sin(t * floatSpeed) * floatAmplitude
+
+    model.rotation.y = THREE.MathUtils.damp(model.rotation.y, targetRotationY, rotationSpeed, delta)
+
+    if (pauseTimer > 0) {
+      pauseTimer -= delta
+      return
+    }
+
+    model.position.x += direction * speed * delta
+
+    if (direction === -1 && model.position.x <= endX) {
+      model.position.x = endX
+      direction = 1
+      targetRotationY = rotationRight
+      pauseTimer = pauseDuration
+    }
+
+    if (direction === 1 && model.position.x >= startX) {
+      model.position.x = startX
+      direction = -1
+      targetRotationY = rotationLeft
+      pauseTimer = pauseDuration
+    }
+  }
+}
+
+// Bateau Ponyo
+const createPonyoBoatAnimation = (
+  model,
+  { startX = 86, endX = -50, speed = 4, pauseDuration = 1.5, rotationSpeed = 4 } = {},
+) => {
+  let direction = -1
+  let pauseTimer = 0
+
+  const rotationLeft = Math.PI * -0.5
+  const rotationRight = Math.PI * 0.5
+
+  let targetRotationY = rotationLeft
+  model.rotation.y = rotationLeft
+
+  return (delta) => {
+    // Rotation progressive, même pendant la pause
+    model.rotation.y = THREE.MathUtils.damp(model.rotation.y, targetRotationY, rotationSpeed, delta)
+
+    if (pauseTimer > 0) {
+      pauseTimer -= delta
+      return
+    }
+
+    model.position.x += direction * speed * delta
+
+    if (direction === -1 && model.position.x <= endX) {
+      model.position.x = endX
+      direction = 1
+      targetRotationY = rotationRight
+      pauseTimer = pauseDuration
+    }
+
+    if (direction === 1 && model.position.x >= startX) {
+      model.position.x = startX
+      direction = -1
+      targetRotationY = rotationLeft
+      pauseTimer = pauseDuration
+    }
+  }
+}
+
+// Chateau Laputa
+const createLaputaCastleAnimation = (
+  model,
+  { floatAmplitude = 0.35, floatSpeed = 0.6, rotationSpeed = 0.05 } = {},
+) => {
+  const baseY = model.position.y
+
+  return (delta, t) => {
+    model.position.y = baseY + Math.sin(t * floatSpeed) * floatAmplitude
+    model.rotation.y += rotationSpeed * delta
+  }
+}
+
+// Chihiro
+const createCircularWalkAnimation = (
+  model,
+  { radius = 2.5, angularSpeed = 0.35, startAngle = 0, clockwise = true, rotationOffset = 0 } = {},
+) => {
+  const baseY = model.position.y
+  const initialX = model.position.x
+  const initialZ = model.position.z
+
+  const direction = clockwise ? -1 : 1
+
+  // Permet de garder la position initiale comme point de départ du cercle
+  const centerX = initialX - Math.cos(startAngle) * radius
+  const centerZ = initialZ - Math.sin(startAngle) * radius
+
+  let angle = startAngle
+
+  return (delta) => {
+    angle += direction * angularSpeed * delta
+
+    const x = centerX + Math.cos(angle) * radius
+    const z = centerZ + Math.sin(angle) * radius
+
+    model.position.set(x, baseY, z)
+
+    // Direction tangentielle du cercle
+    const tangentX = -Math.sin(angle) * direction
+    const tangentZ = Math.cos(angle) * direction
+
+    // Oriente Chihiro dans le sens de la marche
+    model.rotation.y = Math.atan2(tangentX, tangentZ) + rotationOffset
+  }
+}
 
 // Train
 const createTrainXAnimation = (model, { distance = 9, speed = 3, pauseDuration = 2.5 } = {}) => {
@@ -66,6 +205,19 @@ const createMagicGoldAnimation = (
         material.emissiveIntensity = pulseBase + Math.sin(t * pulseSpeed) * pulseAmplitude
       }
     }
+  }
+}
+
+// Warawara
+const createWarawaraAnimation = (
+  model,
+  { floatAmplitude = 0.18, floatSpeed = 1.5, rotationSpeed = 0.45 } = {},
+) => {
+  const baseY = model.position.y
+
+  return (delta, t) => {
+    model.position.y = baseY + Math.sin(t * floatSpeed) * floatAmplitude
+    model.rotation.z += rotationSpeed * delta
   }
 }
 
@@ -154,7 +306,7 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/avion.glb",
-    position: [25, 10, -60],
+    position: [50, 18, -60],
     rotation: [0, Math.PI * 1.5, 0],
     interactive: true,
     animated: true,
@@ -162,6 +314,20 @@ export const loadModels = ({
     showHitbox: false,
     onLoad: (model) => {
       model.userData.modelKey = "avion"
+
+      modelAnimations.push(
+        createPlaneAnimation(model, {
+          startX: 50,
+          endX: -30,
+          speed: 5,
+          floatAmplitude: 1,
+          floatSpeed: 1.5,
+          pauseDuration: 0.5,
+          rotationSpeed: 4,
+          rotationLeft: Math.PI * 1.5,
+          rotationRight: Math.PI * 0.5,
+        }),
+      )
     },
   })
 
@@ -211,7 +377,7 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/bateau-ponyo.glb",
-    position: [0, -3, -80],
+    position: [-50, -3, -80],
     rotation: [0, Math.PI * 0.5, 0],
     interactive: true,
     hitboxScale: [1, 1, 1],
@@ -220,6 +386,15 @@ export const loadModels = ({
     outlineHoverThickness: 0.05,
     onLoad: (model) => {
       model.userData.modelKey = "bateau-ponyo"
+      modelAnimations.push(
+        createPonyoBoatAnimation(model, {
+          startX: 86,
+          endX: -50,
+          speed: 4,
+          pauseDuration: 1.5,
+          rotationSpeed: 4,
+        }),
+      )
     },
   })
 
@@ -308,7 +483,7 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/chihiro.glb",
-    position: [20, 0, -25],
+    position: [18, 0, -20],
     rotation: [0, Math.PI * 1.5, 0],
     scale: 0.35,
     interactive: true,
@@ -317,6 +492,14 @@ export const loadModels = ({
     showHitbox: false,
     onLoad: (model) => {
       model.userData.modelKey = "chihiro"
+      modelAnimations.push(
+        createCircularWalkAnimation(model, {
+          radius: 5,
+          angularSpeed: 0.6,
+          clockwise: true,
+          rotationOffset: 0,
+        }),
+      )
     },
   })
 
@@ -347,7 +530,7 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/epouvantail.glb",
-    position: [42, 10.5, -92],
+    position: [34, 7, -98],
     scale: 0.4,
     interactive: true,
     hitboxScale: [0.8, 1, 1],
@@ -424,8 +607,8 @@ export const loadModels = ({
     interactiveObjects,
     mixers,
     path: "models/lanterne.glb",
-    position: [-15, 0, -40],
-    rotation: [0, Math.PI * 1, 0],
+    position: [-12, 0, -35],
+    rotation: [0, Math.PI * 0.5, 0],
     scale: 5,
     interactive: true,
     hitboxScale: [1, 1, 1],
@@ -479,6 +662,14 @@ export const loadModels = ({
 
         child.material.color.multiplyScalar(0.5)
       })
+
+      modelAnimations.push(
+        createLaputaCastleAnimation(model, {
+          floatAmplitude: 0.35,
+          floatSpeed: 0.6,
+          rotationSpeed: 0.05,
+        }),
+      )
     },
   })
 
@@ -819,6 +1010,13 @@ export const loadModels = ({
     outlineHoverThickness: 0.05,
     onLoad: (model) => {
       model.userData.modelKey = "warawara"
+      modelAnimations.push(
+        createWarawaraAnimation(model, {
+          floatAmplitude: 0.18,
+          floatSpeed: 1.5,
+          rotationSpeed: 0.45,
+        }),
+      )
     },
   })
 
